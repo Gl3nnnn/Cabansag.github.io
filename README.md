@@ -13,10 +13,6 @@ Welcome to my portfolio website! I'm Glenn Patrick Cabansag, a passionate UI des
 - **Frameworks**: React, Vue.js
 - **Tools**: Figma, Adobe XD, Git
 
-## 📈 GitHub Stats
-
-!Glenn's GitHub stats
-
 ## 📫 Contact Me
 
 - **Email**: patrickcabansag5@gmail.com
