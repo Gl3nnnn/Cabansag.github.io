@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - Glenn Patrick Cabansag</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+        .faq-header {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: #282828;
+            border-bottom: 2px solid #444;
+        }
+        .faq-header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .faq-container {
+            width: 80%;
+            max-width: 800px;
+            margin: 40px auto;
+            background-color: #333333;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .faq-item {
+            margin-bottom: 20px;
+        }
+        .question {
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #555555;
+            padding: 10px 0;
+            transition: background-color 0.3s ease;
+        }
+        .question-text {
+            flex-grow: 1;
+        }
+        .question:hover {
+            background-color: #444444;
+        }
+        .answer {
+            margin-top: 10px;
+            display: none;
+            color: #1a1a1a;
+            padding-left: 20px;
+            border-left: 2px solid #555555;
+        }
+        .answer.show {
+            display: block;
+        }
+        .question i {
+            transition: transform 0.3s ease;
+        }
+        .question.active i {
+            transform: rotate(180deg);
+        }
+        .back-button-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .back-button {
+            display: inline-block;
+            background-color: #555555;
+            color: #ffffff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .back-button:hover {
+            background-color: #777777;
+        }
+        /* Added styles */
+        .faq-item:hover {
+            background-color: #444444;
+        }
+        .answer {
+            background-color: #f7f7f7;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .answer.show {
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        /* New styles */
+        .faq-header {
+            background-image: linear-gradient(to bottom, #282828, #333333);
+        }
+        .faq-item {
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .question {
+            padding: 15px 20px;
+        }
+        .answer {
+            padding: 20px;
+        }
+        .back-button {
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="faq-header">
+        <h1>Frequently Asked Questions</h1>
+        <p>Get answers to common questions about me and my work.</p>
+    </header>
+    <section class="faq-container">
+        <!-- FAQ Item 1 -->
+        <div class="faq-item">
+            <div class="question">
+                <span class="question-text">Q: What is your educational background?</span>
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="answer">A: I completed high school in 2021 and am currently pursuing a college degree.</div>
+        </div>
+        <!-- FAQ Item 2 -->
+        <div class="faq-item">
+            <div class="question">
+                <span class="question-text">Q: What projects have you worked on?</span>
+                <i class="fas fa-project-diagram"></i>
+            </div>
+            <div class="answer">A: I have experience in UI Design, Frontend, Backend, and Testing projects.</div>
+        </div>
+        <!-- FAQ Item 3 -->
+        <div class="faq-item">
+            <div class="question">
+                <span class="question-text">Q: How can I contact you for collaboration?</span>
+                <i class="fas fa-envelope"></i>
+            </div>
+            <div class="answer">A: Feel free to reach out via email at <a href="mailto:patrickcabansag5@gmail.com" target="_blank">patrickcabansag5@gmail.com</a> or connect with me on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank">LinkedIn</a>.</div>
+        </div>
+        <!-- FAQ Item 4 -->
+        <div class="faq-item">
+            <div class="question">
+                <span class="question-text">Q: What programming languages are you proficient in?</span>
+                <i class="fas fa-code"></i>
+            </div>
+            <div class="answer">A: I'm proficient in Python, JavaScript, and Java.</div>
+        </div>
+        <!-- FAQ Item 5 -->
+        <div class="faq-item">
+            <div class="question">
+                <span class="question-text">Q: Can you explain your design process?</span>
+                <i class="fas fa-pencil-ruler"></i>
+            </div>
+            <div class="answer">A: My design process involves research, wireframing, prototyping, and user testing.</div>
+        </div>
+        <!-- FAQ Item 6 -->
+        <div class="faq-item">
+            <div class="question">
+                <span class="question-text">Q: What tools do you use for version control?</span>
+                <i class="fas fa-code-branch"></i>
+            </div>
+            <div class="answer">A: I use Git and GitHub for version control and collaboration.</div>
+        </div>
+        <!-- FAQ Item 7 -->
+        <div class="faq-item">
+            <div class="question">
+                <span class="question-text">Q: Are you open to freelance work?</span>
+                <i class="fas fa-briefcase"></i>
+            </div>
+            <div class="answer">A: Yes, I'm open to freelance opportunities. Let's discuss your project!</div>
+        </div>
+        <!-- FAQ Item 8 -->
+        <div class="faq-item">
+            <div class="question">
+                <span class="question-text">Q: How do you stay updated with industry trends?</span>
+                <i class="fas fa-lightbulb"></i>
+            </div>
+            <div class="answer">A: I read tech blogs, follow industry leaders on social media, and attend webinars.</div>
+        </div>
+        <!-- FAQ Item 9 -->
+        <div class="faq-item">
+            <div class="question">
+                <span class="question-text">Q: What design principles do you consider important?</span>
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="answer">A: I focus on usability, consistency, and accessibility in my designs.</div>
+        </div>
+        <!-- FAQ Item 10 -->
+        <div class="faq-item">
+            <div class="question">
+                <span class="question-text">Q: Can you share your favorite coding project?</span>
+                <i class="fas fa-star"></i>
+            </div>
+            <div class="answer">A: Certainly! Check out my GitHub repository for my personal website.</div>
+        </div>
+    </section>
+    <div class="back-button-container">
+        <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    </div>
+    <script>
+        // Toggle answer visibility on question click
+        document.querySelectorAll('.question').forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                answer.classList.toggle('show');
+                question.classList.toggle('active');
+            });
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
