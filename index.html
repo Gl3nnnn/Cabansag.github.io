@@ -1750,6 +1750,28 @@ section{
     color: #ffffff;
     box-shadow: 0 6px 18px rgba(22, 101, 52, 0.35);
 }
+/* Light: certification category badges -> outlined chips */
+[data-theme="light"] .cert-cat-badge{
+    background: #ffffff;
+    color: var(--main-color);
+    border: 2px solid var(--main-color);
+    box-shadow: none;
+}
+/* Light: skill bars -> lighter green fill */
+[data-theme="light"] .skill-fill{ background: linear-gradient(90deg, #16a34a, #0d9488); }
+/* Light: testimonial avatars -> outlined circles; cards softened */
+[data-theme="light"] .testimonial-avatar{
+    background: #ffffff;
+    color: var(--main-color);
+    border: 2px solid var(--main-color);
+    box-shadow: none;
+}
+[data-theme="light"] .testimonial-card{ border-color: #d6d9de; }
+[data-theme="light"] .testimonial-card:hover{
+    box-shadow: 0 10px 26px rgba(23, 24, 28, 0.10);
+}
+[data-theme="light"] .testimonial-quote,
+[data-theme="light"] .cert-card-top i{ text-shadow: none; }
 /* Form/popup */
 .popup{
     position: fixed;
