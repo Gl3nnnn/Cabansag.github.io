@@ -51,12 +51,15 @@ The Projects section on the site loads live from GitHub and includes language fi
 
 ## Site Structure
 
-- `index.html` — main portfolio page (home, about, education, skills, experience, projects, certifications, services, testimonials, contact)
+- `index.html` — main portfolio page (home, about, education, skills, experience, projects, certifications, services, testimonials, blog, contact)
 - `faq.html` — frequently asked questions
-- `blog-home-lab.html`, `blog-helpdesk-lessons.html`, `blog-aws-journey.html` — blog posts
-- `script.js` — interactivity (nav, projects via GitHub API, reveal-on-scroll, contact copy/honeypot)
-- `profile.jpg` — profile photo
-- `favicon.svg`, `sitemap.xml`, `robots.txt` — branding and SEO files
+- `blog-home-lab.html`, `blog-helpdesk-lessons.html`, `blog-aws-journey.html`, `blog-tryhackme-first-month.html`, `blog-docker-portfolio.html`, `blog-vlans-home-lab.html` — blog posts
+- `404.html` — custom 404 page
+- `script.js` — interactivity (nav, projects via GitHub API, reveal-on-scroll, theme toggle, hero stats, contact validation/copy/honeypot)
+- `manifest.webmanifest` — PWA/install metadata
+- `profile.jpg`, `og-cover.jpg` — profile photo and social share card
+- `favicon.svg`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png` — branding and icons
+- `sitemap.xml`, `robots.txt` — SEO files
 
 ## Contact Me
 

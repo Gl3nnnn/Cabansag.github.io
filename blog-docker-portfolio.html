@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My AWS Learning Journey: Getting Started | Glenn Patrick Cabansag</title>
+    <title>Dockerizing My Portfolio: Containers Made Simple | Glenn Patrick Cabansag</title>
     <meta name="author" content="Glenn Patrick Cabansag">
     <meta name="theme-color" content="#121212">
-    <meta name="description" content="How I'm exploring cloud fundamentals, EC2, S3, and Docker to level up my DevOps and cloud skills.">
-    <meta property="og:title" content="My AWS Learning Journey: Getting Started | Glenn Patrick Cabansag">
-    <meta property="og:description" content="How I'm exploring cloud fundamentals, EC2, S3, and Docker to level up my DevOps and cloud skills.">
+    <meta name="description" content="A beginner's guide to running a static site with Docker - Dockerfiles, volume mounts, docker-compose, and why containers make deployment predictable.">
+    <meta property="og:title" content="Dockerizing My Portfolio: Containers Made Simple | Glenn Patrick Cabansag">
+    <meta property="og:description" content="A beginner's guide to running a static site with Docker - Dockerfiles, volume mounts, and why containers make deployment predictable.">
     <meta property="og:type" content="article">
-    <meta property="og:url" content="https://gl3nnnn.github.io/blog-aws-journey.html">
+    <meta property="og:url" content="https://gl3nnnn.github.io/blog-docker-portfolio.html">
     <meta property="og:image" content="https://gl3nnnn.github.io/og-cover.jpg">
-    <meta property="article:published_time" content="2025-09-20">
+    <meta property="article:published_time" content="2026-03-15">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:creator" content="@glenpatrick">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="canonical" href="https://gl3nnnn.github.io/blog-aws-journey.html">
+    <link rel="canonical" href="https://gl3nnnn.github.io/blog-docker-portfolio.html">
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,12 +28,12 @@
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      "headline": "My AWS Learning Journey: Getting Started",
-      "description": "How I'm exploring cloud fundamentals, EC2, S3, and Docker to level up my DevOps and cloud skills.",
+      "headline": "Dockerizing My Portfolio: Containers Made Simple",
+      "description": "A beginner's guide to running a static site with Docker - Dockerfiles, volume mounts, docker-compose, and why containers make deployment predictable.",
       "image": "https://gl3nnnn.github.io/profile.jpg",
       "author": { "@type": "Person", "name": "Glenn Patrick Cabansag", "url": "https://gl3nnnn.github.io/" },
       "publisher": { "@type": "Person", "name": "Glenn Patrick Cabansag" },
-      "datePublished": "2025-09-20"
+      "datePublished": "2026-03-15"
     }
     </script>
     <style>
@@ -106,46 +106,56 @@
     </header>
 
     <article class="article" id="main" tabindex="-1">
-        <span class="category">Cloud</span>
-        <h1 class="title">My AWS Learning Journey: Getting Started</h1>
+        <span class="category">Cloud / DevOps</span>
+        <h1 class="title">Dockerizing My Portfolio: Containers Made Simple</h1>
         <div class="meta">
-            <span>2025</span>
+            <span>2026</span>
             <span>Glenn Patrick Cabansag</span>
             <span>7 min read</span>
         </div>
 
         <div class="content">
-            <p>Cloud computing felt overwhelming at first, but after certifying in Digital Transformation with Google Cloud, I decided to go deeper with AWS. Here's my starter roadmap and the concepts that made everything click.</p>
+            <p>My portfolio is a plain static site — HTML, CSS, and a bit of JavaScript. It's simple enough to open with a double-click, so why bother with Docker at all? Because learning to ship even a tiny project in a container teaches you how deployment behaves on a real server. Here's how I containerized this very site.</p>
 
-            <h2>1. Start With the Big Three Services</h2>
-            <p>Don't try to learn all 200+ AWS services. The foundation tier is really three things:</p>
+            <h2>1. Images vs. Containers</h2>
+            <p>The mental model that finally made Docker click: an <strong>image</strong> is a frozen recipe — a snapshot of the OS, runtime, and files. A <strong>container</strong> is a running instance of that recipe. You can run five containers from one image, like running five copies of the same app in isolated boxes.</p>
+
+            <h2>2. Writing the Dockerfile</h2>
+            <p>For a static site, the classic approach is a small web server. I used <code>nginx:alpine</code> because it's tiny and purpose-built for serving files. The Dockerfile is just three lines:</p>
+            <pre><code>FROM nginx:alpine
+COPY . /usr/share/nginx/html
+EXPOSE 80</code></pre>
             <ul>
-                <li><strong>EC2</strong> — virtual servers. Learn to launch, connect via SSH, and run a simple web server.</li>
-                <li><strong>S3</strong> — object storage. Upload files, set bucket policies, and understand availability.</li>
-                <li><strong>IAM</strong> — identity and access. Learn users, roles, and the principle of least privilege.</li>
+                <li><code>FROM</code> picks the base image — here, a minimal nginx with Alpine Linux</li>
+                <li><code>COPY</code> drops my site files into the folder nginx serves by default</li>
+                <li><code>EXPOSE</code> documents that the container listens on port 80</li>
             </ul>
 
-            <h2>2. Spin Up a Free-Tier EC2 Instance</h2>
-            <p>Hands-on beats reading every time. I launched a free-tier t2.micro, connected with SSH, and hosted a tiny page with Python:</p>
-            <pre><code># Install a web server + write a quick page
-sudo apt update
-sudo apt install -y nginx
-echo "&lt;h1&gt;Hello from EC2&lt;/h1&gt;" | sudo tee /var/www/html/index.html</code></pre>
+            <h2>3. Build and Run</h2>
+            <p>Two commands turn the Dockerfile into a working site:</p>
+            <pre><code>docker build -t portfolio .
+docker run -d -p 8080:80 --name portfolio portfolio</code></pre>
+            <p>Now <code>http://localhost:8080</code> serves the exact same files that GitHub Pages serves. The <code>-p 8080:80</code> maps my host port to the container's port 80, so <strong>any port on the host can point at the container's port</strong>.</p>
 
-            <h2>3. Manage Firewalls With Security Groups</h2>
-            <p>The default security group blocks most traffic. I opened port 22 (SSH) and port 80 (HTTP) and immediately understood why permissions matter — a misconfigured group can expose your instance to the whole internet. Least privilege is not optional.</p>
+            <h2>4. Live Reload with Volume Mounts</h2>
+            <p>Rebuilding the image after every edit gets old fast. A <strong>bind mount</strong> overrides a folder in the container with a folder on my machine, so changes appear instantly:</p>
+            <pre><code>docker run -d -p 8080:80 -v "%cd%":/usr/share/nginx/html --name portfolio portfolio</code></pre>
+            <p>Now I edit <code>index.html</code> locally, refresh the browser, and the container already serves the new file. No restart needed.</p>
 
-            <h2>4. Docker Changed How I Think About Deployment</h2>
-            <p>Containerizing projects with Docker made my local code run identically in the cloud. A simple <code>Dockerfile</code> plus an image pull means the same app runs on my laptop and on EC2 without setup drama:</p>
-            <pre><code>docker build -t my-app .
-docker run -d -p 8080:80 my-app</code></pre>
+            <h2>5. One Command with Docker Compose</h2>
+            <p>As soon as an app grows past one container, typing <code>docker run</code> for each one becomes error-prone. <code>docker-compose.yml</code> turns everything into a single command:</p>
+            <pre><code>services:
+  portfolio:
+    build: .
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/usr/share/nginx/html</code></pre>
+            <pre><code>docker compose up -d</code></pre>
 
-            <h2>5. Keep the Bill at Zero</h2>
-            <p>The biggest fear for a fresh grad is the AWS bill. My rule: use the free tier, always tag resources, and <strong>terminate</strong> what I'm not using. Checking the billing dashboard after every session is a habit I refuse to skip.</p>
-            <blockquote>Cloud skills are about making systems scalable and reliable — but wisdom is knowing when to shut things down.</blockquote>
-
-            <h2>What's Next</h2>
-            <p>I'm moving toward CI/CD pipelines next — building a small project, pushing it to GitHub, and letting an automated workflow test and deploy it to EC2. The path from developer to cloud-ready is just a series of small, repeated experiments.</p>
+            <h2>6. Why This Matters</h2>
+            <blockquote>If it runs the same way on my laptop as it does on a server, half of the mysteries of deployment disappear.</blockquote>
+            <p>Containerizing this site gave me the vocabulary and confidence to approach bigger things — the Laravel and PHP apps I work with at my job, and eventually pushing images for real cloud deployments. The skill transfers; the static site is just the cheapest possible scaffold to practice on.</p>
         </div>
 
         <div class="post-footer">Thanks for reading! Connect on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer">LinkedIn</a> or check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">GitHub</a>.</div>

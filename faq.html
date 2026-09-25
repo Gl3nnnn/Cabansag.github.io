@@ -11,15 +11,18 @@
     <meta property="og:description" content="Frequently asked questions about Glenn Patrick Cabansag - IT Assistant, full-stack developer, and 37x certified IT professional from Iloilo, Philippines.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://gl3nnnn.github.io/faq.html">
-    <meta property="og:image" content="https://gl3nnnn.github.io/profile.jpg">
+    <meta property="og:image" content="https://gl3nnnn.github.io/og-cover.jpg">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="FAQ | Glenn Patrick Cabansag">
     <meta name="twitter:description" content="Frequently asked questions about Glenn Patrick Cabansag - IT Assistant, full-stack developer, and 37x certified IT professional from Iloilo, Philippines.">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="canonical" href="https://gl3nnnn.github.io/faq.html">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -149,6 +152,22 @@
         .back-top{position:fixed;right:1.5rem;bottom:1.5rem;width:44px;height:44px;border-radius:50%;background:var(--panel);border:2px solid var(--main);color:var(--main);font-size:1.1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;visibility:hidden;transform:translateY(12px);transition:.3s;z-index:50;}
         .back-top.show{opacity:1;visibility:visible;transform:none;}
         .back-top:hover{background:var(--main);color:#000;box-shadow:0 0 18px rgba(27,179,14,.5);}
+
+        /* Theme toggle */
+        #theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:2.8rem;height:2.8rem;border-radius:50%;border:1.5px solid var(--main);background:transparent;color:var(--main);font-size:1rem;cursor:pointer;transition:.25s;flex-shrink:0;}
+        #theme-toggle:hover{background:var(--main);color:#000;box-shadow:0 0 14px rgba(27,179,14,.5);}
+        [data-theme="light"]{--bg:#f6f7f9;--panel:#ffffff;--main:#1a9e0d;--accent:#0a8f83;--text:#17181c;--muted:#5f6368;}
+        [data-theme="light"] .bp-header{background:rgba(255,255,255,.85);}
+        [data-theme="light"] .hero h1,
+        [data-theme="light"] .group-title,
+        [data-theme="light"] .cta h2{color:#14161a;}
+        [data-theme="light"] .group-title{border-bottom-color:rgba(0,0,0,.12);}
+        [data-theme="light"] .q-btn:hover{color:var(--text);}
+        [data-theme="light"] .search-box,
+        [data-theme="light"] .faq-item,
+        [data-theme="light"] .filter-btn,
+        [data-theme="light"] .faq-footer{border-color:rgba(0,0,0,.14);}
+        [data-theme="light"] body::before{opacity:.6;}
     </style>
 </head>
 <body>
@@ -156,6 +175,7 @@
     <button class="back-top" id="back-top" aria-label="Back to top" title="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
     <header class="bp-header">
         <a href="index.html" class="logo">Glenn Patrick <span>Cabansag</span></a>
+        <button id="theme-toggle" aria-label="Toggle light and dark mode" title="Toggle light/dark mode"><i class="fa-solid fa-moon"></i></button>
         <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
     </header>
 

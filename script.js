@@ -137,6 +137,9 @@ function buildProjectCard(repo) {
     const language = repo.language || 'N/A';
     const stars = repo.stargazers_count || 0;
     const url = repo.html_url || `https://github.com/${GITHUB_USER}/${name}`;
+    const hasDemo = Boolean(repo.homepage);
+    const ctaLabel = hasDemo ? 'Live Demo' : 'View Project';
+    const ctaIcon = hasDemo ? 'fa-solid fa-rocket' : 'fa-solid fa-arrow-right';
 
     return `
         <a class="project-card" href="${url}" target="_blank" rel="noopener">
@@ -147,7 +150,7 @@ function buildProjectCard(repo) {
             <p>${description}</p>
             <div class="project-meta">
                 <span class="project-lang"><i class="${langIcon(language)}"></i> ${language}</span>
-                <span class="project-link">View Project <i class="fa-solid fa-arrow-right"></i></span>
+                <span class="project-link ${hasDemo ? 'demo' : ''}">${ctaLabel} <i class="${ctaIcon}"></i></span>
             </div>
         </a>
     `;
@@ -199,6 +202,9 @@ function renderProjects(projects) {
     activeProjects = projects
         .filter(isWorthShowing)
         .sort((a, b) => (b.stargazers_count || 0) - (a.stargazers_count || 0));
+
+    const statProj = document.getElementById('hero-stat-projects');
+    if (statProj) statProj.textContent = activeProjects.length + '+';
 
     if (activeProjects.length === 0) {
         projectsGrid.innerHTML = `<p class="project-error">No projects to show at the moment.</p>`;
@@ -335,3 +341,69 @@ if (skillBars.length && 'IntersectionObserver' in window) {
 // Dynamic copyright year
 const yearEl = document.getElementById('year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+// Light / dark theme toggle (persisted; defaults to system preference)
+(function initTheme() {
+    const root = document.documentElement;
+    let saved = null;
+    try { saved = localStorage.getItem('theme'); } catch (err) { /* ignore */ }
+    const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+    const theme = saved || (prefersLight ? 'light' : 'dark');
+    root.setAttribute('data-theme', theme);
+    try { localStorage.setItem('theme', theme); } catch (err) { /* ignore */ }
+
+    const toggle = document.getElementById('theme-toggle');
+    const icon = toggle ? toggle.querySelector('i') : null;
+    const apply = (t) => {
+        root.setAttribute('data-theme', t);
+        if (icon) icon.className = t === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        try { localStorage.setItem('theme', t); } catch (err) { /* ignore */ }
+    };
+    if (icon) icon.className = theme === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    if (toggle) toggle.addEventListener('click', () => {
+        const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        apply(next);
+    });
+})();
+
+// Hero stats count-up animation when scrolled into view
+if ('IntersectionObserver' in window) {
+    const statEls = document.querySelectorAll('.hero-stat-count');
+    if (statEls.length) {
+        const statObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                const el = entry.target;
+                statObserver.unobserve(el);
+                const target = parseInt(el.dataset.target || '0', 10);
+                const suffix = el.dataset.suffix || '';
+                const duration = 1500;
+                const start = performance.now();
+                const tick = (now) => {
+                    const p = Math.min((now - start) / duration, 1);
+                    const eased = 1 - Math.pow(1 - p, 3);
+                    el.textContent = Math.round(target * eased) + suffix;
+                    if (p < 1) requestAnimationFrame(tick);
+                };
+                requestAnimationFrame(tick);
+            });
+        }, { threshold: 0.4 });
+        statEls.forEach(el => statObserver.observe(el));
+    }
+}
+
+// Certification cards: add a per-card "view on LinkedIn" quick link
+const CERT_LINK = 'https://www.linkedin.com/in/glenpatrick/details/certifications/';
+document.querySelectorAll('.cert-card').forEach(card => {
+    if (card.querySelector('.cert-verify-link')) return;
+    const top = card.querySelector('.cert-card-top');
+    const link = document.createElement('a');
+    link.href = CERT_LINK;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.className = 'cert-verify-link';
+    link.setAttribute('aria-label', 'View certifications on LinkedIn');
+    link.innerHTML = '<i class="fa-solid fa-arrow-up-right-from-square"></i>';
+    if (top) top.appendChild(link);
+    else card.appendChild(link);
+});

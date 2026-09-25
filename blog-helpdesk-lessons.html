@@ -11,16 +11,19 @@
     <meta property="og:description" content="Lessons from supporting end users every day — troubleshooting, patience, and the joy of solving problems.">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://gl3nnnn.github.io/blog-helpdesk-lessons.html">
-    <meta property="og:image" content="https://gl3nnnn.github.io/profile.jpg">
+    <meta property="og:image" content="https://gl3nnnn.github.io/og-cover.jpg">
     <meta property="article:published_time" content="2025-06-10">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:creator" content="@glenpatrick">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="canonical" href="https://gl3nnnn.github.io/blog-helpdesk-lessons.html">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -76,6 +79,21 @@
         .bp-footer .social a:hover{background:var(--main);color:#000;transform:translateY(-5px);box-shadow:0 0 18px rgba(27,179,14,.5);text-decoration:none;}
         .bp-footer p{color:var(--muted);font-size:.9rem;}
         .bp-footer a{color:var(--accent);}
+
+        #theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:2.8rem;height:2.8rem;border-radius:50%;border:1.5px solid var(--main);background:transparent;color:var(--main);font-size:1rem;cursor:pointer;transition:.25s;flex-shrink:0;}
+        #theme-toggle:hover{background:var(--main);color:#000;box-shadow:0 0 14px rgba(27,179,14,.5);}
+        [data-theme="light"]{--bg:#f6f7f9;--panel:#ffffff;--main:#1a9e0d;--accent:#0a8f83;--text:#17181c;--muted:#5f6368;}
+        [data-theme="light"] .bp-header{background:rgba(255,255,255,.85);}
+        [data-theme="light"] h1.title,
+        [data-theme="light"] .content h2,
+        [data-theme="light"] .content strong{color:#14161a;}
+        [data-theme="light"] .meta,
+        [data-theme="light"] .post-footer,
+        [data-theme="light"] .bp-footer{border-color:rgba(0,0,0,.14);}
+        [data-theme="light"] .content pre{background:#0f1115;color:#0a8f83;}
+        [data-theme="light"] .content blockquote{background:#eef1f4;color:#3c4043;}
+        [data-theme="light"] .content code{border-color:rgba(0,0,0,.16);}
+        [data-theme="light"] body::before{opacity:.6;}
     </style>
 </head>
 <body>
@@ -83,6 +101,7 @@
     <button class="back-top" id="back-top" aria-label="Back to top" title="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
     <header class="bp-header">
         <a href="index.html" class="logo">Glenn Patrick <span>Cabansag</span></a>
+        <button id="theme-toggle" aria-label="Toggle light and dark mode" title="Toggle light/dark mode"><i class="fa-solid fa-moon"></i></button>
         <a href="index.html#blog" class="back-link">&larr; Back to Blog</a>
     </header>
 

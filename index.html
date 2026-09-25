@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#121212">
     <meta name="description" content="Portfolio of Glenn Patrick Cabansag, IT Assistant at COMPASS Training Center and BS IT graduate from the University of San Agustin. Full-stack, networking and technical support.">
     <meta name="author" content="Glenn Patrick Cabansag">
@@ -11,19 +11,21 @@
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Glenn Patrick Cabansag">
     <meta property="og:url" content="https://gl3nnnn.github.io/">
-    <meta property="og:image" content="https://gl3nnnn.github.io/profile.jpg">
-    <meta property="og:image:width" content="598">
-    <meta property="og:image:height" content="900">
+    <meta property="og:image" content="https://gl3nnnn.github.io/og-cover.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Glenn Patrick Cabansag | IT Professional">
     <meta name="twitter:description" content="IT Assistant, full-stack developer, UI/UX designer, network and technical support.">
-    <meta name="twitter:image" content="https://gl3nnnn.github.io/profile.jpg">
+    <meta name="twitter:image" content="https://gl3nnnn.github.io/og-cover.jpg">
     <title>Glenn Patrick Cabansag | IT Professional</title>
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="canonical" href="https://gl3nnnn.github.io/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="canonical" href="https://gl3nnnn.github.io/">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -1587,6 +1589,105 @@ section{
     outline-offset: 2px;
     border-radius: 0.3rem;
 }
+/* Theme toggle */
+#theme-toggle{
+    width: 4.4rem;
+    height: 4.4rem;
+    border-radius: 50%;
+    border: 2px solid var(--main-color);
+    background: transparent;
+    color: var(--main-color);
+    font-size: 1.9rem;
+    margin-left: auto;
+    margin-right: 1.5rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s ease-in-out;
+}
+#theme-toggle:hover{
+    background: var(--main-color);
+    color: black;
+    box-shadow: 0 0 20px var(--main-color);
+}
+/* Hero stats */
+.hero-stats{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin: 2rem 0 0;
+}
+.hero-stat{
+    background: var(--second-bg-color);
+    border: 2px solid var(--main-color);
+    border-radius: 1.5rem;
+    padding: 1.2rem 2.4rem;
+    text-align: center;
+    min-width: 12rem;
+    transition: 0.3s ease-in-out;
+}
+.hero-stat:hover{
+    box-shadow: 0 0 20px rgba(27, 179, 14, 0.3);
+    transform: translateY(-3px);
+}
+.hero-stat-count{
+    display: block;
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: var(--accent-color);
+    line-height: 1.2;
+}
+.hero-stat-label{
+    font-size: 1.3rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+/* Light theme overrides */
+[data-theme="light"]{
+    --bg-color: #f6f7f9;
+    --second-bg-color: #ffffff;
+    --text-color: #17181c;
+    --main-color: #1a9e0d;
+    --accent-color: #0a8f83;
+    --secondary-accent-color: #b03a4e;
+}
+[data-theme="light"] .header{ background: rgba(255, 255, 255, 0.85); }
+[data-theme="light"] .timeline-date,
+[data-theme="light"] .timeline-content p,
+[data-theme="light"] .projects h2,
+[data-theme="light"] .project-card h3,
+[data-theme="light"] .testimonials h2,
+[data-theme="light"] .testimonial-person h4,
+[data-theme="light"] .blog h2,
+[data-theme="light"] .blog-card h3,
+[data-theme="light"] .blog-post-title,
+[data-theme="light"] .blog-post-content h2,
+[data-theme="light"] .services h2,
+[data-theme="light"] .contact h2,
+[data-theme="light"] .certifications h2,
+[data-theme="light"] .cert-category-heading h3,
+[data-theme="light"] .cert-card h4,
+[data-theme="light"] .skill-heading,
+[data-theme="light"] .footer ul li a,
+[data-theme="light"] .navbar a{ color: #14161a; }
+[data-theme="light"] .blog-read-more:hover{ color: var(--main-color); }
+[data-theme="light"] .footer .copyright{ color: #5f6368; }
+[data-theme="light"] .project-card .project-meta,
+[data-theme="light"] .blog-footer,
+[data-theme="light"] .blog-post-meta,
+[data-theme="light"] .blog-post-content code,
+[data-theme="light"] .blog-post-content img,
+[data-theme="light"] .cert-card,
+[data-theme="light"] .blog-card{ border-color: #d6d9de; }
+[data-theme="light"] .timeline-content,
+[data-theme="light"] .hero-stat,
+[data-theme="light"] .contact form .input-box input,
+[data-theme="light"] .contact form textarea{ background: #ffffff; }
+[data-theme="light"] .blog-post-content code{ color: var(--accent-color); }
+[data-theme="light"] .blog-post-article blockquote{ color: #3c4043; }
+[data-theme="light"] .navbar{ background: rgba(255, 255, 255, 0.95); }
+[data-theme="light"] .blog-post-header{ background: rgba(255, 255, 255, 0.85); }
 /* Form/popup */
 .popup{
     position: fixed;
@@ -1670,8 +1771,46 @@ section{
     background: transparent;
     color: var(--main-color);
 }
+/* Project demo pill & cert quick link */
+.project-link.demo{
+    background: var(--accent-color);
+}
+.cert-verify-link{
+    color: var(--accent-color);
+    font-size: 1.6rem;
+    opacity: 0.85;
+    transition: 0.25s ease-in-out;
+    flex-shrink: 0;
+}
+.cert-verify-link:hover{
+    opacity: 1;
+    transform: translateY(-3px);
+}
+/* Form validation states */
+.field-error{
+    display: none;
+    color: var(--secondary-accent-color);
+    font-size: 1.3rem;
+    font-weight: 500;
+    width: 100%;
+    text-align: left;
+    margin: -0.5rem 0 0.5rem;
+}
+.field-error.show{
+    display: block;
+}
+.contact form input.invalid,
+.contact form textarea.invalid{
+    border-color: var(--secondary-accent-color) !important;
+    box-shadow: 0 0 10px rgba(207, 102, 121, 0.45);
+}
+.contact form input.invalid:focus-visible,
+.contact form textarea.invalid:focus-visible{
+    outline-color: var(--secondary-accent-color);
+}
 </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>
 
 
 </head>
@@ -1683,6 +1822,7 @@ section{
         <a href="#home" class="logo">Glenn Patrick
             <span>Cabansag</span>
         </a>
+        <button id="theme-toggle" aria-label="Toggle light and dark mode" title="Toggle light/dark mode"><i class="fa-solid fa-moon"></i></button>
         <i class="fa-solid fa-bars" id="menu-icon"></i>
         <nav class="navbar">
             <a href="#home" class="active">Home</a>
@@ -1709,6 +1849,25 @@ section{
                 <a href="https://www.facebook.com/Gl3nQt" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
                 <a href="https://mail.google.com/mail/u/1/?view=cm&fs=1&to=patrickcabansag5@gmail.com&tf=1" target="_blank" rel="noopener noreferrer" aria-label="Email"><i class="fa-regular fa-envelope"></i></a>
 
+            </div>
+
+            <div class="hero-stats" aria-label="Key figures">
+                <div class="hero-stat">
+                    <span class="hero-stat-count" data-target="2" data-suffix="+">0</span>
+                    <span class="hero-stat-label">Years Experience</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-count" data-target="37">0</span>
+                    <span class="hero-stat-label">Certifications</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-count" id="hero-stat-projects" data-target="6" data-suffix="+">0</span>
+                    <span class="hero-stat-label">Projects Built</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-count" data-target="7">0</span>
+                    <span class="hero-stat-label">Skill Areas</span>
+                </div>
             </div>
 
             <div class="btn-group">
@@ -2408,6 +2567,33 @@ section{
                 <a href="blog-aws-journey.html" class="blog-read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         </article>
+        <article class="blog-card">
+            <span class="blog-category">Cybersecurity</span>
+            <h3>My First Month on TryHackMe</h3>
+            <p class="blog-excerpt">Hands-on rooms, Nmap, and Burp Suite — what learning cybersecurity one lab at a time taught me about real security skills.</p>
+            <div class="blog-footer">
+                <span class="blog-date"><i class="fa-regular fa-calendar"></i> 2026</span>
+                <a href="blog-tryhackme-first-month.html" class="blog-read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </article>
+        <article class="blog-card">
+            <span class="blog-category">Cloud / DevOps</span>
+            <h3>Dockerizing My Portfolio: Containers Made Simple</h3>
+            <p class="blog-excerpt">How I turned this static site into a container — Dockerfiles, volume mounts, and one-command deployment.</p>
+            <div class="blog-footer">
+                <span class="blog-date"><i class="fa-regular fa-calendar"></i> 2026</span>
+                <a href="blog-docker-portfolio.html" class="blog-read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </article>
+        <article class="blog-card">
+            <span class="blog-category">Networking</span>
+            <h3>Segmenting My Home Lab with VLANs</h3>
+            <p class="blog-excerpt">From flat network to isolated virtual LANs — access ports, 802.1Q trunks, and why segmentation matters at home.</p>
+            <div class="blog-footer">
+                <span class="blog-date"><i class="fa-regular fa-calendar"></i> 2026</span>
+                <a href="blog-vlans-home-lab.html" class="blog-read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </article>
     </div>
 </section>
 
@@ -2420,7 +2606,7 @@ section{
         <button type="button" class="btn btn-copy" id="copy-email">Copy Email</button>
         <a href="RESUME_Cabansag_GlennPatrick.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" class="btn btn-resume">Resume</a>
     </div>
-    <form id="contact-form">
+    <form id="contact-form" novalidate>
         <div class="input-group">
             <div class="input-box">
                 <label class="sr-only" for="full-name">Full Name</label>
@@ -2452,12 +2638,83 @@ section{
         emailjs.init("qJNRbjDf_u2JtF1Hf");
     })();
 
-    document.getElementById('contact-form').addEventListener('submit', function(event) {
+    var contactForm = document.getElementById('contact-form');
+    var formLoadedAt = Date.now();
+
+    var fieldRules = {
+        'full-name':     { test: function(v) { return v.trim().length >= 2; },      msg: 'Please enter your full name.' },
+        'email':         { test: function(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); }, msg: 'Please enter a valid email address.' },
+        'phone-number':  { test: function(v) { return v.trim().length >= 7; },      msg: 'Please enter your phone number.' },
+        'subject':       { test: function(v) { return v.trim().length >= 2; },      msg: 'Please enter a subject.' },
+        'message':       { test: function(v) { return v.trim().length >= 10; },     msg: 'Your message must be at least 10 characters.' }
+    };
+
+    function setFieldError(input, message) {
+        var err = input.parentNode.querySelector('.field-error');
+        if (!err) {
+            err = document.createElement('p');
+            err.className = 'field-error';
+            err.setAttribute('role', 'alert');
+            input.parentNode.insertBefore(err, input.nextSibling);
+        }
+        if (message) {
+            input.classList.add('invalid');
+            input.setAttribute('aria-invalid', 'true');
+            err.textContent = message;
+            err.classList.add('show');
+        } else {
+            input.classList.remove('invalid');
+            input.removeAttribute('aria-invalid');
+            err.classList.remove('show');
+        }
+    }
+
+    function validateField(input, id) {
+        if (fieldRules[id]) {
+            setFieldError(input, fieldRules[id].test(input.value) ? null : fieldRules[id].msg);
+        }
+    }
+
+    function validateForm() {
+        var firstInvalid = null;
+        Object.keys(fieldRules).forEach(function(id) {
+            var input = document.getElementById(id);
+            if (!input) return;
+            if (fieldRules[id].test(input.value)) {
+                setFieldError(input, null);
+            } else {
+                setFieldError(input, fieldRules[id].msg);
+                if (!firstInvalid) firstInvalid = input;
+            }
+        });
+        if (firstInvalid) firstInvalid.focus();
+        return firstInvalid === null;
+    }
+
+    Object.keys(fieldRules).forEach(function(id) {
+        var input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('blur', function() { validateField(input, id); });
+            input.addEventListener('input', function() { validateField(input, id); });
+        }
+    });
+
+    contactForm.addEventListener('submit', function(event) {
         event.preventDefault();
 
         // Honeypot: silently 'succeed' on bots without sending anything
         if (document.getElementById('website').value) {
             showPopup("Message sent successfully!");
+            return;
+        }
+
+        // Time-based anti-spam: a human takes at least a few seconds to fill the form
+        if (Date.now() - formLoadedAt < 3000) {
+            showPopup("Message sent successfully!");
+            return;
+        }
+
+        if (!validateForm()) {
             return;
         }
 
@@ -2470,7 +2727,11 @@ section{
         })
         .then(function(response) {
             showPopup("Message sent successfully!");
-            document.getElementById('contact-form').reset();
+            contactForm.reset();
+            Object.keys(fieldRules).forEach(function(id) {
+                var input = document.getElementById(id);
+                if (input) setFieldError(input, null);
+            });
         }, function(error) {
             showPopup("Failed to send message. Please try again. Error: " + JSON.stringify(error));
         });
@@ -2513,6 +2774,6 @@ section{
     </p>
 </footer>
 
-   <script src="script.js?v=3.0"></script>
+   <script src="script.js?v=4.0" defer></script>
 </body>
 </html>

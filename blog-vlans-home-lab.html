@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My AWS Learning Journey: Getting Started | Glenn Patrick Cabansag</title>
+    <title>Segmenting My Home Lab with VLANs | Glenn Patrick Cabansag</title>
     <meta name="author" content="Glenn Patrick Cabansag">
     <meta name="theme-color" content="#121212">
-    <meta name="description" content="How I'm exploring cloud fundamentals, EC2, S3, and Docker to level up my DevOps and cloud skills.">
-    <meta property="og:title" content="My AWS Learning Journey: Getting Started | Glenn Patrick Cabansag">
-    <meta property="og:description" content="How I'm exploring cloud fundamentals, EC2, S3, and Docker to level up my DevOps and cloud skills.">
+    <meta name="description" content="How I moved from a flat network to VLANs in my home lab - VLAN IDs, 802.1Q tagging, trunk vs access ports, and why segmentation matters even at home.">
+    <meta property="og:title" content="Segmenting My Home Lab with VLANs | Glenn Patrick Cabansag">
+    <meta property="og:description" content="How I moved from a flat network to VLANs in my home lab - tagging, trunk ports, and why segmentation matters even at home.">
     <meta property="og:type" content="article">
-    <meta property="og:url" content="https://gl3nnnn.github.io/blog-aws-journey.html">
+    <meta property="og:url" content="https://gl3nnnn.github.io/blog-vlans-home-lab.html">
     <meta property="og:image" content="https://gl3nnnn.github.io/og-cover.jpg">
-    <meta property="article:published_time" content="2025-09-20">
+    <meta property="article:published_time" content="2026-04-15">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:creator" content="@glenpatrick">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="canonical" href="https://gl3nnnn.github.io/blog-aws-journey.html">
+    <link rel="canonical" href="https://gl3nnnn.github.io/blog-vlans-home-lab.html">
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,12 +28,12 @@
     {
       "@context": "https://schema.org",
       "@type": "Article",
-      "headline": "My AWS Learning Journey: Getting Started",
-      "description": "How I'm exploring cloud fundamentals, EC2, S3, and Docker to level up my DevOps and cloud skills.",
+      "headline": "Segmenting My Home Lab with VLANs",
+      "description": "How I moved from a flat network to VLANs in my home lab - VLAN IDs, 802.1Q tagging, trunk vs access ports, and why segmentation matters even at home.",
       "image": "https://gl3nnnn.github.io/profile.jpg",
       "author": { "@type": "Person", "name": "Glenn Patrick Cabansag", "url": "https://gl3nnnn.github.io/" },
       "publisher": { "@type": "Person", "name": "Glenn Patrick Cabansag" },
-      "datePublished": "2025-09-20"
+      "datePublished": "2026-04-15"
     }
     </script>
     <style>
@@ -106,46 +106,67 @@
     </header>
 
     <article class="article" id="main" tabindex="-1">
-        <span class="category">Cloud</span>
-        <h1 class="title">My AWS Learning Journey: Getting Started</h1>
+        <span class="category">Networking</span>
+        <h1 class="title">Segmenting My Home Lab with VLANs</h1>
         <div class="meta">
-            <span>2025</span>
+            <span>2026</span>
             <span>Glenn Patrick Cabansag</span>
             <span>7 min read</span>
         </div>
 
         <div class="content">
-            <p>Cloud computing felt overwhelming at first, but after certifying in Digital Transformation with Google Cloud, I decided to go deeper with AWS. Here's my starter roadmap and the concepts that made everything click.</p>
+            <p>After my flat home lab got comfortable, I wanted the network to match how companies actually run things. That meant VLANs — splitting one physical switch into several logical networks. It sounded intimidating until I realized it's mostly about <strong>deciding which ports belong to which group</strong>.</p>
 
-            <h2>1. Start With the Big Three Services</h2>
-            <p>Don't try to learn all 200+ AWS services. The foundation tier is really three things:</p>
+            <h2>1. Why Bother Segmenting?</h2>
+            <p>A flat network means every device can talk to every other device directly. That's fine with a laptop and a phone, but it gets risky once you mix devices you don't fully trust — cheap IoT gadgets, cameras, or lab machines running intentionally vulnerable services.</p>
             <ul>
-                <li><strong>EC2</strong> — virtual servers. Learn to launch, connect via SSH, and run a simple web server.</li>
-                <li><strong>S3</strong> — object storage. Upload files, set bucket policies, and understand availability.</li>
-                <li><strong>IAM</strong> — identity and access. Learn users, roles, and the principle of least privilege.</li>
+                <li><strong>Smaller broadcast domains</strong> — less unnecessary chatter and cleaner traffic captures</li>
+                <li><strong>Isolation</strong> — a compromised IoT camera can't reach your main PC on VLAN 10</li>
+                <li><strong>Real-world practice</strong> — trunking and tagging are core enterprise networking skills</li>
             </ul>
 
-            <h2>2. Spin Up a Free-Tier EC2 Instance</h2>
-            <p>Hands-on beats reading every time. I launched a free-tier t2.micro, connected with SSH, and hosted a tiny page with Python:</p>
-            <pre><code># Install a web server + write a quick page
-sudo apt update
-sudo apt install -y nginx
-echo "&lt;h1&gt;Hello from EC2&lt;/h1&gt;" | sudo tee /var/www/html/index.html</code></pre>
+            <h2>2. VLAN Basics</h2>
+            <p>Each VLAN is a virtual LAN with a number (1–4094). Devices in the same VLAN behave as if they're on the same switch segment; devices in different VLANs don't see each other unless traffic is routed between them.</p>
+            <ul>
+                <li><strong>Access port</strong> — belongs to one VLAN, carries untagged traffic for devices like PCs and printers</li>
+                <li><strong>Trunk port</strong> — carries many VLANs between switches/routers using 802.1Q <strong>tagging</strong>, where each frame gets a small header saying which VLAN it belongs to</li>
+            </ul>
 
-            <h2>3. Manage Firewalls With Security Groups</h2>
-            <p>The default security group blocks most traffic. I opened port 22 (SSH) and port 80 (HTTP) and immediately understood why permissions matter — a misconfigured group can expose your instance to the whole internet. Least privilege is not optional.</p>
+            <h2>3. My Segmentation Plan</h2>
+            <pre><code>VLAN 10  TRUSTED  - desktop, laptops, Raspberry Pi
+VLAN 20  IOT      - smart plugs, cameras, streaming sticks
+VLAN 30  LAB      - intentionally vulnerable / practice machines</code></pre>
+            <p>The lab VLAN is the whole point: now my vulnerable practice boxes are cut off from everything I actually care about, and any traffic between the zones has to go through control I can inspect.</p>
 
-            <h2>4. Docker Changed How I Think About Deployment</h2>
-            <p>Containerizing projects with Docker made my local code run identically in the cloud. A simple <code>Dockerfile</code> plus an image pull means the same app runs on my laptop and on EC2 without setup drama:</p>
-            <pre><code>docker build -t my-app .
-docker run -d -p 8080:80 my-app</code></pre>
+            <h2>4. Configuring a Managed Switch</h2>
+            <p>On a small Cisco-style switch the config is short. First create the VLANs, then assign access ports, then define a trunk:</p>
+            <pre><code>vlan 10
+ name TRUSTED
+vlan 20
+ name IOT
+vlan 30
+ name LAB
 
-            <h2>5. Keep the Bill at Zero</h2>
-            <p>The biggest fear for a fresh grad is the AWS bill. My rule: use the free tier, always tag resources, and <strong>terminate</strong> what I'm not using. Checking the billing dashboard after every session is a habit I refuse to skip.</p>
-            <blockquote>Cloud skills are about making systems scalable and reliable — but wisdom is knowing when to shut things down.</blockquote>
+interface FastEthernet0/1
+ switchport mode access
+ switchport access vlan 10
 
-            <h2>What's Next</h2>
-            <p>I'm moving toward CI/CD pipelines next — building a small project, pushing it to GitHub, and letting an automated workflow test and deploy it to EC2. The path from developer to cloud-ready is just a series of small, repeated experiments.</p>
+interface FastEthernet0/2
+ switchport mode access
+ switchport access vlan 20
+
+interface GigabitEthernet0/1
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30</code></pre>
+            <p><code>show vlan brief</code> confirms which ports sit in which VLAN — the single most useful verification command you'll run while learning this.</p>
+
+            <h2>5. What I'd Do Differently</h2>
+            <p>Two lessons after breaking (and fixing) this setup a few times:</p>
+            <ol>
+                <li><strong>Give each VLAN its own DHCP scope.</strong> Without it, devices on VLAN 20 and 30 get no address until you route or relay appropriately.</li>
+                <li><strong>Plan inter-VLAN routing before you need it.</strong> A router-on-a-stick (one trunk port into a router with tagged subinterfaces) works, but knowing the routing story up front saves a lot of head-scratching.</li>
+            </ol>
+            <blockquote>VLANs turned one switch into three isolated networks, and taught me more in an afternoon than any lecture on segmentation ever did.</blockquote>
         </div>
 
         <div class="post-footer">Thanks for reading! Connect on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer">LinkedIn</a> or check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">GitHub</a>.</div>
