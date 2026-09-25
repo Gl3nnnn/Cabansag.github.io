@@ -1774,6 +1774,30 @@ section{
 [data-theme="light"] .services-box:hover .services-info h4 i,
 [data-theme="light"] .services-box:hover .services-info h4,
 [data-theme="light"] .services-box:hover .services-info p{ color: #ffffff; }
+/* Dark/Night: "What I Do" cards -> white outlined cards too (no solid green slab) */
+:root[data-theme="dark"] .services-box,
+html[data-theme="dark"] .services-box{
+    background: #ffffff;
+    color: #14161a;
+    border: 5px solid var(--main-color);
+}
+:root[data-theme="dark"] .services-box:hover,
+html[data-theme="dark"] .services-box:hover{
+    background: var(--main-color);
+    color: #ffffff;
+}
+:root[data-theme="dark"] .services-info h4,
+:root[data-theme="dark"] .services-info p,
+html[data-theme="dark"] .services-info h4,
+html[data-theme="dark"] .services-info p{ color: #14161a; }
+:root[data-theme="dark"] .services-info h4 i,
+html[data-theme="dark"] .services-info h4 i{ color: var(--main-color); }
+:root[data-theme="dark"] .services-box:hover .services-info h4 i,
+:root[data-theme="dark"] .services-box:hover .services-info h4,
+:root[data-theme="dark"] .services-box:hover .services-info p,
+html[data-theme="dark"] .services-box:hover .services-info h4 i,
+html[data-theme="dark"] .services-box:hover .services-info h4,
+html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 /* Light: skill bars -> lighter green fill */
 [data-theme="light"] .skill-fill{ background: linear-gradient(90deg, #22c55e, #14b8a6); }
 /* Light: testimonial avatars -> outlined circles; cards softened */
