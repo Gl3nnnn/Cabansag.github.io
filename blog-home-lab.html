@@ -82,7 +82,8 @@
 
         #theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:2.8rem;height:2.8rem;border-radius:50%;border:1.5px solid var(--main);background:transparent;color:var(--main);font-size:1rem;cursor:pointer;transition:.25s;flex-shrink:0;}
         #theme-toggle:hover{background:var(--main);color:#000;box-shadow:0 0 14px rgba(27,179,14,.5);}
-        [data-theme="light"]{--bg:#f6f7f9;--panel:#ffffff;--main:#1a9e0d;--accent:#0a8f83;--text:#17181c;--muted:#5f6368;}
+        [data-theme="light"]{--bg:#f6f7f9;--panel:#ffffff;--main:#166534;--accent:#115e59;--text:#17181c;--muted:#5f6368;}
+        [data-theme="light"] #theme-toggle:hover{color:#fff;}
         [data-theme="light"] .bp-header{background:rgba(255,255,255,.85);}
         [data-theme="light"] h1.title,
         [data-theme="light"] .content h2,
@@ -90,7 +91,7 @@
         [data-theme="light"] .meta,
         [data-theme="light"] .post-footer,
         [data-theme="light"] .bp-footer{border-color:rgba(0,0,0,.14);}
-        [data-theme="light"] .content pre{background:#0f1115;color:#0a8f83;}
+        [data-theme="light"] .content pre{background:#eef1f4;color:#115e59;border-color:rgba(17,94,89,.3);}
         [data-theme="light"] .content blockquote{background:#eef1f4;color:#3c4043;}
         [data-theme="light"] .content code{border-color:rgba(0,0,0,.16);}
         [data-theme="light"] body::before{opacity:.6;}
@@ -170,6 +171,30 @@ arp -a                 # View the local ARP table</code></pre>
         }, { passive: true });
         backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
         document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Theme toggle (persisted; defaults to system preference)
+        (function initTheme() {
+            const root = document.documentElement;
+            let saved = null;
+            try { saved = localStorage.getItem('theme'); } catch (err) { /* ignore */ }
+            const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+            const theme = saved || (prefersLight ? 'light' : 'dark');
+            const toggle = document.getElementById('theme-toggle');
+            const icon = toggle ? toggle.querySelector('i') : null;
+            const themeColor = document.querySelector('meta[name="theme-color"]');
+            const applyThemeColor = (t) => { if (themeColor) themeColor.setAttribute('content', t === 'light' ? '#f6f7f9' : '#121212'); };
+            root.setAttribute('data-theme', theme);
+            try { localStorage.setItem('theme', theme); } catch (err) { /* ignore */ }
+            if (icon) icon.className = theme === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            applyThemeColor(theme);
+            if (toggle) toggle.addEventListener('click', () => {
+                const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+                root.setAttribute('data-theme', next);
+                if (icon) icon.className = next === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+                applyThemeColor(next);
+                try { localStorage.setItem('theme', next); } catch (err) { /* ignore */ }
+            });
+        })();
     </script>
 </body>
 </html>

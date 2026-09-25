@@ -354,12 +354,18 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 
     const toggle = document.getElementById('theme-toggle');
     const icon = toggle ? toggle.querySelector('i') : null;
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    const applyThemeColor = (t) => {
+        if (themeColor) themeColor.setAttribute('content', t === 'light' ? '#f6f7f9' : '#121212');
+    };
     const apply = (t) => {
         root.setAttribute('data-theme', t);
         if (icon) icon.className = t === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        applyThemeColor(t);
         try { localStorage.setItem('theme', t); } catch (err) { /* ignore */ }
     };
     if (icon) icon.className = theme === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    applyThemeColor(theme);
     if (toggle) toggle.addEventListener('click', () => {
         const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
         apply(next);
