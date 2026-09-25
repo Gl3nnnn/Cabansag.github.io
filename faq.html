@@ -3,228 +3,415 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAQ - Glenn Patrick Cabansag</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <meta name="description" content="Frequently asked questions about Glenn Patrick Cabansag - IT Assistant, full-stack developer, and 37x certified IT professional from Iloilo, Philippines.">
+    <meta name="author" content="Glenn Patrick Cabansag">
+    <title>FAQ | Glenn Patrick Cabansag</title>
+    <link rel="icon" type="image/x-icon" href="R.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: #1a1a1a;
-            color: #ffffff;
-            margin: 0;
-            padding: 0;
+        :root{--bg:#121212;--panel:#1e1e1e;--main:#1bb30e;--accent:#03dac6;--text:#e0e0e0;--muted:#9aa0a6;--danger:#cf6679;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        html{scroll-behavior:smooth;}
+        body{font-family:'Poppins',system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;}
+        body::before{content:"";position:fixed;inset:0;background:radial-gradient(600px at 10% 5%,rgba(27,179,14,.14),transparent 60%),radial-gradient(600px at 90% 12%,rgba(3,218,198,.10),transparent 60%);pointer-events:none;z-index:-1;}
+        a{color:var(--accent);text-decoration:none;}
+        a:hover{text-decoration:underline;}
+
+        /* Header */
+        .bp-header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.4rem 6vw;background:rgba(18,18,18,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(27,179,14,.25);}
+        .logo{font-size:1.35rem;font-weight:800;color:var(--text);letter-spacing:.02em;}
+        .logo:hover{text-decoration:none;}
+        .logo span{color:var(--main);text-shadow:0 0 12px rgba(27,179,14,.6);}
+        .back-link{color:var(--main);border:1.5px solid var(--main);padding:.55rem 1.3rem;border-radius:999px;font-size:.95rem;font-weight:600;transition:.25s;white-space:nowrap;}
+        .back-link:hover{background:var(--main);color:#000;box-shadow:0 0 18px rgba(27,179,14,.5);text-decoration:none;}
+
+        /* Hero */
+        .hero{max-width:820px;margin:0 auto;padding:5.5rem 6vw 2rem;text-align:center;}
+        .eyebrow{display:inline-block;background:rgba(27,179,14,.14);border:1px solid var(--main);color:var(--main);font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:.4rem 1.1rem;border-radius:999px;margin-bottom:1.4rem;}
+        .hero h1{font-size:clamp(2.1rem,5vw,3.4rem);line-height:1.15;color:#fff;font-weight:800;margin-bottom:1rem;}
+        .hero h1 span{color:var(--main);text-shadow:0 0 25px rgba(27,179,14,.4);}
+        .hero p{font-size:1.05rem;color:var(--muted);max-width:640px;margin:0 auto;}
+
+        /* Stats */
+        .stats{max-width:980px;margin:3rem auto 0;padding:0 6vw;display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;}
+        .stat{background:var(--panel);border:1px solid rgba(27,179,14,.25);border-radius:1.2rem;padding:1.8rem 1rem;text-align:center;transition:.3s;}
+        .stat:hover{transform:translateY(-4px);box-shadow:0 0 22px rgba(27,179,14,.18);border-color:var(--main);}
+        .stat .num{font-size:2.4rem;font-weight:800;color:var(--main);line-height:1;}
+        .stat .lbl{font-size:.92rem;color:var(--muted);font-weight:500;margin-top:.6rem;}
+
+        /* Toolbar: search + filters */
+        .faq-wrap{max-width:820px;margin:0 auto;padding:3rem 6vw 4rem;}
+        .toolbar{display:flex;flex-direction:column;gap:1.2rem;margin-bottom:2.5rem;}
+        .search-box{display:flex;align-items:center;gap:.9rem;background:var(--panel);border:1.5px solid rgba(255,255,255,.1);border-radius:999px;padding:.9rem 1.5rem;transition:border-color .3s;width:100%;}
+        .search-box i{color:var(--accent);font-size:1.1rem;}
+        .search-box input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:inherit;font-size:1rem;}
+        .search-box input::placeholder{color:var(--muted);}
+        .search-box:focus-within{border-color:var(--main);box-shadow:0 0 0 3px rgba(27,179,14,.15);}
+        .filters{display:flex;flex-wrap:wrap;gap:.7rem;}
+        .filter-btn{font-family:inherit;font-size:.9rem;font-weight:600;color:var(--text);background:var(--panel);border:1px solid rgba(255,255,255,.12);padding:.55rem 1.2rem;border-radius:999px;cursor:pointer;transition:.25s;}
+        .filter-btn:hover{border-color:var(--main);color:var(--main);}
+        .filter-btn.active{background:var(--main);border-color:var(--main);color:#000;box-shadow:0 0 16px rgba(27,179,14,.35);}
+
+        /* Groups & FAQ items */
+        .faq-group{margin-bottom:2.8rem;}
+        .group-title{display:flex;align-items:center;gap:.9rem;font-size:1.25rem;font-weight:700;color:#fff;margin-bottom:1.2rem;padding-bottom:.8rem;border-bottom:1px solid rgba(255,255,255,.08);}
+        .group-title i{color:var(--accent);}
+        .accordion{overflow:hidden;}
+        .faq-item{background:var(--panel);border:1px solid rgba(255,255,255,.08);border-left:4px solid var(--main);border-radius:1rem;margin-bottom:.9rem;transition:box-shadow .3s,border-color .3s;}
+        .faq-item.open{box-shadow:0 0 22px rgba(27,179,14,.15);}
+        .q-btn{width:100%;display:flex;align-items:center;justify-content:space-between;gap:1rem;text-align:left;background:none;border:none;cursor:pointer;padding:1.25rem 1.5rem;font-family:inherit;font-size:1.02rem;font-weight:600;color:var(--text);line-height:1.45;}
+        .q-btn:hover{color:#fff;}
+        .q-btn .chev{margin-left:auto;flex-shrink:0;color:var(--accent);transition:transform .35s;}
+        .faq-item.open .chev{transform:rotate(180deg);}
+        .answer{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s ease;}
+        .answer-inner{overflow:hidden;}
+        .faq-item.open .answer{grid-template-rows:1fr;}
+        .answer-inner p{padding:0 1.5rem 1.4rem;color:var(--text);font-size:.97rem;}
+        .answer-inner p a{color:var(--accent);font-weight:600;}
+        .answer-inner ul{margin:.2rem 1.5rem 1.4rem 2.7rem;font-size:.97rem;}
+        .answer-inner li{margin-bottom:.35rem;}
+        .tag{display:inline-block;background:rgba(27,179,14,.12);border:1px solid rgba(27,179,14,.35);color:var(--main);font-size:.8rem;font-weight:600;padding:.25rem .8rem;border-radius:999px;margin:.15rem .35rem .15rem 0;}
+
+        /* No results */
+        .no-results{display:none;text-align:center;color:var(--muted);padding:2.5rem 0;}
+        .no-results i{font-size:2.6rem;color:var(--danger);margin-bottom:.8rem;}
+
+        /* CTA */
+        .cta{max-width:820px;margin:0 auto;padding:3.5rem 6vw 4rem;text-align:center;background:var(--panel);border:1px solid rgba(27,179,14,.25);border-radius:1.6rem;}
+        .cta h2{color:#fff;font-size:1.7rem;font-weight:700;margin-bottom:.7rem;}
+        .cta p{color:var(--muted);margin-bottom:1.8rem;font-size:1rem;}
+        .cta-btns{display:flex;justify-content:center;flex-wrap:wrap;gap:1rem;}
+        .cta-btn{display:inline-flex;align-items:center;gap:.6rem;font-weight:600;font-size:.98rem;padding:.85rem 1.9rem;border-radius:999px;transition:.25s;border:2px solid var(--main);color:var(--main);}
+        .cta-btn:hover{background:var(--main);color:#000;box-shadow:0 0 22px rgba(27,179,14,.5);text-decoration:none;}
+        .cta-btn.teal{border-color:var(--accent);color:var(--accent);}
+        .cta-btn.teal:hover{background:var(--accent);color:#000;box-shadow:0 0 22px rgba(3,218,198,.5);}
+
+        /* Footer */
+        .faq-footer{border-top:1px solid rgba(255,255,255,.08);padding:2.5rem 6vw 2rem;text-align:center;}
+        .faq-footer .social{display:flex;justify-content:center;gap:1rem;margin-bottom:1.4rem;}
+        .faq-footer .social a{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid var(--main);color:var(--main);font-size:1.15rem;transition:.25s;}
+        .faq-footer .social a:hover{background:var(--main);color:#000;transform:translateY(-5px);box-shadow:0 0 18px rgba(27,179,14,.5);text-decoration:none;}
+        .faq-footer p{color:var(--muted);font-size:.9rem;}
+        .faq-footer a{color:var(--accent);}
+
+        @media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr);}}
+        @media(max-width:640px){
+            .bp-header{padding:1.1rem 5vw;}
+            .logo{font-size:1.15rem;}
+            .hero,.faq-wrap,.cta{padding-left:5vw;padding-right:5vw;}
+            .stats{padding:0 5vw;grid-template-columns:repeat(2,1fr);}
+            .q-btn{font-size:.97rem;padding:1.1rem 1.2rem;}
         }
-        .faq-header {
-            text-align: center;
-            padding: 40px 20px;
-            background-color: #282828;
-            border-bottom: 2px solid #444;
-        }
-        .faq-header h1 {
-            margin: 0;
-            font-size: 2.5rem;
-        }
-        .faq-container {
-            width: 80%;
-            max-width: 800px;
-            margin: 40px auto;
-            background-color: #333333;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            border-radius: 8px;
-        }
-        .faq-item {
-            margin-bottom: 20px;
-        }
-        .question {
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #555555;
-            padding: 10px 0;
-            transition: background-color 0.3s ease;
-        }
-        .question-text {
-            flex-grow: 1;
-        }
-        .question:hover {
-            background-color: #444444;
-        }
-        .answer {
-            margin-top: 10px;
-            display: none;
-            color: #1a1a1a;
-            padding-left: 20px;
-            border-left: 2px solid #555555;
-        }
-        .answer.show {
-            display: block;
-        }
-        .question i {
-            transition: transform 0.3s ease;
-        }
-        .question.active i {
-            transform: rotate(180deg);
-        }
-        .back-button-container {
-            text-align: center;
-            margin: 20px 0;
-        }
-        .back-button {
-            display: inline-block;
-            background-color: #555555;
-            color: #ffffff;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-        .back-button:hover {
-            background-color: #777777;
-        }
-        /* Added styles */
-        .faq-item:hover {
-            background-color: #444444;
-        }
-        .answer {
-            background-color: #f7f7f7;
-            padding: 20px;
-            border-radius: 8px;
-        }
-        .answer.show {
-            animation: fadeIn 0.5s ease;
-        }
-        @keyframes fadeIn {
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-            }
-        }
-        /* New styles */
-        .faq-header {
-            background-image: linear-gradient(to bottom, #282828, #333333);
-        }
-        .faq-item {
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        .question {
-            padding: 15px 20px;
-        }
-        .answer {
-            padding: 20px;
-        }
-        .back-button {
-            font-size: 1.2rem;
-        }
+        @media(max-width:400px){.stats{grid-template-columns:1fr;}}
     </style>
 </head>
 <body>
-    <header class="faq-header">
-        <h1>Frequently Asked Questions</h1>
-        <p>Get answers to common questions about me and my work.</p>
+    <header class="bp-header">
+        <a href="index.html" class="logo">Glenn Patrick <span>Cabansag</span></a>
+        <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
     </header>
-    <section class="faq-container">
-        <!-- FAQ Item 1 -->
-        <div class="faq-item">
-            <div class="question">
-                <span class="question-text">Q: What is your educational background?</span>
-                <i class="fas fa-graduation-cap"></i>
-            </div>
-            <div class="answer">A: I completed my high school and graduated with a Bachelor of Science in Information Technology from the University of San Agustin in 2024.</div>
-        </div>
-        <!-- FAQ Item 2 -->
-        <div class="faq-item">
-            <div class="question">
-                <span class="question-text">Q: What projects have you worked on?</span>
-                <i class="fas fa-project-diagram"></i>
-            </div>
-            <div class="answer">A: I have experience in UI Design, Frontend, Backend, programming, and technical support. I've built inventory, helpdesk, and IT asset management systems, plus smaller web and Python apps. Check out my <a href="https://github.com/Gl3nnnn" target="_blank">GitHub</a> for the full list.</div>
-        </div>
-        <!-- FAQ Item 3 -->
-        <div class="faq-item">
-            <div class="question">
-                <span class="question-text">Q: How can I contact you for collaboration?</span>
-                <i class="fas fa-envelope"></i>
-            </div>
-            <div class="answer">A: Feel free to reach out via email at <a href="mailto:patrickcabansag5@gmail.com" target="_blank">patrickcabansag5@gmail.com</a> or connect with me on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank">LinkedIn</a>.</div>
-        </div>
-        <!-- FAQ Item 4 -->
-        <div class="faq-item">
-            <div class="question">
-                <span class="question-text">Q: What programming languages are you proficient in?</span>
-                <i class="fas fa-code"></i>
-            </div>
-            <div class="answer">A: I'm proficient in Python, JavaScript, and Java, and I also work with PHP, HTML/CSS, SQL, and React.</div>
-        </div>
-        <!-- FAQ Item 5 -->
-        <div class="faq-item">
-            <div class="question">
-                <span class="question-text">Q: Can you explain your design process?</span>
-                <i class="fas fa-pencil-ruler"></i>
-            </div>
-            <div class="answer">A: My design process involves research, wireframing, prototyping, and user testing.</div>
-        </div>
-        <!-- FAQ Item 6 -->
-        <div class="faq-item">
-            <div class="question">
-                <span class="question-text">Q: What tools do you use for version control?</span>
-                <i class="fas fa-code-branch"></i>
-            </div>
-            <div class="answer">A: I use Git and GitHub for version control and collaboration.</div>
-        </div>
-        <!-- FAQ Item 7 -->
-        <div class="faq-item">
-            <div class="question">
-                <span class="question-text">Q: Are you open to freelance work?</span>
-                <i class="fas fa-briefcase"></i>
-            </div>
-            <div class="answer">A: Yes, I'm open to freelance opportunities. Let's discuss your project!</div>
-        </div>
-        <!-- FAQ Item 8 -->
-        <div class="faq-item">
-            <div class="question">
-                <span class="question-text">Q: How do you stay updated with industry trends?</span>
-                <i class="fas fa-lightbulb"></i>
-            </div>
-            <div class="answer">A: I read tech blogs, follow industry leaders on social media, and attend webinars.</div>
-        </div>
-        <!-- FAQ Item 9 -->
-        <div class="faq-item">
-            <div class="question">
-                <span class="question-text">Q: What design principles do you consider important?</span>
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <div class="answer">A: I focus on usability, consistency, and accessibility in my designs.</div>
-        </div>
-        <!-- FAQ Item 10 -->
-        <div class="faq-item">
-            <div class="question">
-                <span class="question-text">Q: Can you share your favorite coding project?</span>
-                <i class="fas fa-star"></i>
-            </div>
-            <div class="answer">A: Certainly! Beyond this personal site, some of my favorites include my inventory and helpdesk systems. Check my <a href="https://github.com/Gl3nnnn" target="_blank">GitHub</a> to see more.</div>
-        </div>
+
+    <section class="hero">
+        <span class="eyebrow">Know me better</span>
+        <h1>Frequently Asked <span>Questions</span></h1>
+        <p>Everything about my experience, skills, certifications and how to work with me &mdash; in one place.</p>
     </section>
-    <div class="back-button-container">
-        <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i> Back to Home</a>
-    </div>
+
+    <section class="stats">
+        <div class="stat"><div class="num">37+</div><div class="lbl">Licenses &amp; Certifications</div></div>
+        <div class="stat"><div class="num">2+</div><div class="lbl">Years in IT Roles</div></div>
+        <div class="stat"><div class="num">7</div><div class="lbl">Skill Areas</div></div>
+        <div class="stat"><div class="num">12+</div><div class="lbl">Projects Built</div></div>
+    </section>
+
+    <section class="faq-wrap">
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="faq-search" placeholder="Search questions... (e.g. cloud, certifications, freelance)" autocomplete="off">
+            </div>
+            <div class="filters" id="faq-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="about">About Me</button>
+                <button class="filter-btn" data-filter="experience">Experience</button>
+                <button class="filter-btn" data-filter="skills">Skills</button>
+                <button class="filter-btn" data-filter="certs">Certifications</button>
+                <button class="filter-btn" data-filter="projects">Projects</button>
+                <button class="filter-btn" data-filter="contact">Contact</button>
+            </div>
+        </div>
+
+        <div class="no-results" id="no-results">
+            <i class="fa-solid fa-circle-question"></i>
+            <p>No questions match your search.</p>
+        </div>
+
+        <!-- About Me -->
+        <div class="faq-group" data-group="about">
+            <h2 class="group-title"><i class="fa-solid fa-user"></i> About Me</h2>
+            <div class="accordion">
+                <div class="faq-item" data-cat="about" data-keywords="who name bio">
+                    <button class="q-btn" aria-expanded="false">
+                        <span>Who is Glenn Patrick Cabansag?</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="answer"><div class="answer-inner"><p>I'm an Information Technology professional based in Iloilo, Philippines. I currently work as an <strong>IT Assistant at COMPASS Training Center, Inc.</strong> and graduated with a <strong>Bachelor of Science in Information Technology</strong> from the University of San Agustin in 2024. I build responsive web applications, support and troubleshoot IT systems, and constantly explore new technologies.</p></div></div>
+                </div>
+                <div class="faq-item" data-cat="about" data-keywords="open opportunities roles">
+                    <button class="q-btn" aria-expanded="false">
+                        <span>Are you open to job opportunities?</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="answer"><div class="answer-inner"><p>Yes! With experience in IT support, help desk, full-stack development and networking, I'm open to <strong>entry-level and freelance opportunities</strong> in IT support, web development, cloud and technical work. Reach out any time through <a href="mailto:patrickcabansag5@gmail.com">email</a> or <a href="https://www.linkedin.com/in/glenpatrick" target="_blank">LinkedIn</a>.</p></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Experience & Education -->
+        <div class="faq-group" data-group="experience">
+            <h2 class="group-title"><i class="fa-solid fa-briefcase"></i> Experience &amp; Education</h2>
+            <div class="accordion">
+                <div class="faq-item" data-cat="experience" data-keywords="current job work assistant compass">
+                    <button class="q-btn" aria-expanded="false">
+                        <span>What do you do as an IT Assistant?</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="answer"><div class="answer-inner"><p>Since October 2024, I've been providing IT support at the <strong>Competent Maritime Professionals and Sea Staff (COMPASS) Training Center</strong> in Iloilo City &mdash; maintaining systems, devices and network infrastructure to keep the training center's daily operations running smoothly.</p></div></div>
+                </div>
+                <div class="faq-item" data-cat="experience" data-keywords="previous past help desk job">
+                    <button class="q-btn" aria-expanded="false">
+                        <span>What was your previous IT role?</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="answer"><div class="answer-inner"><p>Before COMPASS, I worked as an <strong>IT Help Desk associate at Lead Generation and Donor Creation Inc.</strong> (January&ndash;April 2024), responding to technical requests and incidents, troubleshooting hardware and software, and supporting end users to keep operations running smoothly.</p></div></div>
+                </div>
+                <div class="faq-item" data-cat="experience" data-keywords="education school degree university">
+                    <button class="q-btn" aria-expanded="false">
+                        <span>What is your educational background?</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="answer"><div class="answer-inner"><p>I hold a <strong>Bachelor of Science in Information Technology</strong> from the University of San Agustin (2020&ndash;2024). Earlier, I attended Senior High School at John B. Lacson Foundation Maritime University (2019&ndash;2020) and completed my secondary and primary schooling in Iloilo City.</p></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skills & Technologies -->
+        <div class="faq-group" data-group="skills">
+            <h2 class="group-title"><i class="fa-solid fa-code"></i> Skills &amp; Technologies</h2>
+            <div class="accordion">
+                <div class="faq-item" data-cat="skills" data-keywords="programming languages python javascript java php sql react">
+                    <button class="q-btn" aria-expanded="false">
+                        <span>What programming languages do you use?</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="answer"><div class="answer-inner">
+                        <p>I'm most comfortable with:</p>
+                        <p><span class="tag">Python</span><span class="tag">JavaScript</span><span class="tag">Java</span><span class="tag">PHP</span><span class="tag">HTML/CSS</span><span class="tag">SQL</span><span class="tag">React</span></p>
+                    </div></div>
+                </div>
+                <div class="faq-item" data-cat="skills" data-keywords="skills areas technologies stack">
+                    <button class="q-btn" aria-expanded="false">
+                        <span>What skill areas do you cover?</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="answer"><div class="answer-inner"><p>Seven main areas: <strong>UI design</strong>, <strong>frontend</strong>, <strong>backend</strong>, <strong>networking</strong>, <strong>cloud &amp; DevOps</strong>, <strong>technical support</strong>, and <strong>programming</strong>. I work across the stack &mdash; from designing interfaces to wiring networks and supporting end users.</p></div></div>
+                </div>
+                <div class="faq-item" data-cat="skills" data-keywords="cloud aws google docker devops">
+                    <button class="q-btn" aria-expanded="false">
+                        <span>Do you have cloud experience?</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="answer"><div class="answer-inner"><p>Yes. I hold <strong>Google Cloud certifications</strong> covering core infrastructure, security &amp; operations, and AI, and I'm actively exploring <strong>AWS</strong> (EC2, S3), <strong>Docker</strong> and <strong>CI/CD</strong> workflows &mdash; I write about that journey on my <a href="blog-aws-journey.html">AWS learning blog post</a>.</p></div></div>
+                </div>
+                <div class="faq-item" data-cat="skills" data-keywords="design tools figma ui ux graphic">
+                    <button class="q-btn" aria-expanded="false">
+                        <span>Which design tools do you use?</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="answer"><div class="answer-inner"><p>I use <strong>Figma</strong>, wireframing and prototyping for UI/UX work. I've also earned certifications in graphic design principles (UPOU), visual graphic design (TESDA), logo design (TESDA) and trends in art &amp; design (DICT).</p></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Certifications & Learning -->
+        <div class="faq-group" data-group="certs">
+            <h2 class="group-title"><i class="fa-solid fa-certificate"></i> Certifications &amp; Learning</h2>
+            <div class="accordion">
+                <div class="faq-item" data-cat="certs" data-keywords="certifications licenses how many certificate">
+                    <button class="q-btn" aria-expanded="false">
+                        <span>What certifications do you hold?</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="answer"><div class="answer-inner"><p>I hold <strong>37 licenses and certifications</strong> across cloud &amp; DevOps, networking, cybersecurity, development &amp; AI, design &amp; graphics, systems &amp; support, and data &amp; professional skills &mdash; from Google, Cisco, Red Hat, ISC2, IBM, freeCodeCamp, The Linux Foundation, TESDA and more.</p></div></div>
+                </div>
+                <div class="faq-item" data-cat="certs" data-keywords="cybersecurity security isc2 cisco tryhackme cc">
+                    <button class="q-btn" aria-expanded="false">
+                        <span>Which cybersecurity certifications do you have?</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="answer"><div class="answer-inner">
+                        <p>My security-focused credentials include:</p>
+                        <ul>
+                            <li><strong>ISC2</strong> Certified in Cybersecurity (CC)</li>
+                            <li><strong>Cisco</strong> CyberOps Associate</li>
+                            <li><strong>Linux Foundation</strong> Cybersecurity Essentials (LFC108)</li>
+                            <li><strong>IBM</strong> Intro to Cybersecurity Tools &amp; Cyber Attacks</li>
+                            <li><strong>University of Maryland</strong> Cybersecurity for Everyone</li>
+                            <li><strong>TryHackMe</strong> Advent of Cyber 2024</li>
+                        </ul>
+                    </div></div>
+                </div>
+                <div class="faq-item" data-cat="certs" data-keywords="learning stay updated trends how">
+                    <button class="q-btn" aria-expanded="false">
+                        <span>How do you keep your skills current?</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="answer"><div class="answer-inner"><p>I read tech blogs, follow industry leaders, earn certifications, practice in a <strong>home lab</strong>, work through TryHackMe rooms, and write up what I learn on my <a href="index.html#blog">technical blog</a>.</p></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects & Development -->
+        <div class="faq-group" data-group="projects">
+            <h2 class="group-title"><i class="fa-solid fa-folder-open"></i> Projects &amp; Development</h2>
+            <div class="accordion">
+                <div class="faq-item" data-cat="projects" data-keywords="projects built built github work apps">
+                    <button class="q-btn" aria-expanded="false">
+                        <span>What projects have you built?</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="answer"><div class="answer-inner"><p>Inventory and IT asset management systems, helpdesk and ticketing apps, an accounting app built with Laravel, browser games, and Python tools like <strong>SimpleAssistant</strong> and <strong>SimpleStudentManager</strong>. The full list is on <a href="https://github.com/Gl3nnnn" target="_blank">GitHub</a>.</p></div></div>
+                </div>
+                <div class="faq-item" data-cat="projects" data-keywords="process workflow approach method">
+                    <button class="q-btn" aria-expanded="false">
+                        <span>How do you approach a new project?</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="answer"><div class="answer-inner"><p>Research &rarr; plan &rarr; wireframe &rarr; build &rarr; test &rarr; deploy. I use <strong>Git/GitHub</strong> for version control and collaboration, and iterate based on feedback until the result is clean and reliable.</p></div></div>
+                </div>
+                <div class="faq-item" data-cat="projects" data-keywords="favorite favorite project">
+                    <button class="q-btn" aria-expanded="false">
+                        <span>What's your favorite project so far?</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="answer"><div class="answer-inner"><p>The <strong>helpdesk and inventory systems</strong> &mdash; they solve real everyday problems. I also enjoy the smaller creative stuff like my browser games and this portfolio site itself.</p></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact & Availability -->
+        <div class="faq-group" data-group="contact">
+            <h2 class="group-title"><i class="fa-solid fa-envelope-open-text"></i> Contact &amp; Availability</h2>
+            <div class="accordion">
+                <div class="faq-item" data-cat="contact" data-keywords="contact email linkedin reach get">
+                    <button class="q-btn" aria-expanded="false">
+                        <span>How can I get in touch with you?</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="answer"><div class="answer-inner"><p>Best ways to reach me:</p>
+                        <ul>
+                            <li>Email &mdash; <a href="mailto:patrickcabansag5@gmail.com">patrickcabansag5@gmail.com</a></li>
+                            <li>LinkedIn &mdash; <a href="https://www.linkedin.com/in/glenpatrick" target="_blank">/in/glenpatrick</a></li>
+                            <li>GitHub &mdash; <a href="https://github.com/Gl3nnnn" target="_blank">Gl3nnnn</a></li>
+                            <li>Facebook &mdash; <a href="https://www.facebook.com/Gl3nQt" target="_blank">Gl3nQt</a></li>
+                        </ul>
+                    </div></div>
+                </div>
+                <div class="faq-item" data-cat="contact" data-keywords="freelance freelance work projects">
+                    <button class="q-btn" aria-expanded="false">
+                        <span>Do you accept freelance work?</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="answer"><div class="answer-inner"><p>Yes! I'm open to freelance projects. Send a short message describing what you need and your timeline via the <a href="index.html#contact">contact form</a> or <a href="mailto:patrickcabansag5@gmail.com">email</a>, and I'll get back to you.</p></div></div>
+                </div>
+                <div class="faq-item" data-cat="contact" data-keywords="remote collaboration work online">
+                    <button class="q-btn" aria-expanded="false">
+                        <span>Are you available for remote or collaborative work?</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="answer"><div class="answer-inner"><p>Absolutely &mdash; I'm comfortable collaborating remotely using Git, project trackers and video calls, and I'm happy to take ownership of a feature or a full project.</p></div></div>
+                </div>
+            </div>
+        </div>
+
+        <section class="cta">
+            <h2>Still have questions?</h2>
+            <p>Don't hesitate to reach out &mdash; I usually reply within a day.</p>
+            <div class="cta-btns">
+                <a class="cta-btn" href="mailto:patrickcabansag5@gmail.com"><i class="fa-solid fa-envelope"></i> Email Me</a>
+                <a class="cta-btn teal" href="https://www.linkedin.com/in/glenpatrick" target="_blank"><i class="fa-brands fa-linkedin-in"></i> Connect on LinkedIn</a>
+            </div>
+        </section>
+    </section>
+
+    <footer class="faq-footer">
+        <div class="social">
+            <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="https://github.com/Gl3nnnn" target="_blank" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+            <a href="https://www.facebook.com/Gl3nQt" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="mailto:patrickcabansag5@gmail.com" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+        </div>
+        <p>&copy; 2026 Glenn Patrick Cabansag | All rights reserved</p>
+    </footer>
+
     <script>
-        // Toggle answer visibility on question click
-        document.querySelectorAll('.question').forEach(question => {
-            question.addEventListener('click', () => {
-                const answer = question.nextElementSibling;
-                answer.classList.toggle('show');
-                question.classList.toggle('active');
+        // Accordion (one open at a time)
+        document.querySelectorAll('.q-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const item = btn.closest('.faq-item');
+                const wasOpen = item.classList.contains('open');
+                document.querySelectorAll('.faq-item.open').forEach(i => {
+                    i.classList.remove('open');
+                    i.querySelector('.q-btn').setAttribute('aria-expanded', 'false');
+                });
+                if (!wasOpen) {
+                    item.classList.add('open');
+                    btn.setAttribute('aria-expanded', 'true');
+                }
             });
         });
+
+        // Filter + search
+        const items = Array.from(document.querySelectorAll('.faq-item'));
+        const groups = Array.from(document.querySelectorAll('.faq-group'));
+        const filterBtns = Array.from(document.querySelectorAll('.filter-btn'));
+        const searchInput = document.getElementById('faq-search');
+        const noResults = document.getElementById('no-results');
+        let activeFilter = 'all';
+
+        function applyFilters() {
+            const query = searchInput.value.trim().toLowerCase();
+            let anyVisible = false;
+
+            items.forEach(item => {
+                const catMatch = activeFilter === 'all' || item.dataset.cat === activeFilter;
+                const term = (item.textContent || '').toLowerCase();
+                const queryMatch = !query || term.includes(query);
+                const show = catMatch && queryMatch;
+                item.style.display = show ? '' : 'none';
+                if (show) anyVisible = true;
+            });
+
+            groups.forEach(group => {
+                const hasVisible = Array.from(group.querySelectorAll('.faq-item')).some(i => i.style.display !== 'none');
+                group.style.display = hasVisible ? '' : 'none';
+            });
+
+            noResults.style.display = anyVisible ? 'none' : 'block';
+        }
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                activeFilter = btn.dataset.filter;
+                applyFilters();
+            });
+        });
+
+        searchInput.addEventListener('input', applyFilters);
     </script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
