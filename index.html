@@ -1757,6 +1757,23 @@ section{
     border: 2px solid var(--main-color);
     box-shadow: none;
 }
+/* Light: "What I Do" cards -> white outlined cards (no solid dark-green slab) */
+[data-theme="light"] .services-box{
+    background: #ffffff;
+    color: #14161a;
+    border: 5px solid var(--main-color);
+}
+[data-theme="light"] .services-box:hover{
+    background: var(--main-color);
+    color: #ffffff;
+}
+[data-theme="light"] .services-info h4,
+[data-theme="light"] .services-info p{ color: #14161a; }
+[data-theme="light"] .services-info h4:hover{ color: #ffffff; }
+[data-theme="light"] .services-info h4 i{ color: var(--main-color); }
+[data-theme="light"] .services-box:hover .services-info h4 i,
+[data-theme="light"] .services-box:hover .services-info h4,
+[data-theme="light"] .services-box:hover .services-info p{ color: #ffffff; }
 /* Light: skill bars -> lighter green fill */
 [data-theme="light"] .skill-fill{ background: linear-gradient(90deg, #22c55e, #14b8a6); }
 /* Light: testimonial avatars -> outlined circles; cards softened */
