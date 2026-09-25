@@ -1611,37 +1611,46 @@ section{
     color: black;
     box-shadow: 0 0 20px var(--main-color);
 }
-/* Hero stats */
+/* Hero stats band */
 .hero-stats{
     display: flex;
     flex-wrap: wrap;
-    gap: 2rem;
-    margin: 2rem 0 0;
+    justify-content: center;
+    gap: 2.5rem 6rem;
+    padding: 5rem 12%;
+    background: var(--second-bg-color);
+    border-top: 2px solid var(--main-color);
+    border-bottom: 2px solid var(--main-color);
+    margin: 0;
 }
 .hero-stat{
-    background: var(--second-bg-color);
-    border: 2px solid var(--main-color);
-    border-radius: 1.5rem;
-    padding: 1.2rem 2.4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
     text-align: center;
     min-width: 12rem;
-    transition: 0.3s ease-in-out;
+    padding: 0;
+    background: none;
+    border: none;
 }
 .hero-stat:hover{
-    box-shadow: 0 0 20px rgba(27, 179, 14, 0.3);
-    transform: translateY(-3px);
+    box-shadow: none;
+    transform: none;
 }
 .hero-stat-count{
     display: block;
-    font-size: 2.8rem;
+    font-size: 3.2rem;
     font-weight: 800;
-    color: var(--accent-color);
-    line-height: 1.2;
+    color: var(--main-color);
+    line-height: 1.1;
 }
 .hero-stat-label{
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     color: var(--text-color);
     font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
 }
 /* Light theme overrides */
 [data-theme="light"]{
@@ -1681,7 +1690,6 @@ section{
 [data-theme="light"] .cert-card,
 [data-theme="light"] .blog-card{ border-color: #d6d9de; }
 [data-theme="light"] .timeline-content,
-[data-theme="light"] .hero-stat,
 [data-theme="light"] .contact form .input-box input,
 [data-theme="light"] .contact form textarea{ background: #ffffff; }
 [data-theme="light"] .blog-post-content code{ color: var(--accent-color); }
@@ -1751,6 +1759,19 @@ section{
 @media(max-width:768px){
     .skill-bars{
         grid-template-columns: 1fr;
+    }
+    .hero-stats{
+        padding: 3.5rem 8%;
+        gap: 2rem 4rem;
+    }
+    .hero-stat{
+        min-width: 10rem;
+    }
+    .hero-stat-count{
+        font-size: 2.6rem;
+    }
+    .hero-stat-label{
+        font-size: 1.2rem;
     }
 }
 /* Projects error / retry */
@@ -1851,25 +1872,6 @@ section{
 
             </div>
 
-            <div class="hero-stats" aria-label="Key figures">
-                <div class="hero-stat">
-                    <span class="hero-stat-count" data-target="2" data-suffix="+">0</span>
-                    <span class="hero-stat-label">Years Experience</span>
-                </div>
-                <div class="hero-stat">
-                    <span class="hero-stat-count" data-target="37">0</span>
-                    <span class="hero-stat-label">Certifications</span>
-                </div>
-                <div class="hero-stat">
-                    <span class="hero-stat-count" id="hero-stat-projects" data-target="6" data-suffix="+">0</span>
-                    <span class="hero-stat-label">Projects Built</span>
-                </div>
-                <div class="hero-stat">
-                    <span class="hero-stat-count" data-target="7">0</span>
-                    <span class="hero-stat-label">Skill Areas</span>
-                </div>
-            </div>
-
             <div class="btn-group">
                 <a href="RESUME_Cabansag_GlennPatrick.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" class="btn">Resume</a>
 
@@ -1881,6 +1883,25 @@ section{
             <img src="profile.jpg" alt="Glenn Patrick Cabansag">
         </div>
     </section>
+
+    <div class="hero-stats" aria-label="Key figures">
+        <div class="hero-stat">
+            <span class="hero-stat-count" data-target="2" data-suffix="+">0</span>
+            <span class="hero-stat-label">Years Experience</span>
+        </div>
+        <div class="hero-stat">
+            <span class="hero-stat-count" data-target="37">0</span>
+            <span class="hero-stat-label">Certifications</span>
+        </div>
+        <div class="hero-stat">
+            <span class="hero-stat-count" id="hero-stat-projects" data-target="6" data-suffix="+">0</span>
+            <span class="hero-stat-label">Projects Built</span>
+        </div>
+        <div class="hero-stat">
+            <span class="hero-stat-count" data-target="7">0</span>
+            <span class="hero-stat-label">Skill Areas</span>
+        </div>
+    </div>
 
     <section class="education" id="education">
         <h2 class="heading">Education</h2>
