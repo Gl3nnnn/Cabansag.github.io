@@ -38,14 +38,14 @@ window.onscroll = () => {
 
 // Mobile menu toggle
 menuIcon.onclick = () => {
-    menuIcon.classList.toggle('bx-x');
+    menuIcon.classList.toggle('fa-xmark');
     navbar.classList.toggle('active');
 };
 
 // Close mobile menu when a link is clicked
 navLinks.forEach(link => {
     link.addEventListener('click', () => {
-        menuIcon.classList.remove('bx-x');
+        menuIcon.classList.remove('fa-xmark');
         navbar.classList.remove('active');
     });
 });
@@ -139,7 +139,7 @@ function buildProjectCard(repo) {
     const url = repo.html_url || `https://github.com/${GITHUB_USER}/${name}`;
 
     return `
-        <div class="project-card" onclick="window.open('${url}', '_blank')">
+        <a class="project-card" href="${url}" target="_blank" rel="noopener">
             <div class="project-top">
                 <h3>${name}</h3>
                 <span class="project-star"><i class="fa-solid fa-star"></i> ${stars}</span>
@@ -147,21 +147,66 @@ function buildProjectCard(repo) {
             <p>${description}</p>
             <div class="project-meta">
                 <span class="project-lang"><i class="${langIcon(language)}"></i> ${language}</span>
-                <a href="${url}" target="_blank" class="project-link">View Project</a>
+                <span class="project-link">View Project <i class="fa-solid fa-arrow-right"></i></span>
             </div>
-        </div>
+        </a>
     `;
 }
 
+let activeLang = 'All';
+
+function projectLangCounts() {
+    const counts = {};
+    activeProjects.forEach(repo => {
+        const lang = repo.language || 'N/A';
+        counts[lang] = (counts[lang] || 0) + 1;
+    });
+    return counts;
+}
+
+function renderProjectFilters() {
+    const container = document.getElementById('project-filters');
+    if (!container) return;
+    const counts = projectLangCounts();
+    const langs = Object.keys(counts).sort((a, b) => (counts[b] - counts[a]) || a.localeCompare(b));
+    container.innerHTML = ['All', ...langs].map(lang =>
+        `<button type="button" class="chip${lang === activeLang ? ' active' : ''}" data-lang="${lang}">${lang}</button>`
+    ).join('');
+    container.querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            activeLang = chip.dataset.lang;
+            renderProjectFilters();
+            renderProjectGrid();
+        });
+    });
+}
+
+function renderProjectGrid() {
+    const list = activeLang === 'All'
+        ? activeProjects
+        : activeProjects.filter(repo => (repo.language || 'N/A') === activeLang);
+
+    if (list.length === 0) {
+        projectsGrid.innerHTML = `<p class="project-error">No projects in this category.</p>`;
+        return;
+    }
+
+    projectsGrid.innerHTML = list.slice(0, 12).map(buildProjectCard).join('');
+    observeReveal(projectsGrid);
+}
+
 function renderProjects(projects) {
-    activeProjects = projects.filter(isWorthShowing);
+    activeProjects = projects
+        .filter(isWorthShowing)
+        .sort((a, b) => (b.stargazers_count || 0) - (a.stargazers_count || 0));
 
     if (activeProjects.length === 0) {
         projectsGrid.innerHTML = `<p class="project-error">No projects to show at the moment.</p>`;
         return;
     }
 
-    projectsGrid.innerHTML = activeProjects.slice(0, 12).map(buildProjectCard).join('');
+    renderProjectFilters();
+    renderProjectGrid();
 }
 
 async function loadProjects() {
@@ -177,3 +222,56 @@ async function loadProjects() {
 }
 
 loadProjects();
+
+// Scroll reveal (runs immediately; dynamic cards call observeReveal after render)
+let revealObserver = null;
+
+function observeReveal(root) {
+    if (!revealObserver) return;
+    root.querySelectorAll('.timeline-item, .cert-category, .cert-card, .services-box, .project-card, .testimonial-card, .blog-card, .heading')
+        .forEach(el => {
+            if (el.classList.contains('reveal')) return;
+            el.classList.add('reveal');
+            revealObserver.observe(el);
+        });
+}
+
+if ('IntersectionObserver' in window) {
+    revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('in-view');
+                revealObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    observeReveal(document);
+}
+
+// Copy email button (contact section)
+const copyEmailBtn = document.getElementById('copy-email');
+if (copyEmailBtn) {
+    copyEmailBtn.addEventListener('click', () => {
+        const email = 'patrickcabansag5@gmail.com';
+        const done = () => {
+            copyEmailBtn.textContent = 'Copied!';
+            setTimeout(() => { copyEmailBtn.textContent = 'Copy Email'; }, 2000);
+        };
+        const fallbackCopy = () => {
+            const textarea = document.createElement('textarea');
+            textarea.value = email;
+            textarea.setAttribute('readonly', '');
+            textarea.style.position = 'absolute';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try { document.execCommand('copy'); done(); } catch (err) { /* ignore */ }
+            document.body.removeChild(textarea);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(email).then(done).catch(fallbackCopy);
+        } else {
+            fallbackCopy();
+        }
+    });
+}

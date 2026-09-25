@@ -11,8 +11,38 @@
     <meta property="og:title" content="Glenn Patrick Cabansag | IT Professional">
     <meta property="og:description" content="IT Assistant, full-stack developer, UI/UX designer, network and technical support. Explore my projects and experience.">
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://gl3nnnn.github.io/">
+    <meta property="og:image" content="https://gl3nnnn.github.io/profile.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Glenn Patrick Cabansag | IT Professional">
+    <meta name="twitter:description" content="IT Assistant, full-stack developer, UI/UX designer, network and technical support.">
+    <meta name="twitter:image" content="https://gl3nnnn.github.io/profile.jpg">
     <title>Glenn Patrick Cabansag | IT Professional</title>
 <link rel="icon" type="image/x-icon" href="R.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Glenn Patrick Cabansag",
+  "givenName": "Glenn Patrick",
+  "familyName": "Cabansag",
+  "url": "https://gl3nnnn.github.io/",
+  "image": "https://gl3nnnn.github.io/profile.jpg",
+  "jobTitle": "IT Assistant",
+  "worksFor": { "@type": "Organization", "name": "COMPASS Training Center, Inc." },
+  "alumniOf": { "@type": "CollegeOrUniversity", "name": "University of San Agustin" },
+  "email": "mailto:patrickcabansag5@gmail.com",
+  "address": { "@type": "PostalAddress", "addressLocality": "Iloilo City", "addressCountry": "PH" },
+  "sameAs": [
+    "https://www.linkedin.com/in/glenpatrick",
+    "https://github.com/Gl3nnnn",
+    "https://www.facebook.com/Gl3nQt"
+  ]
+}
+</script>
 
     <style>
 * {
@@ -1416,20 +1446,124 @@ padding-left:37px;
         grid-template-columns: 1fr;
     }
 }
+/* Scroll reveal + anchor offset */
+section{
+    scroll-margin-top: 6rem;
+}
+.reveal{
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.in-view{
+    opacity: 1;
+    transform: none;
+}
+@media (prefers-reduced-motion: reduce){
+    .reveal{
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+/* Accessibility helpers */
+.sr-only{
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+.hp-field{
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+    height: 0;
+    width: 0;
+}
+/* Contact: direct email row */
+.contact-direct{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    margin: 2rem 0 0;
+    text-align: center;
+}
+.contact-direct span{
+    font-size: 1.8rem;
+    color: var(--text-color);
+}
+.contact-direct .btn-copy{
+    background: transparent;
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+.contact-direct .btn-copy:hover{
+    background: var(--accent-color);
+    color: black;
+    box-shadow: 0 0 25px var(--accent-color);
+}
+/* Certifications: verification link */
+.cert-verify{
+    display: block;
+    font-size: 1.5rem;
+    margin-top: 1rem;
+}
+.cert-verify a{
+    color: var(--accent-color);
+    font-weight: 600;
+}
+/* Project filters */
+.project-filters{
+    max-width: 1200px;
+    margin: 0 auto 2.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    justify-content: center;
+}
+.project-filters .chip{
+    font-family: inherit;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-color);
+    background: var(--bg-color);
+    border: 2px solid #333;
+    border-left: 4px solid var(--main-color);
+    padding: 0.6rem 1.8rem;
+    border-radius: 3rem;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+.project-filters .chip:hover{
+    border-color: var(--main-color);
+    color: var(--main-color);
+}
+.project-filters .chip.active{
+    background: var(--main-color);
+    color: black;
+    border-color: var(--main-color);
+    box-shadow: 0 0 16px rgba(27, 179, 14, 0.4);
+}
 </style>
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 
 </head>
 <body>
     <div class="scroll-progress" id="scroll-progress"></div>
-    <button id="back-to-top" aria-label="Back to top" title="Back to top"><i class="bx bx-up-arrow-alt"></i></button>
+    <button id="back-to-top" aria-label="Back to top" title="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
     <header class="header">
         <a href="#home" class="logo">Glenn Patrick
             <span>Cabansag</span>
         </a>
-        <i class="bx bx-menu" id="menu-icon"></i>
+        <i class="fa-solid fa-bars" id="menu-icon"></i>
         <nav class="navbar">
             <a href="#home" class="active">Home</a>
             <a href="#education">Education</a>
@@ -1450,10 +1584,10 @@ padding-left:37px;
             <p>I'm Glenn Patrick Cabansag, an Information Technology professional based in Iloilo, Philippines, currently working as an IT Assistant at COMPASS Training Center. I graduated from the University of San Agustin with a Bachelor of Science in Information Technology in 2024. I build responsive web applications, support and troubleshoot IT systems, and constantly explore new technologies to grow and contribute to the IT field.</p>
 
             <div class="social-icons">
-                <a href="https://www.linkedin.com/in/glenpatrick" target="_blank"><i class='bx bxl-linkedin-square'></i></a>
-                <a href="https://github.com/Gl3nnnn" target="_blank"><i class='bx bxl-github' ></i></a>
-                <a href="https://www.facebook.com/Gl3nQt" target="_blank"><i class='bx bxl-facebook-circle' ></i></a>
-                <a href="https://mail.google.com/mail/u/1/?view=cm&fs=1&to=patrickcabansag5@gmail.com&tf=1" target="_blank"><i class='bx bxl-gmail' ></i></a>
+                <a href="https://www.linkedin.com/in/glenpatrick" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="https://github.com/Gl3nnnn" target="_blank"><i class="fa-brands fa-github"></i></a>
+                <a href="https://www.facebook.com/Gl3nQt" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://mail.google.com/mail/u/1/?view=cm&fs=1&to=patrickcabansag5@gmail.com&tf=1" target="_blank"><i class="fa-regular fa-envelope"></i></a>
 
             </div>
 
@@ -1465,7 +1599,7 @@ padding-left:37px;
         </div>
 
         <div class="home-img">
-            <img src="Cabansag Glenn Patrick-.jpg" alt="">
+            <img src="profile.jpg" alt="Glenn Patrick Cabansag">
         </div>
     </section>
 
@@ -1551,7 +1685,9 @@ padding-left:37px;
 
 <section class="certifications" id="certifications">
     <h2 class="heading">Licenses & <span>Certifications</span></h2>
-    <p class="certifications-intro">37 licenses and certifications covering Google Cloud, Cisco, Red Hat, Linux Foundation, ISC2, IBM, TESDA and more — from cloud architecture and networking to cybersecurity, development, design and systems support.</p>
+    <p class="certifications-intro">37 licenses and certifications covering Google Cloud, Cisco, Red Hat, Linux Foundation, ISC2, IBM, TESDA and more — from cloud architecture and networking to cybersecurity, development, design and systems support.
+        <span class="cert-verify">All credentials can be viewed and verified on my <a href="https://www.linkedin.com/in/glenpatrick/details/certifications/" target="_blank">LinkedIn certifications page</a>.</span>
+    </p>
 
     <div class="cert-container">
 
@@ -2064,6 +2200,8 @@ padding-left:37px;
     <h2 class="heading">Projects</h2>
     <p class="projects-intro">My public work on GitHub. Loaded live — check my <a href="https://github.com/Gl3nnnn" target="_blank">profile</a> for the full list.</p>
 
+    <div class="project-filters" id="project-filters"></div>
+
     <div class="projects-grid" id="projects-grid">
         <div class="project-card">
             <h3>Loading projects...</h3>
@@ -2139,19 +2277,30 @@ padding-left:37px;
 
 <section class="contact" id="contact">
     <h2 class="heading">Contact <span>Me</span></h2>
+    <div class="contact-direct">
+        <span>Prefer email?</span>
+        <a href="mailto:patrickcabansag5@gmail.com" class="btn">patrickcabansag5@gmail.com</a>
+        <button type="button" class="btn btn-copy" id="copy-email">Copy Email</button>
+    </div>
     <form id="contact-form">
         <div class="input-group">
             <div class="input-box">
+                <label class="sr-only" for="full-name">Full Name</label>
                 <input type="text" id="full-name" placeholder="Full Name" required>
+                <label class="sr-only" for="email">Email</label>
                 <input type="email" id="email" placeholder="Email" required>
             </div>
             <div class="input-box">
-                <input type="number" id="phone-number" placeholder="Phone Number" required>
+                <label class="sr-only" for="phone-number">Phone Number</label>
+                <input type="tel" id="phone-number" placeholder="Phone Number" required>
+                <label class="sr-only" for="subject">Subject</label>
                 <input type="text" id="subject" placeholder="Subject" required>
             </div>
         </div>
         <div class="input-group-2">
+            <label class="sr-only" for="message">Your Message</label>
             <textarea id="message" cols="30" rows="10" placeholder="Your Message" required></textarea>
+            <input type="text" id="website" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
             <input type="submit" value="Send Message" class="btn">
         </div>
     </form>
@@ -2167,7 +2316,13 @@ padding-left:37px;
 
     document.getElementById('contact-form').addEventListener('submit', function(event) {
         event.preventDefault();
-        
+
+        // Honeypot: silently 'succeed' on bots without sending anything
+        if (document.getElementById('website').value) {
+            showPopup("Message sent successfully!");
+            return;
+        }
+
         emailjs.send("service_bkjbqcm", "template_kkar83i", {
             from_name: document.getElementById('full-name').value,
             email: document.getElementById('email').value,
@@ -2177,6 +2332,7 @@ padding-left:37px;
         })
         .then(function(response) {
             showPopup("Message sent successfully!");
+            document.getElementById('contact-form').reset();
         }, function(error) {
             showPopup("Failed to send message. Please try again. Error: " + JSON.stringify(error));
         });
@@ -2207,10 +2363,10 @@ padding-left:37px;
 
 <footer class="footer">
     <div class="social">
-        <a href="https://www.linkedin.com/in/glenpatrick" target="_blank"><i class='bx bxl-linkedin-square'></i></a>
-        <a href="https://github.com/Gl3nnnn" target="_blank"><i class='bx bxl-github' ></i></a>
-        <a href="https://www.facebook.com/Gl3nQt" target="_blank"><i class='bx bxl-facebook-circle' ></i></a>
-        <a href="https://mail.google.com/mail/u/1/?view=cm&fs=1&to=patrickcabansag5@gmail.com&tf=1" target="_blank"><i class='bx bxl-gmail' ></i></a>
+        <a href="https://www.linkedin.com/in/glenpatrick" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
+        <a href="https://github.com/Gl3nnnn" target="_blank"><i class="fa-brands fa-github"></i></a>
+        <a href="https://www.facebook.com/Gl3nQt" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+        <a href="https://mail.google.com/mail/u/1/?view=cm&fs=1&to=patrickcabansag5@gmail.com&tf=1" target="_blank"><i class="fa-regular fa-envelope"></i></a>
 
     </div>
     <ul class="list">
@@ -2228,6 +2384,6 @@ padding-left:37px;
     </p>
 </footer>
 
-   <script src="script.js?v=2.0"></script>
+   <script src="script.js?v=3.0"></script>
 </body>
 </html>
