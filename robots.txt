@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://gl3nnnn.github.io/sitemap.xml

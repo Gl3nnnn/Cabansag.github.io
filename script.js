@@ -210,13 +210,54 @@ function renderProjects(projects) {
 }
 
 async function loadProjects() {
+    const CACHE_KEY = 'portfolio_projects_v1';
+    const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+
+    const readCache = () => {
+        try {
+            const raw = localStorage.getItem(CACHE_KEY);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            if (!parsed || !Array.isArray(parsed.repos)) return null;
+            return parsed;
+        } catch (err) { return null; }
+    };
+
+    const cached = readCache();
+
+    if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
+        renderProjects(cached.repos);
+        return;
+    }
+
+    const showRateLimit = () => {
+        projectsGrid.innerHTML = `
+            <p class="project-error">
+                The GitHub API rate limit was reached for this IP. Try again in about an hour.
+                <br><button type="button" class="retry-btn" id="retry-projects">Retry Now</button>
+            </p>`;
+        const retry = document.getElementById('retry-projects');
+        if (retry) retry.addEventListener('click', () => {
+            try { localStorage.removeItem(CACHE_KEY); } catch (err) { /* ignore */ }
+            projectsGrid.innerHTML = `<div class="project-card"><h3>Loading projects...</h3><p>Fetching repositories from GitHub.</p></div>`;
+            loadProjects();
+        });
+    };
+
     try {
         const res = await fetch(GITHUB_API_URL);
+        if (res.status === 403 || res.status === 429) {
+            if (cached) { renderProjects(cached.repos); return; }
+            showRateLimit();
+            return;
+        }
         if (!res.ok) throw new Error('GitHub API error: ' + res.status);
         const data = await res.json();
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: Date.now(), repos: data })); } catch (err) { /* ignore */ }
         renderProjects(data);
     } catch (error) {
-        console.warn('Could not load projects from GitHub, using fallback list.', error);
+        console.warn('Could not load projects from GitHub.', error);
+        if (cached) { renderProjects(cached.repos); return; }
         renderProjects(FALLBACK_PROJECTS);
     }
 }
@@ -275,3 +316,22 @@ if (copyEmailBtn) {
         }
     });
 }
+
+// Skill bars fill animation
+const skillBars = document.querySelectorAll('.skill-bar');
+if (skillBars.length && 'IntersectionObserver' in window) {
+    const skillObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const fill = entry.target.querySelector('.skill-fill');
+                if (fill) fill.style.width = (fill.dataset.level || 80) + '%';
+                skillObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+    skillBars.forEach(bar => skillObserver.observe(bar));
+}
+
+// Dynamic copyright year
+const yearEl = document.getElementById('year');
+if (yearEl) yearEl.textContent = new Date().getFullYear();

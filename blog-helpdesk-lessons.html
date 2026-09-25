@@ -4,19 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>From Help Desk to IT Assistant: What I Learned | Glenn Patrick Cabansag</title>
+    <meta name="author" content="Glenn Patrick Cabansag">
+    <meta name="theme-color" content="#121212">
     <meta name="description" content="Lessons from supporting end users every day — troubleshooting, patience, and the joy of solving problems.">
     <meta property="og:title" content="From Help Desk to IT Assistant: What I Learned | Glenn Patrick Cabansag">
     <meta property="og:description" content="Lessons from supporting end users every day — troubleshooting, patience, and the joy of solving problems.">
     <meta property="og:type" content="article">
     <meta property="og:url" content="https://gl3nnnn.github.io/blog-helpdesk-lessons.html">
     <meta property="og:image" content="https://gl3nnnn.github.io/profile.jpg">
+    <meta property="article:published_time" content="2025-06-10">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="icon" type="image/x-icon" href="R.png">
+    <meta name="twitter:creator" content="@glenpatrick">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="canonical" href="https://gl3nnnn.github.io/blog-helpdesk-lessons.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "From Help Desk to IT Assistant: What I Learned",
+      "description": "Lessons from supporting end users every day — troubleshooting, patience, and the joy of solving problems.",
+      "image": "https://gl3nnnn.github.io/profile.jpg",
+      "author": { "@type": "Person", "name": "Glenn Patrick Cabansag", "url": "https://gl3nnnn.github.io/" },
+      "publisher": { "@type": "Person", "name": "Glenn Patrick Cabansag" },
+      "datePublished": "2025-06-10"
+    }
+    </script>
     <style>
         :root{--bg:#121212;--panel:#1e1e1e;--main:#1bb30e;--accent:#03dac6;--text:#e0e0e0;--muted:#9aa0a6;}
         *{margin:0;padding:0;box-sizing:border-box;}
         html{scroll-behavior:smooth;}
-        body{font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;}
+        body{font-family:'Poppins',system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.8;}
         body::before{content:"";position:fixed;inset:0;background:radial-gradient(600px at 12% 8%,rgba(27,179,14,.16),transparent 60%),radial-gradient(600px at 88% 15%,rgba(3,218,198,.12),transparent 60%);pointer-events:none;z-index:-1;}
         .bp-header{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.4rem 6vw;background:rgba(18,18,18,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(27,179,14,.25);}
         .logo{font-size:1.35rem;font-weight:800;color:var(--text);text-decoration:none;letter-spacing:.02em;}
@@ -42,15 +63,30 @@
         .post-footer a{color:var(--accent);text-decoration:none;}
         .post-footer a:hover{text-decoration:underline;}
         @media(max-width:640px){.bp-header{padding:1.1rem 5vw;}.article{padding:0 5vw;}}
+        /* A11y & extra elements */
+        .skip-link{position:absolute;left:-9999px;top:0;z-index:999;background:var(--main);color:#000;font-weight:700;padding:.7rem 1.4rem;border-radius:0 0 1rem 0;text-decoration:none;}
+        .skip-link:focus{left:0;text-decoration:none;}
+        :focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:.3rem;}
+        .back-top{position:fixed;right:1.5rem;bottom:1.5rem;z-index:50;width:44px;height:44px;border-radius:50%;background:var(--panel);border:2px solid var(--main);color:var(--main);font-size:1.1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;visibility:hidden;transform:translateY(12px);transition:.3s;}
+        .back-top.show{opacity:1;visibility:visible;transform:none;}
+        .back-top:hover{background:var(--main);color:#000;box-shadow:0 0 18px rgba(27,179,14,.5);}
+        .bp-footer{border-top:1px solid rgba(255,255,255,.08);padding:2.5rem 6vw 2rem;text-align:center;}
+        .bp-footer .social{display:flex;justify-content:center;gap:1rem;margin-bottom:1.4rem;}
+        .bp-footer .social a{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid var(--main);color:var(--main);font-size:1.15rem;transition:.25s;}
+        .bp-footer .social a:hover{background:var(--main);color:#000;transform:translateY(-5px);box-shadow:0 0 18px rgba(27,179,14,.5);text-decoration:none;}
+        .bp-footer p{color:var(--muted);font-size:.9rem;}
+        .bp-footer a{color:var(--accent);}
     </style>
 </head>
 <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <button class="back-top" id="back-top" aria-label="Back to top" title="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
     <header class="bp-header">
         <a href="index.html" class="logo">Glenn Patrick <span>Cabansag</span></a>
         <a href="index.html#blog" class="back-link">&larr; Back to Blog</a>
     </header>
 
-    <article class="article">
+    <article class="article" id="main" tabindex="-1">
         <span class="category">Experience</span>
         <h1 class="title">From Help Desk to IT Assistant: What I Learned</h1>
         <div class="meta">
@@ -85,7 +121,26 @@
             <p>Say yes to the messy tickets, keep a learning log, and be honest when you're unsure — then go find the answer. Curiosity compounds. Two years in, I can trace problems that used to leave me stuck, and I'm still just getting started.</p>
         </div>
 
-        <div class="post-footer">Thanks for reading! Connect on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank">LinkedIn</a> or check my <a href="https://github.com/Gl3nnnn" target="_blank">GitHub</a>.</div>
+        <div class="post-footer">Thanks for reading! Connect on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer">LinkedIn</a> or check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">GitHub</a>.</div>
     </article>
+
+    <footer class="bp-footer">
+        <div class="social">
+            <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+            <a href="https://www.facebook.com/Gl3nQt" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="mailto:patrickcabansag5@gmail.com" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+        </div>
+        <p>&copy; <span id="year">2026</span> Glenn Patrick Cabansag | All rights reserved</p>
+    </footer>
+
+    <script>
+        const backTop = document.getElementById('back-top');
+        window.addEventListener('scroll', () => {
+            backTop.classList.toggle('show', window.scrollY > 400);
+        }, { passive: true });
+        backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
 </body>
 </html>

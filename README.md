@@ -56,6 +56,7 @@ The Projects section on the site loads live from GitHub and includes language fi
 - `blog-home-lab.html`, `blog-helpdesk-lessons.html`, `blog-aws-journey.html` — blog posts
 - `script.js` — interactivity (nav, projects via GitHub API, reveal-on-scroll, contact copy/honeypot)
 - `profile.jpg` — profile photo
+- `favicon.svg`, `sitemap.xml`, `robots.txt` — branding and SEO files
 
 ## Contact Me
 

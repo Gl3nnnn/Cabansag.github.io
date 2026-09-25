@@ -2,23 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#121212">
     <meta name="description" content="Portfolio of Glenn Patrick Cabansag, IT Assistant at COMPASS Training Center and BS IT graduate from the University of San Agustin. Full-stack, networking and technical support.">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <meta name="author" content="Glenn Patrick Cabansag">
     <meta property="og:title" content="Glenn Patrick Cabansag | IT Professional">
     <meta property="og:description" content="IT Assistant, full-stack developer, UI/UX designer, network and technical support. Explore my projects and experience.">
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Glenn Patrick Cabansag">
     <meta property="og:url" content="https://gl3nnnn.github.io/">
     <meta property="og:image" content="https://gl3nnnn.github.io/profile.jpg">
+    <meta property="og:image:width" content="598">
+    <meta property="og:image:height" content="900">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Glenn Patrick Cabansag | IT Professional">
     <meta name="twitter:description" content="IT Assistant, full-stack developer, UI/UX designer, network and technical support.">
     <meta name="twitter:image" content="https://gl3nnnn.github.io/profile.jpg">
     <title>Glenn Patrick Cabansag | IT Professional</title>
-<link rel="icon" type="image/x-icon" href="R.png">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="canonical" href="https://gl3nnnn.github.io/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -637,6 +639,19 @@ top: 10px;
 .testimonial-quote{
     font-size: 3.5rem;
     color: var(--main-color);
+}
+.testimonial-avatar{
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--main-color), var(--accent-color));
+    color: #000;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 0 16px rgba(27, 179, 14, 0.35);
 }
 .testimonial-card p{
     font-size: 1.6rem;
@@ -1551,12 +1566,117 @@ section{
     border-color: var(--main-color);
     box-shadow: 0 0 16px rgba(27, 179, 14, 0.4);
 }
+/* Accessibility: skip link + focus ring */
+.skip-link{
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 999;
+    background: var(--main-color);
+    color: #000;
+    font-weight: 700;
+    padding: 0.7rem 1.4rem;
+    border-radius: 0 0 1rem 0;
+}
+.skip-link:focus{
+    left: 0;
+    color: #000;
+}
+:focus-visible{
+    outline: 3px solid var(--accent-color);
+    outline-offset: 2px;
+    border-radius: 0.3rem;
+}
+/* Form/popup */
+.popup{
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    padding: 2.5rem;
+    background: #4caf50;
+    color: #fff;
+    font-size: 1.25rem;
+    border-radius: 1.2rem;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    max-width: 90vw;
+    text-align: center;
+}
+/* Skills proficiency bars */
+.skills-proficiency{
+    max-width: 1200px;
+    margin: 3rem auto 0;
+    padding: 0 9%;
+}
+.skill-heading{
+    font-size: 2rem;
+    text-align: center;
+    color: white;
+    margin-bottom: 2rem;
+    font-weight: 700;
+}
+.skill-bars{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem 3rem;
+}
+.skill-bar .skill-bar-top{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+    color: var(--text-color);
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+.skill-bar .skill-pct{
+    color: var(--accent-color);
+}
+.skill-track{
+    height: 1rem;
+    background: var(--second-bg-color);
+    border: 1px solid #333;
+    border-radius: 100px;
+    overflow: hidden;
+}
+.skill-fill{
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--main-color), var(--accent-color));
+    border-radius: 100px;
+    transition: width 1.2s ease;
+}
+@media(max-width:768px){
+    .skill-bars{
+        grid-template-columns: 1fr;
+    }
+}
+/* Projects error / retry */
+.retry-btn{
+    font-family: inherit;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: black;
+    background: var(--main-color);
+    border: 2px solid var(--main-color);
+    padding: 0.7rem 2.2rem;
+    border-radius: 2rem;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: 0.25s;
+}
+.retry-btn:hover{
+    background: transparent;
+    color: var(--main-color);
+}
 </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 
 </head>
 <body>
+    <a class="skip-link" href="#home">Skip to content</a>
     <div class="scroll-progress" id="scroll-progress"></div>
     <button id="back-to-top" aria-label="Back to top" title="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
     <header class="header">
@@ -1577,17 +1697,17 @@ section{
         </nav>
     </header>
     
-    <section class="home" id="home">
+    <section class="home" id="home" tabindex="-1">
         <div class="home-content">
             <h1>Hi, It's <span>Patrick</span></h1>
             <h3 class="text-animation">I'm a <span></span></h3>
             <p>I'm Glenn Patrick Cabansag, an Information Technology professional based in Iloilo, Philippines, currently working as an IT Assistant at COMPASS Training Center. I graduated from the University of San Agustin with a Bachelor of Science in Information Technology in 2024. I build responsive web applications, support and troubleshoot IT systems, and constantly explore new technologies to grow and contribute to the IT field.</p>
 
             <div class="social-icons">
-                <a href="https://www.linkedin.com/in/glenpatrick" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
-                <a href="https://github.com/Gl3nnnn" target="_blank"><i class="fa-brands fa-github"></i></a>
-                <a href="https://www.facebook.com/Gl3nQt" target="_blank"><i class="fa-brands fa-facebook"></i></a>
-                <a href="https://mail.google.com/mail/u/1/?view=cm&fs=1&to=patrickcabansag5@gmail.com&tf=1" target="_blank"><i class="fa-regular fa-envelope"></i></a>
+                <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+                <a href="https://www.facebook.com/Gl3nQt" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://mail.google.com/mail/u/1/?view=cm&fs=1&to=patrickcabansag5@gmail.com&tf=1" target="_blank" rel="noopener noreferrer" aria-label="Email"><i class="fa-regular fa-envelope"></i></a>
 
             </div>
 
@@ -1686,7 +1806,7 @@ section{
 <section class="certifications" id="certifications">
     <h2 class="heading">Licenses & <span>Certifications</span></h2>
     <p class="certifications-intro">37 licenses and certifications covering Google Cloud, Cisco, Red Hat, Linux Foundation, ISC2, IBM, TESDA and more — from cloud architecture and networking to cybersecurity, development, design and systems support.
-        <span class="cert-verify">All credentials can be viewed and verified on my <a href="https://www.linkedin.com/in/glenpatrick/details/certifications/" target="_blank">LinkedIn certifications page</a>.</span>
+        <span class="cert-verify">All credentials can be viewed and verified on my <a href="https://www.linkedin.com/in/glenpatrick/details/certifications/" target="_blank" rel="noopener noreferrer">LinkedIn certifications page</a>.</span>
     </p>
 
     <div class="cert-container">
@@ -2194,11 +2314,25 @@ section{
 
 
     </div>
+
+        <div class="skills-proficiency">
+            <h3 class="skill-heading">Proficiency <span>Meter</span></h3>
+            <div class="skill-bars">
+                <div class="skill-bar"><div class="skill-bar-top"><span class="skill-name">Frontend Development</span><span class="skill-pct">90%</span></div><div class="skill-track"><div class="skill-fill" data-level="90"></div></div></div>
+                <div class="skill-bar"><div class="skill-bar-top"><span class="skill-name">Technical Support</span><span class="skill-pct">90%</span></div><div class="skill-track"><div class="skill-fill" data-level="90"></div></div></div>
+                <div class="skill-bar"><div class="skill-bar-top"><span class="skill-name">UI/UX Design</span><span class="skill-pct">85%</span></div><div class="skill-track"><div class="skill-fill" data-level="85"></div></div></div>
+                <div class="skill-bar"><div class="skill-bar-top"><span class="skill-name">Python &amp; Programming</span><span class="skill-pct">85%</span></div><div class="skill-track"><div class="skill-fill" data-level="85"></div></div></div>
+                <div class="skill-bar"><div class="skill-bar-top"><span class="skill-name">Backend Development</span><span class="skill-pct">80%</span></div><div class="skill-track"><div class="skill-fill" data-level="80"></div></div></div>
+                <div class="skill-bar"><div class="skill-bar-top"><span class="skill-name">Networking</span><span class="skill-pct">80%</span></div><div class="skill-track"><div class="skill-fill" data-level="80"></div></div></div>
+                <div class="skill-bar"><div class="skill-bar-top"><span class="skill-name">Cloud &amp; DevOps</span><span class="skill-pct">75%</span></div><div class="skill-track"><div class="skill-fill" data-level="75"></div></div></div>
+                <div class="skill-bar"><div class="skill-bar-top"><span class="skill-name">Databases &amp; SQL</span><span class="skill-pct">75%</span></div><div class="skill-track"><div class="skill-fill" data-level="75"></div></div></div>
+            </div>
+        </div>
 </section>
 
 <section class="projects" id="projects">
     <h2 class="heading">Projects</h2>
-    <p class="projects-intro">My public work on GitHub. Loaded live — check my <a href="https://github.com/Gl3nnnn" target="_blank">profile</a> for the full list.</p>
+    <p class="projects-intro">My public work on GitHub. Loaded live — check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">profile</a> for the full list.</p>
 
     <div class="project-filters" id="project-filters"></div>
 
@@ -2217,6 +2351,7 @@ section{
             <i class="fa-solid fa-quote-left testimonial-quote"></i>
             <p>Patrick is reliable and quick to help with any technical issue. His support helps keep our daily operations running smoothly.</p>
             <div class="testimonial-person">
+                <span class="testimonial-avatar"><i class="fa-solid fa-user-tie"></i></span>
                 <h4>Work Supervisor</h4>
                 <span>COMPASS Training Center, Inc.</span>
             </div>
@@ -2224,8 +2359,9 @@ section{
         <div class="testimonial-card">
             <i class="fa-solid fa-quote-left testimonial-quote"></i>
             <p>Clean code, a keen eye for UI design, and always eager to learn new technologies. A really well-rounded developer.</p>
-            <div class="testimonial-person">
-                <h4>Classmate & Teammate</h4>
+<div class="testimonial-person">
+                <span class="testimonial-avatar"><i class="fa-solid fa-user-graduate"></i></span>
+                <h4>Classmate &amp; Teammate</h4>
                 <span>University of San Agustin</span>
             </div>
         </div>
@@ -2233,6 +2369,7 @@ section{
             <i class="fa-solid fa-quote-left testimonial-quote"></i>
             <p>Great with both frontend interfaces and backend logic. He turns ideas into working systems with follow-through.</p>
             <div class="testimonial-person">
+                <span class="testimonial-avatar"><i class="fa-solid fa-users"></i></span>
                 <h4>Project Collaborator</h4>
                 <span>IT Projects</span>
             </div>
@@ -2281,6 +2418,7 @@ section{
         <span>Prefer email?</span>
         <a href="mailto:patrickcabansag5@gmail.com" class="btn">patrickcabansag5@gmail.com</a>
         <button type="button" class="btn btn-copy" id="copy-email">Copy Email</button>
+        <a href="RESUME_Cabansag_GlennPatrick.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" class="btn btn-resume">Resume</a>
     </div>
     <form id="contact-form">
         <div class="input-group">
@@ -2340,19 +2478,9 @@ section{
 
     function showPopup(message) {
         var popup = document.createElement('div');
-    popup.style.position = 'fixed';
-    popup.style.left = '50%';
-    popup.style.top = '50%';
-    popup.style.transform = 'translate(-50%, -50%)';
-    popup.style.padding = '40px'; // Increased padding for a larger popup
-    popup.style.backgroundColor = '#4CAF50'; // Changed background color to a pleasant green
-    popup.style.color = '#fff'; // Set text color to white for better contrast
-    popup.style.fontSize = '20px'; // Increased font size for better readability
-    popup.style.boxShadow = '0 0 20px rgba(0, 0, 0, 0.2)'; // Enhanced shadow for a more prominent effect
-    popup.style.zIndex = '1000';
-    popup.innerText = message;
-
-
+        popup.className = 'popup';
+        popup.setAttribute('role', 'status');
+        popup.innerText = message;
         document.body.appendChild(popup);
 
         setTimeout(function() {
@@ -2363,13 +2491,14 @@ section{
 
 <footer class="footer">
     <div class="social">
-        <a href="https://www.linkedin.com/in/glenpatrick" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
-        <a href="https://github.com/Gl3nnnn" target="_blank"><i class="fa-brands fa-github"></i></a>
-        <a href="https://www.facebook.com/Gl3nQt" target="_blank"><i class="fa-brands fa-facebook"></i></a>
-        <a href="https://mail.google.com/mail/u/1/?view=cm&fs=1&to=patrickcabansag5@gmail.com&tf=1" target="_blank"><i class="fa-regular fa-envelope"></i></a>
+        <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+        <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+        <a href="https://www.facebook.com/Gl3nQt" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+        <a href="https://mail.google.com/mail/u/1/?view=cm&fs=1&to=patrickcabansag5@gmail.com&tf=1" target="_blank" rel="noopener noreferrer" aria-label="Email"><i class="fa-regular fa-envelope"></i></a>
 
     </div>
     <ul class="list">
+        <li> <a href="RESUME_Cabansag_GlennPatrick.pdf" download="RESUME_Cabansag_GlennPatrick.pdf">Resume</a></li>
         <li> <a href="faq.html">FAQ</a></li>
         <li> <a href="#education">Education</a></li>
         <li> <a href="#experience">Experience</a></li>
@@ -2380,7 +2509,7 @@ section{
         <li> <a href="#contact">Contact</a></li>
     </ul>
     <p class="copyright">
-        © 2026 Glenn Patrick Cabansag | ALL RIGHTS RESERVED
+        © <span id="year">2026</span> Glenn Patrick Cabansag | ALL RIGHTS RESERVED
     </p>
 </footer>
 
