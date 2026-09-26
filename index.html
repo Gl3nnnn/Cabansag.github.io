@@ -1814,6 +1814,14 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 }
 [data-theme="light"] .testimonial-quote,
 [data-theme="light"] .cert-card-top i{ text-shadow: none; }
+/* Light: solid-green fills need WHITE text (--main-color is dark green in light, #000/black was invisible) */
+[data-theme="light"] .blog-back-link:hover,
+[data-theme="light"] .skip-link,
+[data-theme="light"] #theme-toggle:hover,
+[data-theme="light"] #back-to-top:hover{ color: #ffffff; }
+[data-theme="light"] .blog-back-link:hover,
+[data-theme="light"] #theme-toggle:hover{ box-shadow: 0 4px 14px rgba(22, 101, 52, 0.30); }
+[data-theme="light"] #back-to-top:hover{ box-shadow: 0 4px 14px rgba(22, 101, 52, 0.35); }
 /* Form/popup */
 .popup{
     position: fixed;

@@ -170,6 +170,15 @@
         [data-theme="light"] .filter-btn,
         [data-theme="light"] .faq-footer{border-color:rgba(0,0,0,.14);}
         [data-theme="light"] body::before{opacity:.6;}
+        /* Light: solid-green fills need WHITE text (--main is dark green in light, #000 was invisible) */
+        [data-theme="light"] .filter-btn.active,
+        [data-theme="light"] .back-link:hover,
+        [data-theme="light"] .cta-btn:hover,
+        [data-theme="light"] .faq-footer .social a:hover,
+        [data-theme="light"] .back-top:hover,
+        [data-theme="light"] #theme-toggle:hover,
+        [data-theme="light"] .skip-link{color:#ffffff;}
+        [data-theme="light"] .filter-btn.active{box-shadow:0 2px 10px rgba(22,101,52,.28);}
     </style>
 </head>
 <body>

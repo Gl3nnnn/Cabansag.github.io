@@ -96,6 +96,12 @@
         [data-theme="light"] .content blockquote{background:#eef1f4;color:#3c4043;}
         [data-theme="light"] .content code{border-color:rgba(0,0,0,.16);}
         [data-theme="light"] body::before{opacity:.6;}
+        /* Light: solid-green fills need WHITE text (--main is dark green in light, #000 was invisible) */
+        [data-theme="light"] .back-link:hover,
+        [data-theme="light"] .back-top:hover,
+        [data-theme="light"] .bp-footer .social a:hover,
+        [data-theme="light"] #theme-toggle:hover,
+        [data-theme="light"] .skip-link{color:#ffffff;}
     </style>
 </head>
 <body>
