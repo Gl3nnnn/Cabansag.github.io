@@ -4,21 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#121212">
-    <script>(function(){try{var t=localStorage.getItem('theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';}document.querySelector('meta[name="theme-color"]').setAttribute('content',t==='light'?'#f6f7f9':'#121212');}catch(e){}})();</script>
+    <script>(function(){try{var t=localStorage.getItem('theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';}document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name="theme-color"]');if(m){m.setAttribute('content',t==='light'?'#f6f7f9':'#121212');}}catch(e){}})();</script>
     <meta name="description" content="Portfolio of Glenn Patrick Cabansag, IT Assistant at COMPASS Training Center and BS IT graduate from the University of San Agustin. Full-stack, networking and technical support.">
     <meta name="author" content="Glenn Patrick Cabansag">
     <meta property="og:title" content="Glenn Patrick Cabansag | IT Professional">
     <meta property="og:description" content="IT Assistant, full-stack developer, UI/UX designer, network and technical support. Explore my projects and experience.">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Glenn Patrick Cabansag">
-    <meta property="og:url" content="https://gl3nnnn.github.io/">
-    <meta property="og:image" content="https://gl3nnnn.github.io/og-cover.jpg">
+    <meta property="og:locale" content="en_PH">
+    <meta property="og:url" content="https://gl3nnnn.github.io/Cabansag.github.io/">
+    <meta property="og:image" content="https://gl3nnnn.github.io/Cabansag.github.io/og-cover.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Glenn Patrick Cabansag - IT Professional portfolio">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Glenn Patrick Cabansag | IT Professional">
     <meta name="twitter:description" content="IT Assistant, full-stack developer, UI/UX designer, network and technical support.">
-    <meta name="twitter:image" content="https://gl3nnnn.github.io/og-cover.jpg">
+    <meta name="twitter:image" content="https://gl3nnnn.github.io/Cabansag.github.io/og-cover.jpg">
+    <meta name="twitter:image:alt" content="Glenn Patrick Cabansag - IT Professional portfolio">
     <title>Glenn Patrick Cabansag | IT Professional</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="canonical" href="https://gl3nnnn.github.io/Cabansag.github.io/">
@@ -34,8 +37,8 @@
   "name": "Glenn Patrick Cabansag",
   "givenName": "Glenn Patrick",
   "familyName": "Cabansag",
-  "url": "https://gl3nnnn.github.io/",
-  "image": "https://gl3nnnn.github.io/profile.jpg",
+  "url": "https://gl3nnnn.github.io/Cabansag.github.io/",
+  "image": "https://gl3nnnn.github.io/Cabansag.github.io/profile.jpg",
   "jobTitle": "IT Assistant",
   "worksFor": { "@type": "Organization", "name": "COMPASS Training Center, Inc." },
   "alumniOf": { "@type": "CollegeOrUniversity", "name": "University of San Agustin" },
@@ -68,6 +71,7 @@ font-family: "Poppins" , sans-serif;
     --main-color: #1bb30e; /* Soft purple */
     --accent-color: #03dac6; /* Teal */
     --secondary-accent-color: #cf6679; /* Soft red */
+    --muted-color: #9aa0a6; /* Dimmed text for meta/secondary lines */
 }
 
 
@@ -283,15 +287,28 @@ border-radius: 50%;
     font-weight: 600;
     min-width: 280px;
 }
-.text-animation span{
+/*
+ * The rotating job titles used to live only in CSS `content:`, which made the
+ * hero sub-headline invisible to search engines, screen readers and Ctrl+F -
+ * the <h3> read as just "I'm a".
+ *
+ * Now the real text lives in the markup (.ta-sr) for crawlers and assistive
+ * tech, while .ta-rotator is an empty, aria-hidden element that carries the
+ * decorative CSS animation. With prefers-reduced-motion the rotator is hidden
+ * and the real text is shown visibly instead.
+ */
+.text-animation .ta-rotator{
     position: relative;
+    display: inline-block;
+    min-width: 280px;
+    text-align: left;
 }
-.text-animation span::before{
+.text-animation .ta-rotator::before{
     content: "Information Technology Assistant";
     color: var(--main-color);
     animation: word 20s ease-in-out infinite;
 }
-.text-animation span::after{
+.text-animation .ta-rotator::after{
     content: "";
     background-color: var(--bg-color);
     position: absolute;
@@ -436,6 +453,13 @@ top: 10px;
     font-weight: 500;
 
 }
+.timeline-school{
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--main-color);
+    margin: -4px 0 10px;
+}
 .timeline-content p{
     color: white;
     font-size: 16px;
@@ -543,6 +567,15 @@ top: 10px;
     font-size: 1.2rem;
     color: var(--main-color);
 }
+.project-card .project-updated{
+    font-size: 1.2rem;
+    color: #9aa0a6;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+    white-space: nowrap;
+}
 .project-card .project-link{
     font-size: 1.4rem;
     color: white;
@@ -551,6 +584,7 @@ top: 10px;
     border-radius: 2rem;
     font-weight: 600;
     transition: 0.3s ease-in-out;
+    white-space: nowrap;
 }
 .project-card .project-link:hover{
     background: white;
@@ -1483,6 +1517,21 @@ section{
         transform: none;
         transition: none;
     }
+    /* Swap the animated hero sub-headline for its real, visible text. */
+    .text-animation .ta-rotator{
+        display: none;
+    }
+    .text-animation .ta-sr{
+        position: static;
+        width: auto;
+        height: auto;
+        padding: 0;
+        margin: 0;
+        overflow: visible;
+        clip: auto;
+        white-space: normal;
+        color: var(--main-color);
+    }
 }
 /* Accessibility helpers */
 .sr-only{
@@ -1661,8 +1710,10 @@ section{
     --main-color: #166534;
     --accent-color: #115e59;
     --secondary-accent-color: #b03a4e;
+    --muted-color: #5f6368;
 }
 [data-theme="light"] .header{ background: rgba(255, 255, 255, 0.85); }
+[data-theme="light"] .timeline-school{ color: var(--main-color); }
 [data-theme="light"] .timeline-date,
 [data-theme="light"] .timeline-content p,
 [data-theme="light"] .projects h2,
@@ -1690,6 +1741,7 @@ section{
 [data-theme="light"] .blog-post-content img,
 [data-theme="light"] .cert-card,
 [data-theme="light"] .blog-card{ border-color: #d6d9de; }
+[data-theme="light"] .project-card .project-updated{ color: var(--muted-color); }
 [data-theme="light"] .timeline-content,
 [data-theme="light"] .contact form .input-box input,
 [data-theme="light"] .contact form textarea{ background: #ffffff; }
@@ -1823,20 +1875,23 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 [data-theme="light"] #theme-toggle:hover{ box-shadow: 0 4px 14px rgba(22, 101, 52, 0.30); }
 [data-theme="light"] #back-to-top:hover{ box-shadow: 0 4px 14px rgba(22, 101, 52, 0.35); }
 /* Form/popup */
-.popup{
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    padding: 2.5rem;
-    background: #4caf50;
-    color: #fff;
-    font-size: 1.25rem;
-    border-radius: 1.2rem;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-    max-width: 90vw;
-    text-align: center;
+/* Inline form status (replaces the old auto-dismissing .popup, which showed a
+   fake success for bot/sub-3s submissions and leaked raw JSON on errors). */
+.form-status{
+    min-height: 1.6rem;
+    margin-top: 1.2rem;
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--muted-color);
+}
+.form-status.success{ color: var(--main-color); }
+.form-status.error{ color: #e5484d; }
+[data-theme="light"] .form-status.error{ color: #c62828; }
+.contact form .btn:disabled{
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
 }
 /* Skills proficiency bars */
 .skills-proficiency{
@@ -1987,7 +2042,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
     <section class="home" id="home" tabindex="-1">
         <div class="home-content">
             <h1>Hi, It's <span>Patrick</span></h1>
-            <h3 class="text-animation">I'm a <span></span></h3>
+            <h3 class="text-animation">I'm a <span class="ta-rotator" aria-hidden="true"></span><span class="ta-sr sr-only">Information Technology Assistant. I also work as a full-stack developer, UI/UX designer, network and technical support specialist, and AWS/cloud learner.</span></h3>
             <p>I'm Glenn Patrick Cabansag, an Information Technology professional based in Iloilo, Philippines, currently working as an IT Assistant at COMPASS Training Center. I graduated from the University of San Agustin with a Bachelor of Science in Information Technology in 2024. I build responsive web applications, support and troubleshoot IT systems, and constantly explore new technologies to grow and contribute to the IT field.</p>
 
             <div class="social-icons">
@@ -2020,7 +2075,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <span class="hero-stat-label">Certifications</span>
         </div>
         <div class="hero-stat">
-            <span class="hero-stat-count" id="hero-stat-projects" data-target="6" data-suffix="+">0</span>
+            <span class="hero-stat-count" id="hero-stat-projects" data-target="12" data-suffix="+">0</span>
             <span class="hero-stat-label">Projects Built</span>
         </div>
         <div class="hero-stat">
@@ -2033,52 +2088,50 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
         <h2 class="heading">Education</h2>
 
         <div class="timeline-items">
-<div class="timeline-item">
-    <div class="timeline-dot"> </div>
-        <div class="timeline-date">2011 - 2012</div>
-        <div class="timeline-content">
-            <h3>Primary </h3>
-            <p>I attended Primary Iloilo Central Elementary School from 2011 to 2012. During this time, I laid the 
-                foundation for my academic journey, developing essential skills and a love for learning that would carry me through my educational career.</p>
-        </div>
-   
-</div>
+            <div class="timeline-item">
+                <div class="timeline-dot"> </div>
+                <div class="timeline-date">Aug 2020 - Jun 2024</div>
+                <div class="timeline-content">
+                    <h3>Undergraduate</h3>
+                    <span class="timeline-school">University of San Agustin</span>
+                    <p>Bachelor of Science in Information Technology. My time at the university was marked by significant
+                        growth in my technical abilities, including programming, technical support and cybersecurity.
+                        This period was crucial in shaping my professional aspirations and readiness to contribute to the IT field.</p>
+                </div>
+            </div>
 
-<div class="timeline-item">
-    <div class="timeline-dot"> </div>
-        <div class="timeline-date">2016 - 2017</div>
-        <div class="timeline-content">
-            <h3>Secondary</h3>
-            <p>From 2016 to 2017, I studied at Bo. Obrero National High School. Here, 
-                I built upon my primary education, gaining deeper knowledge in various subjects and starting to explore 
-                my interests in technology and problem-solving.</p>
-        </div>
-   
-</div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-date">2019 - 2020</div>
+                <div class="timeline-content">
+                    <h3>Senior High School</h3>
+                    <span class="timeline-school">John B. Lacson Foundation Maritime University</span>
+                    <p>In senior high school I focused on more specialised subjects, preparing myself for higher education
+                        and honing the problem-solving skills that would matter for an IT career.</p>
+                </div>
+            </div>
 
-<div class="timeline-item">
-    <div class="timeline-dot"></div>
-        <div class="timeline-date">2019 - 2020</div>
-        <div class="timeline-content">
-            <h3>Senior High School </h3>
-            <p>I continued my education at John B. Lacson Foundation Maritime University from 2019 to 2020. In senior high school, 
-                I focused on more specialized subjects, preparing myself for higher education and honing skills that would be crucial for my future IT career.</p>
-        </div>
-    
-</div>
+            <div class="timeline-item">
+                <div class="timeline-dot"> </div>
+                <div class="timeline-date">2016 - 2017</div>
+                <div class="timeline-content">
+                    <h3>Junior High School</h3>
+                    <span class="timeline-school">Bo. Obrero National High School</span>
+                    <p>Here I built on my elementary education, gaining deeper knowledge across subjects and starting to
+                        explore my interests in technology and problem-solving.</p>
+                </div>
+            </div>
 
-<div class="timeline-item">
-    <div class="timeline-dot">  </div>
-        <div class="timeline-date">2020 - 2024</div>
-        <div class="timeline-content">
-            <h3>Tertiary</h3>
-            <p>I graduated from the University of San Agustin with a Bachelor of Science in Information Technology in 2024. My time at 
-                the university was marked by significant growth in my technical abilities, including programming, technical support, and cybersecurity. 
-                This period was crucial in shaping my professional aspirations and readiness to contribute to the IT field.</p>
-        </div>
-  
-</div>
-
+            <div class="timeline-item">
+                <div class="timeline-dot"> </div>
+                <div class="timeline-date">2011 - 2012</div>
+                <div class="timeline-content">
+                    <h3>Elementary</h3>
+                    <span class="timeline-school">Iloilo Central Elementary School</span>
+                    <p>Where I laid the foundation for my academic journey, developing essential skills and a love of
+                        learning that carried me through the rest of my education.</p>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -2119,7 +2172,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         <div class="cert-category">
             <div class="cert-category-heading">
-                <div class="cert-cat-badge"><i class="fa fa-cloud"></i></div>
+                <div class="cert-cat-badge"><i class="fa-solid fa-cloud"></i></div>
                 <h3>Cloud & DevOps</h3>
                 <span class="cert-count">(7)</span>
             </div>
@@ -2199,7 +2252,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         <div class="cert-category">
             <div class="cert-category-heading">
-                <div class="cert-cat-badge"><i class="fa fa-network-wired"></i></div>
+                <div class="cert-cat-badge"><i class="fa-solid fa-network-wired"></i></div>
                 <h3>Networking</h3>
                 <span class="cert-count">(2)</span>
             </div>
@@ -2229,7 +2282,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         <div class="cert-category">
             <div class="cert-category-heading">
-                <div class="cert-cat-badge"><i class="fa fa-shield-halved"></i></div>
+                <div class="cert-cat-badge"><i class="fa-solid fa-shield-halved"></i></div>
                 <h3>Cybersecurity</h3>
                 <span class="cert-count">(7)</span>
             </div>
@@ -2309,7 +2362,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         <div class="cert-category">
             <div class="cert-category-heading">
-                <div class="cert-cat-badge"><i class="fa fa-code"></i></div>
+                <div class="cert-cat-badge"><i class="fa-solid fa-code"></i></div>
                 <h3>Development & AI</h3>
                 <span class="cert-count">(8)</span>
             </div>
@@ -2399,7 +2452,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         <div class="cert-category">
             <div class="cert-category-heading">
-                <div class="cert-cat-badge"><i class="fa fa-palette"></i></div>
+                <div class="cert-cat-badge"><i class="fa-solid fa-palette"></i></div>
                 <h3>Design & Graphics</h3>
                 <span class="cert-count">(4)</span>
             </div>
@@ -2449,7 +2502,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         <div class="cert-category">
             <div class="cert-category-heading">
-                <div class="cert-cat-badge"><i class="fa fa-desktop"></i></div>
+                <div class="cert-cat-badge"><i class="fa-solid fa-desktop"></i></div>
                 <h3>Systems & Support</h3>
                 <span class="cert-count">(5)</span>
             </div>
@@ -2509,7 +2562,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         <div class="cert-category">
             <div class="cert-category-heading">
-                <div class="cert-cat-badge"><i class="fa fa-chart-line"></i></div>
+                <div class="cert-cat-badge"><i class="fa-solid fa-chart-line"></i></div>
                 <h3>Data & Professional</h3>
                 <span class="cert-count">(4)</span>
             </div>
@@ -2565,22 +2618,22 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
     <div class="services-container">
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa fa-paint-brush"></i> UI Design</h4>
-                <p>I design clean and intuitive user interfaces using tools like Figma, wireframing, and prototyping. I care about usability, consistency, and accessibility to create impactful digital experiences for users.</p>
+                <h4><i class="fa-solid fa-paint-brush"></i> UI Design</h4>
+                <p>I design clean and intuitive user interfaces using Figma, wireframing and prototyping, with an emphasis on usability, visual consistency and accessibility.</p>
 
             </div>
         </div>
 
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa fa-desktop"></i> Frontend</h4>
-                <p>I build responsive web applications with HTML, CSS, JavaScript, and React, transforming design mockups into functional interfaces. Passionate about problem-solving and continuous learning, I aim to create impactful digital experiences.</p>
+                <h4><i class="fa-solid fa-desktop"></i> Frontend</h4>
+                <p>I build responsive web applications with HTML, CSS, JavaScript and React, turning design mockups into interfaces that work cleanly on every screen size.</p>
                 
             </div>
         </div>
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa fa-database"></i> Backend</h4>
+                <h4><i class="fa-solid fa-database"></i> Backend</h4>
                 <p>I specialize in backend development with Node.js, Python, Java, and database management (SQL and NoSQL). I develop and maintain APIs for efficient data flow and frontend integration, aiming to build robust and scalable server-side solutions.</p>
                 
             </div>
@@ -2588,7 +2641,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa fa-wifi"></i> Networking</h4>
+                <h4><i class="fa-solid fa-wifi"></i> Networking</h4>
                 <p>I configure and manage network devices, ensuring secure data transmission, and excel in network analysis with tools like Wireshark. My experience in wired and wireless networks helps maintain reliable infrastructures.</p>
                 
             </div>
@@ -2596,7 +2649,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa fa-cloud"></i> Cloud & DevOps</h4>
+                <h4><i class="fa-solid fa-cloud"></i> Cloud & DevOps</h4>
                 <p>I work with cloud platforms like AWS and containerization with Docker, building and deploying applications through CI/CD workflows. I hold a Digital Transformation with Google Cloud certification and enjoy automating workflows.</p>
                 
             </div>
@@ -2604,7 +2657,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa fa-cogs"></i> Technical Support</h4>
+                <h4><i class="fa-solid fa-cogs"></i> Technical Support</h4>
                 <p>I troubleshoot hardware and software issues, support end users, and maintain IT systems as an IT Assistant and Help Desk associate, keeping operations smooth and reliable.</p>
                 
             </div>
@@ -2612,7 +2665,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa fa-code"></i> Programming</h4>
+                <h4><i class="fa-solid fa-code"></i> Programming</h4>
                 <p>Proficient in Python, JavaScript, and Java. I build automation scripts, desktop utilities, and learning tools like a Simple Assistant and Student Manager to sharpen my craft.</p>
                 
             </div>
@@ -2659,13 +2712,13 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <div class="testimonial-person">
                 <span class="testimonial-avatar"><i class="fa-solid fa-user-tie"></i></span>
                 <h4>Work Supervisor</h4>
-                <span>COMPASS Training Center, Inc.</span>
+                <span>Lead Generation and Donor Creation Inc.</span>
             </div>
         </div>
         <div class="testimonial-card">
             <i class="fa-solid fa-quote-left testimonial-quote"></i>
             <p>Clean code, a keen eye for UI design, and always eager to learn new technologies. A really well-rounded developer.</p>
-<div class="testimonial-person">
+            <div class="testimonial-person">
                 <span class="testimonial-avatar"><i class="fa-solid fa-user-graduate"></i></span>
                 <h4>Classmate &amp; Teammate</h4>
                 <span>University of San Agustin</span>
@@ -2757,23 +2810,24 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
         <div class="input-group">
             <div class="input-box">
                 <label class="sr-only" for="full-name">Full Name</label>
-                <input type="text" id="full-name" placeholder="Full Name" required>
+                <input type="text" id="full-name" name="from_name" placeholder="Full Name" autocomplete="name" required>
                 <label class="sr-only" for="email">Email</label>
-                <input type="email" id="email" placeholder="Email" required>
+                <input type="email" id="email" name="email" placeholder="Email" autocomplete="email" required>
             </div>
             <div class="input-box">
                 <label class="sr-only" for="phone-number">Phone Number</label>
-                <input type="tel" id="phone-number" placeholder="Phone Number" required>
+                <input type="tel" id="phone-number" name="phone_number" placeholder="Phone Number" autocomplete="tel" required>
                 <label class="sr-only" for="subject">Subject</label>
-                <input type="text" id="subject" placeholder="Subject" required>
+                <input type="text" id="subject" name="subject" placeholder="Subject" autocomplete="off" required>
             </div>
         </div>
         <div class="input-group-2">
             <label class="sr-only" for="message">Your Message</label>
-            <textarea id="message" cols="30" rows="10" placeholder="Your Message" required></textarea>
+            <textarea id="message" name="message" cols="30" rows="10" placeholder="Your Message" required></textarea>
             <input type="text" id="website" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
-            <input type="submit" value="Send Message" class="btn">
+            <button type="submit" class="btn" id="contact-submit">Send Message</button>
         </div>
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
     </form>
 </section>
 
@@ -2786,7 +2840,6 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
     })();
 
     var contactForm = document.getElementById('contact-form');
-    var formLoadedAt = Date.now();
 
     var fieldRules = {
         'full-name':     { test: function(v) { return v.trim().length >= 2; },      msg: 'Please enter your full name.' },
@@ -2849,21 +2902,23 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
     contactForm.addEventListener('submit', function(event) {
         event.preventDefault();
 
-        // Honeypot: silently 'succeed' on bots without sending anything
+        // Honeypot: a bot filled the hidden field. Pretend nothing happened -
+        // do NOT show a success message, because nothing was sent.
         if (document.getElementById('website').value) {
-            showPopup("Message sent successfully!");
-            return;
-        }
-
-        // Time-based anti-spam: a human takes at least a few seconds to fill the form
-        if (Date.now() - formLoadedAt < 3000) {
-            showPopup("Message sent successfully!");
             return;
         }
 
         if (!validateForm()) {
+            setStatus('Please fix the highlighted fields and try again.', true);
             return;
         }
+
+        var submitBtn = document.getElementById('contact-submit');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.value = 'Sending...';
+        }
+        setStatus('Sending your message...', false);
 
         emailjs.send("service_bkjbqcm", "template_kkar83i", {
             from_name: document.getElementById('full-name').value,
@@ -2872,28 +2927,34 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             subject: document.getElementById('subject').value,
             message: document.getElementById('message').value
         })
-        .then(function(response) {
-            showPopup("Message sent successfully!");
+        .then(function() {
+            setStatus('Thanks! Your message was sent. I usually reply within a day.', false);
             contactForm.reset();
             Object.keys(fieldRules).forEach(function(id) {
                 var input = document.getElementById(id);
                 if (input) setFieldError(input, null);
             });
         }, function(error) {
-            showPopup("Failed to send message. Please try again. Error: " + JSON.stringify(error));
+            // Log the real error for debugging, but never render it - showing
+            // raw JSON to visitors leaks internals and looks broken.
+            console.error('EmailJS send failed:', error);
+            setStatus('Sorry, the message could not be sent. Please email me directly at patrickcabansag5@gmail.com.', true);
+        })
+        .then(function() {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.value = 'Send Message';
+            }
         });
     });
 
-    function showPopup(message) {
-        var popup = document.createElement('div');
-        popup.className = 'popup';
-        popup.setAttribute('role', 'status');
-        popup.innerText = message;
-        document.body.appendChild(popup);
+    var formStatus = document.getElementById('form-status');
 
-        setTimeout(function() {
-            document.body.removeChild(popup);
-        }, 3000);
+    function setStatus(message, isError) {
+        if (!formStatus) return;
+        formStatus.textContent = message;
+        formStatus.classList.toggle('error', Boolean(isError));
+        formStatus.classList.toggle('success', !isError);
     }
 </script>
 

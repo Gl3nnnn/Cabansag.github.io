@@ -78,46 +78,83 @@ backToTop.addEventListener('click', () => {
 const GITHUB_USER = 'Gl3nnnn';
 const GITHUB_API_URL = `https://api.github.com/users/${GITHUB_USER}/repos?sort=updated&per_page=100`;
 
-// Repos to always hide (forks, skill/learning clones, docs-only or sensitive copies)
-const EXCLUDED = new Set([
-    'Gl3nnnn',
-    'Cabansag.github.io',
-    'The-MALWARE-Repo',
-    'jdeb',
-    'DateTimeExtensions',
-    'Microsoft-Activation-Scripts-MAS-',
-    'skills-reusable-workflows',
-    'skills-introduction-to-codeql',
-    'skills-code-with-codespaces',
-    'skills-change-commit-history',
-    'skills-secure-repository-supply-chain',
-    'skills-introduction-to-github'
-]);
+// Note: the previous EXCLUDED allow/deny list (forks, skills-* clones, The-MALWARE-Repo,
+// Microsoft-Activation-Scripts-MAS-, etc.) has been removed. It only existed to filter raw
+// API output, and the Projects section is now driven by the curated PROJECTS list below.
 
-// Manual fallback in case the API request fails or is rate-limited
-const FALLBACK_PROJECTS = [
-    { name: 'INVENTORY-NEW', description: 'Inventory management web system built with PHP.', language: 'PHP', stars: 0, html_url: 'https://github.com/Gl3nnnn/INVENTORY-NEW' },
-    { name: 'accounting', description: 'Accounting and financial web application built with Laravel (Blade views).', language: 'Blade', stars: 0, html_url: 'https://github.com/Gl3nnnn/accounting' },
-    { name: 'TechDesk', description: 'IT tech-desk / ticketing web application.', language: 'PHP', stars: 0, html_url: 'https://github.com/Gl3nnnn/TechDesk' },
-    { name: 'helpdesk', description: 'Helpdesk support and ticketing system.', language: 'PHP', stars: 0, html_url: 'https://github.com/Gl3nnnn/helpdesk' },
-    { name: 'it_inventory', description: 'IT asset inventory system for managing equipment.', language: 'PHP', stars: 0, html_url: 'https://github.com/Gl3nnnn/it_inventory' },
-    { name: 'InventoryTBF', description: 'Inventory tracker web app.', language: 'JavaScript', stars: 0, html_url: 'https://github.com/Gl3nnnn/InventoryTBF' },
-    { name: 'Issue-Tracker', description: 'Issue and bug tracking web application.', language: 'JavaScript', stars: 0, html_url: 'https://github.com/Gl3nnnn/Issue-Tracker' },
-    { name: 'games', description: 'Collection of browser games (live on GitHub Pages).', language: 'JavaScript', stars: 0, html_url: 'https://github.com/Gl3nnnn/games' },
-    { name: 'radios', description: 'Radios / streaming-style web app.', language: 'JavaScript', stars: 0, html_url: 'https://github.com/Gl3nnnn/radios' },
-    { name: 'SimpleStudentManager', description: 'Simple student management application in Python.', language: 'Python', stars: 0, html_url: 'https://github.com/Gl3nnnn/SimpleStudentManager' },
-    { name: 'SimpleAssistant', description: 'Simple personal assistant application in Python.', language: 'Python', stars: 0, html_url: 'https://github.com/Gl3nnnn/SimpleAssistant' },
-    { name: 'simplecalculator', description: 'Simple calculator built in Python.', language: 'Python', stars: 0, html_url: 'https://github.com/Gl3nnnn/simplecalculator' }
+// Curated project list - the single source of truth for the Projects section.
+//
+// These were previously fetched live from the GitHub API and filtered with
+// `repo.description !== undefined`. That filter never worked: the API returns
+// `description: null` (not `undefined`) for repos without one, and
+// `null !== undefined` is true, so every non-excluded repo passed. The result
+// was 35 "projects", 26 of which rendered the literal text
+// "No description available." - including repos named `3d-image`, `Flower`,
+// `NebulaWhisper` and `shootingNotDone-`.
+//
+// Curating here means the section can never show an undescribed or junk repo.
+// The API is still queried, but only to enrich these entries with live star
+// counts, last-pushed dates and demo URLs.
+const PROJECTS = [
+    { name: 'INVENTORY-NEW', language: 'PHP', description: 'Inventory management web system for tracking stock, suppliers and item movement in a small business.' },
+    { name: 'accounting', language: 'Blade', description: 'Accounting and financial web application built with Laravel and Blade templating.' },
+    { name: 'TechDesk', language: 'PHP', description: 'IT tech-desk ticketing app for logging, assigning and tracking technical support requests.' },
+    { name: 'helpdesk', language: 'PHP', description: 'Helpdesk support system built to manage end-user tickets and recurring IT issues.' },
+    { name: 'it_inventory', language: 'PHP', description: 'IT asset inventory system for recording hardware, assignments and equipment lifecycle.' },
+    { name: 'InventoryTBF', language: 'JavaScript', description: 'Browser-based inventory tracker for monitoring stock levels and item records.' },
+    { name: 'Issue-Tracker', language: 'JavaScript', description: 'Issue and bug tracking web application for capturing, triaging and managing defects.' },
+    { name: 'games', language: 'JavaScript', description: 'Collection of small browser games built with vanilla JavaScript.' },
+    { name: 'radios', language: 'JavaScript', description: 'Streaming-style radio player web app built with JavaScript.' },
+    { name: 'SimpleStudentManager', language: 'Python', description: 'Command-line student management app for storing, searching and updating student records.' },
+    { name: 'SimpleAssistant', language: 'Python', description: 'Desktop assistant application with task helpers and lightweight automation.' },
+    { name: 'simplecalculator', language: 'Python', description: 'Desktop calculator application with a clean graphical interface.' }
 ];
+
+// Rendered when nothing has loaded yet and before enrichment completes.
+function projectsFromCurated() {
+    return PROJECTS.map(p => ({
+        name: p.name,
+        language: p.language,
+        description: p.description,
+        stargazers_count: 0,
+        html_url: `https://github.com/${GITHUB_USER}/${p.name}`,
+        homepage: '',
+        pushed_at: ''
+    }));
+}
+
+// Merge live repo data onto the curated entries. Unknown repos are ignored and
+// curated entries missing from the API are kept, so the list never shrinks.
+function enrichProjects(apiRepos) {
+    const byName = new Map(apiRepos.map(r => [r.name, r]));
+    return PROJECTS.map(p => {
+        const live = byName.get(p.name);
+        if (!live) {
+            return {
+                name: p.name,
+                language: p.language,
+                description: p.description,
+                stargazers_count: 0,
+                html_url: `https://github.com/${GITHUB_USER}/${p.name}`,
+                homepage: '',
+                pushed_at: ''
+            };
+        }
+        return {
+            name: p.name,
+            language: live.language || p.language,
+            description: p.description,
+            stargazers_count: live.stargazers_count || 0,
+            html_url: live.html_url || `https://github.com/${GITHUB_USER}/${p.name}`,
+            homepage: live.homepage || '',
+            pushed_at: live.pushed_at || ''
+        };
+    });
+}
+
 
 const projectsGrid = document.getElementById('projects-grid');
 let activeProjects = [];
-
-function isWorthShowing(repo) {
-    if (repo.fork || EXCLUDED.has(repo.name)) return false;
-    if (repo.name.startsWith('skills-') || repo.name.startsWith('skills_')) return false;
-    return repo.description !== undefined;
-}
 
 function langIcon(language) {
     const lang = (language || '').toLowerCase();
@@ -131,15 +168,23 @@ function langIcon(language) {
     return 'fa-solid fa-code';
 }
 
+function formatPushed(iso) {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleDateString('en-GB', { year: 'numeric', month: 'short' });
+}
+
 function buildProjectCard(repo) {
     const name = repo.name;
-    const description = (repo.description || 'No description available.').slice(0, 160);
+    const description = (repo.description || '').slice(0, 160);
     const language = repo.language || 'N/A';
     const stars = repo.stargazers_count || 0;
     const url = repo.html_url || `https://github.com/${GITHUB_USER}/${name}`;
     const hasDemo = Boolean(repo.homepage);
     const ctaLabel = hasDemo ? 'Live Demo' : 'View Project';
     const ctaIcon = hasDemo ? 'fa-solid fa-rocket' : 'fa-solid fa-arrow-right';
+    const pushed = formatPushed(repo.pushed_at);
 
     return `
         <a class="project-card" href="${url}" target="_blank" rel="noopener">
@@ -150,6 +195,7 @@ function buildProjectCard(repo) {
             <p>${description}</p>
             <div class="project-meta">
                 <span class="project-lang"><i class="${langIcon(language)}"></i> ${language}</span>
+                ${pushed ? `<span class="project-updated"><i class="fa-regular fa-clock"></i> ${pushed}</span>` : ''}
                 <span class="project-link ${hasDemo ? 'demo' : ''}">${ctaLabel} <i class="${ctaIcon}"></i></span>
             </div>
         </a>
@@ -194,14 +240,15 @@ function renderProjectGrid() {
         return;
     }
 
-    projectsGrid.innerHTML = list.slice(0, 12).map(buildProjectCard).join('');
+    projectsGrid.innerHTML = list.map(buildProjectCard).join('');
     observeReveal(projectsGrid);
 }
 
 function renderProjects(projects) {
-    activeProjects = projects
-        .filter(isWorthShowing)
-        .sort((a, b) => (b.stargazers_count || 0) - (a.stargazers_count || 0));
+    // The curated list is already in deliberate display order, so it is not
+    // re-sorted here. Re-sorting by stars (all currently 0) made the order
+    // depend on API response order.
+    activeProjects = projects;
 
     const statProj = document.getElementById('hero-stat-projects');
     if (statProj) statProj.textContent = activeProjects.length + '+';
@@ -216,7 +263,7 @@ function renderProjects(projects) {
 }
 
 async function loadProjects() {
-    const CACHE_KEY = 'portfolio_projects_v1';
+    const CACHE_KEY = 'portfolio_projects_v2';
     const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
     const readCache = () => {
@@ -224,7 +271,7 @@ async function loadProjects() {
             const raw = localStorage.getItem(CACHE_KEY);
             if (!raw) return null;
             const parsed = JSON.parse(raw);
-            if (!parsed || !Array.isArray(parsed.repos)) return null;
+            if (!parsed || !Array.isArray(parsed.projects)) return null;
             return parsed;
         } catch (err) { return null; }
     };
@@ -232,45 +279,36 @@ async function loadProjects() {
     const cached = readCache();
 
     if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
-        renderProjects(cached.repos);
+        renderProjects(cached.projects);
         return;
     }
-
-    const showRateLimit = () => {
-        projectsGrid.innerHTML = `
-            <p class="project-error">
-                The GitHub API rate limit was reached for this IP. Try again in about an hour.
-                <br><button type="button" class="retry-btn" id="retry-projects">Retry Now</button>
-            </p>`;
-        const retry = document.getElementById('retry-projects');
-        if (retry) retry.addEventListener('click', () => {
-            try { localStorage.removeItem(CACHE_KEY); } catch (err) { /* ignore */ }
-            projectsGrid.innerHTML = `<div class="project-card"><h3>Loading projects...</h3><p>Fetching repositories from GitHub.</p></div>`;
-            loadProjects();
-        });
-    };
 
     try {
         const res = await fetch(GITHUB_API_URL);
         if (res.status === 403 || res.status === 429) {
-            if (cached) { renderProjects(cached.repos); return; }
-            showRateLimit();
+            // A rate limit is not a reason to blank the section - the curated
+            // list is authoritative, so fall back to it and say so quietly.
+            if (cached) { renderProjects(cached.projects); return; }
+            renderProjects(projectsFromCurated());
             return;
         }
         if (!res.ok) throw new Error('GitHub API error: ' + res.status);
         const data = await res.json();
-        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: Date.now(), repos: data })); } catch (err) { /* ignore */ }
-        renderProjects(data);
+        const projects = enrichProjects(data);
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: Date.now(), projects })); } catch (err) { /* ignore */ }
+        renderProjects(projects);
     } catch (error) {
-        console.warn('Could not load projects from GitHub.', error);
-        if (cached) { renderProjects(cached.repos); return; }
-        renderProjects(FALLBACK_PROJECTS);
+        console.warn('Could not load projects from GitHub; showing the curated list.', error);
+        if (cached) { renderProjects(cached.projects); return; }
+        renderProjects(projectsFromCurated());
     }
 }
 
-loadProjects();
-
-// Scroll reveal (runs immediately; dynamic cards call observeReveal after render)
+// Scroll reveal.
+// NOTE: this block must be defined and initialised BEFORE loadProjects() is called.
+// renderProjectGrid() calls observeReveal(), and on the cached path loadProjects()
+// renders synchronously (no await), so a null revealObserver here would mean
+// project cards never get the .reveal/.in-view classes and silently stay hidden.
 let revealObserver = null;
 
 function observeReveal(root) {
@@ -294,6 +332,8 @@ if ('IntersectionObserver' in window) {
     }, { threshold: 0.1 });
     observeReveal(document);
 }
+
+loadProjects();
 
 // Copy email button (contact section)
 const copyEmailBtn = document.getElementById('copy-email');

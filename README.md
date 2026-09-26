@@ -2,7 +2,10 @@
 
 Welcome to my portfolio website! I'm Glenn Patrick Cabansag, an Information Technology professional based in Iloilo, Philippines.
 
-🌐 **Live site**: https://gl3nnnn.github.io/
+🌐 **Live site**: https://gl3nnnn.github.io/Cabansag.github.io/
+
+> **Note:** this repository is published as a project page, so every URL below is relative to
+> `https://gl3nnnn.github.io/Cabansag.github.io/` — not the bare domain root.
 
 ## About Me
 
@@ -25,17 +28,19 @@ Welcome to my portfolio website! I'm Glenn Patrick Cabansag, an Information Tech
 
 ## Certifications
 
-37 licenses and certifications across Google Cloud, Cisco, Red Hat, Linux Foundation, ISC2, IBM, TESDA, and more — covering cloud architecture, networking, cybersecurity, development, design, and systems support. Highlights include:
+37 licenses and certifications across 7 categories, spanning cloud, networking, cybersecurity,
+development, design, systems support and data. Highlights include:
 
-- **Google Cloud** — Digital Transformation with Google Cloud, Google Data Analytics, Cloud Security, Machine Learning (Beginner), Gen AI / Prompt Design / Intro to AI
-- **Cisco** — Ethical Hacker, Cloud Security, Network Technician Career Path, Cyber Threat Management
-- **Red Hat & Linux Foundation** — Red Hat System Administration I, Python/Intro to Linux courses
-- **ISC2** — Security Awareness, AI Security
-- **IBM** — Intro to Software Engineering, Agile & Scrum, Cybersecurity
-- **TESDA** — Programming, Animation, Computer System Servicing (NC II)
-- **Others** — AWS Cloud Practitioner Essentials, Fortinet, Splunk, Salesforce, Microsoft, and more
+- **Cloud & DevOps (7)** — Digital Transformation with Google Cloud · Google Cloud Fundamentals: Core Infrastructure · Infrastructure and Application Modernization with Google Cloud · Understanding Google Cloud Security and Operations · Introduction to Large Language Models · Introduction to Responsible AI · Introduction to Generative AI
+- **Networking (2)** — CCNA: Switching, Routing, and Wireless Essentials · Network Support and Security
+- **Cybersecurity (7)** — Certified in Cybersecurity (CC) [ISC2] · CyberOps Associate · Introduction to Cybersecurity · Advent of Cyber 2024 [TryHackMe] · Cybersecurity Essentials (LFC108) [Linux Foundation] · Introduction to Cybersecurity Tools & Cyber Attacks [IBM] · Cybersecurity for Everyone [University of Maryland]
+- **Development & AI (8)** — AI Engineer for Developers Associate [DataCamp] · Introduction to Data Science · Responsive Web Design [freeCodeCamp] · CSS Essentials · Introduction to Software Engineering [IBM] · iOS Development for Beginners · Introduction to Quantum Computing [Udemy] · SMART Android Mobile Apps Development [TESDA]
+- **Design & Graphics (4)** — Principles of Graphic Design [University of the Philippines] · Trends in Art and Design [DICT] · Developing Designs for a Logo [TESDA] · Introduction to Visual Graphic Design [TESDA]
+- **Systems & Support (5)** — Red Hat System Administration I (RH124) · Red Hat System Administration II (RH134) · Technical Support Fundamentals [Google] · Microsoft Digital Literacy [TESDA] · Globe Wi-Fi 101 and Digital Thumbprint Program
+- **Data & Professional (4)** — Alteryx Foundational Micro-Credential · Six Sigma White Belt [CSSC] · Information Systems Auditing, Controls and Assurance [HKUST] · SMART Technopreneurship 101 [TESDA]
 
-All credentials can be viewed and verified on my [LinkedIn certifications page](https://www.linkedin.com/in/glenpatrick/details/certifications/).
+The full list, with issuers, dates and credential IDs, is on the site's Certifications section
+and can also be viewed on my [LinkedIn certifications page](https://www.linkedin.com/in/glenpatrick/details/certifications/).
 
 ## Projects
 
@@ -51,15 +56,18 @@ The Projects section on the site loads live from GitHub and includes language fi
 
 ## Site Structure
 
-- `index.html` — main portfolio page (home, about, education, skills, experience, projects, certifications, services, testimonials, blog, contact)
+- `index.html` — main portfolio page (home, education, experience, certifications, skills, projects, testimonials, blog, contact)
 - `faq.html` — frequently asked questions
 - `blog-home-lab.html`, `blog-helpdesk-lessons.html`, `blog-aws-journey.html`, `blog-tryhackme-first-month.html`, `blog-docker-portfolio.html`, `blog-vlans-home-lab.html` — blog posts
 - `404.html` — custom 404 page
-- `script.js` — interactivity (nav, projects via GitHub API, reveal-on-scroll, theme toggle, hero stats, contact validation/copy/honeypot)
+- `script.js` — shared interactivity (nav, scroll spy, projects via GitHub API, reveal-on-scroll, theme toggle, hero stats, skill bars, cert links, copy-email). Loaded only by `index.html`.
+- Inline in `index.html` — the EmailJS contact form handler, honeypot, field validation and status popups
+- Inline in `faq.html` — FAQ accordion, search and category filter
 - `manifest.webmanifest` — PWA/install metadata
 - `profile.jpg`, `og-cover.jpg` — profile photo and social share card
 - `favicon.svg`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png` — branding and icons
 - `sitemap.xml`, `robots.txt` — SEO files
+- `RESUME_Cabansag_GlennPatrick.pdf` — downloadable resume
 
 ## Contact Me
 
