@@ -578,7 +578,9 @@ top: 10px;
 }
 .project-card .project-link{
     font-size: 1.4rem;
-    color: white;
+    /* --main-color is bright green in dark mode, so near-black reads better
+       than white; the light theme flips this to white. */
+    color: #000000;
     background: var(--main-color);
     padding: 0.6rem 1.6rem;
     border-radius: 2rem;
@@ -1406,6 +1408,104 @@ padding-left:37px;
     max-width: 700px;
     line-height: 1.6;
 }
+/* Certifications search + category filter.
+   Mirrors the search/filter pattern already proven on faq.html, adapted to
+   the category-wrapper structure here (7 groups of 37 cards). */
+.cert-toolbar{
+    max-width: 1200px;
+    margin: 0 auto 4rem;
+    padding: 0 9%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.6rem;
+}
+.cert-search{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 620px;
+    padding: 0.9rem 1.8rem;
+    border: 1px solid #333;
+    border-radius: 999px;
+    background: var(--bg-color);
+    transition: border-color .25s ease-in-out, box-shadow .25s ease-in-out;
+}
+.cert-search:focus-within{
+    border-color: var(--main-color);
+    box-shadow: 0 0 0 3px rgba(27, 179, 14, .18);
+}
+.cert-search i{
+    color: var(--main-color);
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+.cert-search input{
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 1.5rem;
+}
+.cert-search input::placeholder{ color: var(--muted-color); }
+.cert-filters{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .8rem;
+}
+.cert-filter-btn{
+    font-family: inherit;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-color);
+    background: var(--second-bg-color);
+    border: 1px solid #333;
+    padding: .6rem 1.5rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: .25s ease-in-out;
+}
+.cert-filter-btn:hover{
+    border-color: var(--main-color);
+    color: var(--main-color);
+}
+.cert-filter-btn.active{
+    background: var(--main-color);
+    border-color: var(--main-color);
+    /* --main-color is a bright green in dark mode, so near-black is the
+       readable pairing here; the light theme flips this to white because
+       --main-color becomes a dark green. Same rule as faq.html. */
+    color: #000000;
+}
+.cert-filter-btn:focus-visible{
+    outline: 2px solid var(--main-color);
+    outline-offset: 2px;
+}
+.cert-results-count{
+    font-size: 1.3rem;
+    color: var(--muted-color);
+    min-height: 1.4rem;
+    text-align: center;
+}
+.cert-no-results{
+    text-align: center;
+    color: var(--muted-color);
+    padding: 3rem 0;
+}
+.cert-no-results[hidden]{ display: none; }
+.cert-no-results i{
+    font-size: 2.6rem;
+    color: var(--secondary-accent-color);
+    margin-bottom: .8rem;
+}
+/* Applied by the filter when a category has no visible cards. */
+.cert-category.is-hidden{ display: none; }
+.cert-card.is-hidden{ display: none; }
 .cert-category{
     max-width: 1200px;
     margin: 0 auto 5rem;
@@ -1715,6 +1815,9 @@ section{
 [data-theme="light"] .header{ background: rgba(255, 255, 255, 0.85); }
 [data-theme="light"] .timeline-school{ color: var(--main-color); }
 [data-theme="light"] .timeline-date,
+/* .timeline-content h3 was missing from this list, leaving every education
+   stage heading white-on-white in light mode. */
+[data-theme="light"] .timeline-content h3,
 [data-theme="light"] .timeline-content p,
 [data-theme="light"] .projects h2,
 [data-theme="light"] .project-card h3,
@@ -1741,6 +1844,14 @@ section{
 [data-theme="light"] .blog-post-content img,
 [data-theme="light"] .cert-card,
 [data-theme="light"] .blog-card{ border-color: #d6d9de; }
+/* Cert search/filter: soften the hard #333 border for the light theme. */
+[data-theme="light"] .cert-search,
+[data-theme="light"] .cert-filter-btn{ border-color: #d6d9de; }
+[data-theme="light"] .cert-filter-btn.active{
+    border-color: var(--main-color);
+    color: #ffffff;
+    box-shadow: 0 2px 10px rgba(22, 101, 52, .28);
+}
 [data-theme="light"] .project-card .project-updated{ color: var(--muted-color); }
 [data-theme="light"] .timeline-content,
 [data-theme="light"] .contact form .input-box input,
@@ -1779,6 +1890,8 @@ section{
 [data-theme="light"] .project-link:hover,
 [data-theme="light"] .footer .social a:hover{ color: #ffffff; }
 [data-theme="light"] .project-link:hover{ background: var(--main-color); border-color: var(--main-color); }
+/* White on the dark-green --main-color used by the light theme. */
+[data-theme="light"] .project-link{ color: #ffffff; }
 /* Light: buttons */
 [data-theme="light"] .btn{
     background: #ffffff;
@@ -2168,9 +2281,33 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
         <span class="cert-verify">All credentials can be viewed and verified on my <a href="https://www.linkedin.com/in/glenpatrick/details/certifications/" target="_blank" rel="noopener noreferrer">LinkedIn certifications page</a>.</span>
     </p>
 
+    <div class="cert-toolbar">
+        <div class="cert-search">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <label class="sr-only" for="cert-search">Search certifications</label>
+            <input type="search" id="cert-search" placeholder="Search 37 certifications... (e.g. Google, Cisco, AWS, security)" autocomplete="off">
+        </div>
+        <div class="cert-filters" id="cert-filters" role="group" aria-label="Filter certifications by category">
+            <button type="button" class="cert-filter-btn active" data-filter="all" aria-pressed="true">All</button>
+            <button type="button" class="cert-filter-btn" data-filter="Cloud &amp; DevOps" aria-pressed="false">Cloud &amp; DevOps</button>
+            <button type="button" class="cert-filter-btn" data-filter="Networking" aria-pressed="false">Networking</button>
+            <button type="button" class="cert-filter-btn" data-filter="Cybersecurity" aria-pressed="false">Cybersecurity</button>
+            <button type="button" class="cert-filter-btn" data-filter="Development &amp; AI" aria-pressed="false">Development &amp; AI</button>
+            <button type="button" class="cert-filter-btn" data-filter="Design &amp; Graphics" aria-pressed="false">Design &amp; Graphics</button>
+            <button type="button" class="cert-filter-btn" data-filter="Systems &amp; Support" aria-pressed="false">Systems &amp; Support</button>
+            <button type="button" class="cert-filter-btn" data-filter="Data &amp; Professional" aria-pressed="false">Data &amp; Professional</button>
+        </div>
+        <p class="cert-results-count" id="cert-results-count" role="status" aria-live="polite">Showing all 37 certifications</p>
+    </div>
+
+    <div class="cert-no-results" id="cert-no-results" hidden>
+        <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
+        <p>No certifications match that search.</p>
+    </div>
+
     <div class="cert-container">
 
-        <div class="cert-category">
+        <div class="cert-category" data-cat="Cloud &amp; DevOps">
             <div class="cert-category-heading">
                 <div class="cert-cat-badge"><i class="fa-solid fa-cloud"></i></div>
                 <h3>Cloud & DevOps</h3>
@@ -2250,7 +2387,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             </div>
         </div>
 
-        <div class="cert-category">
+        <div class="cert-category" data-cat="Networking">
             <div class="cert-category-heading">
                 <div class="cert-cat-badge"><i class="fa-solid fa-network-wired"></i></div>
                 <h3>Networking</h3>
@@ -2280,7 +2417,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             </div>
         </div>
 
-        <div class="cert-category">
+        <div class="cert-category" data-cat="Cybersecurity">
             <div class="cert-category-heading">
                 <div class="cert-cat-badge"><i class="fa-solid fa-shield-halved"></i></div>
                 <h3>Cybersecurity</h3>
@@ -2360,7 +2497,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             </div>
         </div>
 
-        <div class="cert-category">
+        <div class="cert-category" data-cat="Development &amp; AI">
             <div class="cert-category-heading">
                 <div class="cert-cat-badge"><i class="fa-solid fa-code"></i></div>
                 <h3>Development & AI</h3>
@@ -2450,7 +2587,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             </div>
         </div>
 
-        <div class="cert-category">
+        <div class="cert-category" data-cat="Design &amp; Graphics">
             <div class="cert-category-heading">
                 <div class="cert-cat-badge"><i class="fa-solid fa-palette"></i></div>
                 <h3>Design & Graphics</h3>
@@ -2500,7 +2637,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             </div>
         </div>
 
-        <div class="cert-category">
+        <div class="cert-category" data-cat="Systems &amp; Support">
             <div class="cert-category-heading">
                 <div class="cert-cat-badge"><i class="fa-solid fa-desktop"></i></div>
                 <h3>Systems & Support</h3>
@@ -2560,7 +2697,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             </div>
         </div>
 
-        <div class="cert-category">
+        <div class="cert-category" data-cat="Data &amp; Professional">
             <div class="cert-category-heading">
                 <div class="cert-cat-badge"><i class="fa-solid fa-chart-line"></i></div>
                 <h3>Data & Professional</h3>
@@ -2915,8 +3052,8 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         var submitBtn = document.getElementById('contact-submit');
         if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.value = 'Sending...';
+submitBtn.disabled = true;
+submitBtn.textContent = 'Sending...';
         }
         setStatus('Sending your message...', false);
 
@@ -2942,8 +3079,8 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
         })
         .then(function() {
             if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.value = 'Send Message';
+submitBtn.disabled = false;
+submitBtn.textContent = 'Send Message';
             }
         });
     });
@@ -2956,6 +3093,89 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
         formStatus.classList.toggle('error', Boolean(isError));
         formStatus.classList.toggle('success', !isError);
     }
+
+    // Certifications: live search + category filter.
+    // Follows the pattern already working on faq.html, adapted to this
+    // section's structure of 7 category wrappers holding 37 cards.
+    (function() {
+        var container = document.getElementById('cert-filters');
+        var searchInput = document.getElementById('cert-search');
+        var countEl = document.getElementById('cert-results-count');
+        var noResults = document.getElementById('cert-no-results');
+        if (!container || !searchInput || !countEl || !noResults) return;
+
+        var cards = Array.prototype.slice.call(document.querySelectorAll('.cert-card'));
+        var categories = Array.prototype.slice.call(document.querySelectorAll('.cert-category'));
+        var buttons = Array.prototype.slice.call(container.querySelectorAll('.cert-filter-btn'));
+        var total = cards.length;
+        var activeFilter = 'all';
+
+        // Cache each card's searchable text once, instead of re-reading
+        // textContent on every keystroke.
+        var haystack = cards.map(function(card) {
+            return (card.textContent || '').toLowerCase();
+        });
+
+        function applyFilters() {
+            var query = searchInput.value.trim().toLowerCase();
+            var terms = query ? query.split(/\s+/) : [];
+            var visible = 0;
+
+            cards.forEach(function(card, i) {
+                var catMatch = activeFilter === 'all' ||
+                    (card.closest('.cert-category') &&
+                     card.closest('.cert-category').getAttribute('data-cat') === activeFilter);
+                var textMatch = terms.every(function(t) { return haystack[i].indexOf(t) !== -1; });
+                var show = catMatch && textMatch;
+                card.classList.toggle('is-hidden', !show);
+                if (show) visible++;
+            });
+
+            // Hide a whole category once it has no visible cards, so the
+            // section never shows an empty heading.
+            categories.forEach(function(cat) {
+                var hasVisible = cat.querySelector('.cert-card:not(.is-hidden)') !== null;
+                cat.classList.toggle('is-hidden', !hasVisible);
+            });
+
+            noResults.hidden = visible !== 0;
+
+            if (visible === 0) {
+                countEl.textContent = 'No matching certifications';
+            } else if (activeFilter === 'all' && terms.length === 0) {
+                countEl.textContent = 'Showing all ' + total + ' certifications';
+            } else {
+                var scope = activeFilter === 'all' ? '' : ' in ' + activeFilter;
+                countEl.textContent = 'Showing ' + visible + ' of ' + total + ' certifications' + scope;
+            }
+        }
+
+        buttons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                buttons.forEach(function(b) {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-pressed', 'false');
+                });
+                btn.classList.add('active');
+                btn.setAttribute('aria-pressed', 'true');
+                activeFilter = btn.getAttribute('data-filter');
+                applyFilters();
+            });
+        });
+
+        searchInput.addEventListener('input', applyFilters);
+        searchInput.addEventListener('search', applyFilters);
+
+        // Clear button for the native search inputs that render one.
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && searchInput.value) {
+                searchInput.value = '';
+                applyFilters();
+            }
+        });
+
+        applyFilters();
+    })();
 </script>
 
 <footer class="footer">
