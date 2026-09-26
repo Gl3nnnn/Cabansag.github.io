@@ -62,7 +62,7 @@
         .meta{display:flex;flex-wrap:wrap;gap:1.4rem;color:var(--accent);font-size:.95rem;font-weight:500;padding-bottom:1.8rem;margin-bottom:2rem;border-bottom:1px solid rgba(255,255,255,.08);}
         .content{font-size:1.05rem;}
         .content p{margin-bottom:1.4rem;}
-        .content h2{color:#fff;font-size:1.5rem;margin:2.4rem 0 1rem;}
+        .content h2{color:#fff;font-size:1.5rem;margin:2.4rem 0 1rem;scroll-margin-top:6rem;}
         .content h3{color:var(--accent);font-size:1.2rem;margin:1.8rem 0 .8rem;}
         .content ul,.content ol{margin:0 0 1.4rem 1.6rem;}
         .content li{margin-bottom:.5rem;}
@@ -110,6 +110,32 @@
         [data-theme="light"] .bp-footer .social a:hover,
         [data-theme="light"] #theme-toggle:hover,
         [data-theme="light"] .skip-link{color:#ffffff;}
+    
+/* On-this-page contents */
+.toc{margin:0 0 2.6rem;padding:1.4rem 1.7rem;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:14px;}
+.toc-title{display:block;font-size:.74rem;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin:0 0 .7rem;font-weight:700;}
+.toc ol{margin:0;padding-left:1.3rem;}
+.toc li{margin:.3rem 0;font-size:.95rem;line-height:1.5;}
+.toc a{color:var(--text);text-decoration:none;}
+.toc a:hover,.toc a:focus-visible{color:var(--main);text-decoration:underline;}
+/* Previous / next post */
+.post-nav{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin-top:3rem;}
+.post-nav a{display:block;padding:1.1rem 1.3rem;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:12px;text-decoration:none;transition:border-color .25s;}
+.post-nav a:hover{border-color:var(--main);}
+.post-nav .pn-label{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin-bottom:.35rem;font-weight:700;}
+.post-nav .pn-title{display:block;font-size:.95rem;font-weight:600;color:var(--text);line-height:1.35;}
+.post-nav .pn-next{text-align:right;}
+.post-nav .pn-empty{visibility:hidden;}
+@media(max-width:600px){
+  .post-nav{grid-template-columns:1fr;}
+  .post-nav .pn-next{text-align:left;}
+}
+
+</style>
+    <style>
+[data-theme="light"] .toc,
+[data-theme="light"] .post-nav a{ border-color:#d6d9de; }
+[data-theme="light"] .post-nav .pn-title{ color:var(--text); }
     </style>
 </head>
 <body>
@@ -125,15 +151,26 @@
         <span class="category">Cybersecurity</span>
         <h1 class="title">My First Month on TryHackMe: Learning Cybersecurity One Room at a Time</h1>
         <div class="meta">
-            <span>2026</span>
+            <time datetime="2026-02-15">February 15, 2026</time>
             <span>Glenn Patrick Cabansag</span>
             <span>6 min read</span>
         </div>
+        <nav class="toc" aria-labelledby="toc-heading">
+            <span class="toc-title" id="toc-heading">On this page</span>
+            <ol>
+                <li><a href="#why-tryhackme">1. Why TryHackMe</a></li>
+                <li><a href="#the-rooms-i-started-with">2. The Rooms I Started With</a></li>
+                <li><a href="#tools-i-got-hands-on-with">3. Tools I Got Hands-On With</a></li>
+                <li><a href="#the-biggest-lessons">4. The Biggest Lessons</a></li>
+                <li><a href="#what-s-next">5. What's Next</a></li>
+            </ol>
+        </nav>
+
 
         <div class="content">
             <p>After my home lab taught me how networks move packets, I wanted to learn the other side: how those networks get attacked and defended. My IT work is mostly support-focused, so cybersecurity felt like a natural next layer. I started with TryHackMe and honestly, the first month was one of the most productive stretches of self-study I've had.</p>
 
-            <h2>1. Why TryHackMe</h2>
+            <h2 id="why-tryhackme">1. Why TryHackMe</h2>
             <p>TryHackMe builds everything around <strong>rooms</strong> — guided, browser-based labs with a real Linux machine you can interact with. No expensive VM rig, no scary install script. You follow the task, type commands, answer questions, and learn by doing. That "do it yourself" loop is what kept me coming back.</p>
             <ul>
                 <li>Beginner friendly — a path (<code>Pre Security</code>, <code>Cyber Security 101</code>) holds your hand at first</li>
@@ -141,7 +178,7 @@
                 <li>Gamified — streak counters and badges turned learning into a habit</li>
             </ul>
 
-            <h2>2. The Rooms I Started With</h2>
+            <h2 id="the-rooms-i-started-with">2. The Rooms I Started With</h2>
             <p>I deliberately started broad before going deep. Three rooms carried most of my first month:</p>
             <ol>
                 <li><strong>Pre Security</strong> — the foundation: how the web works, OSI model, and basic security principles</li>
@@ -149,14 +186,14 @@
                 <li><strong>Linux Fundamentals</strong> — command-line basics I now use daily in my actual job</li>
             </ol>
 
-            <h2>3. Tools I Got Hands-On With</h2>
+            <h2 id="tools-i-got-hands-on-with">3. Tools I Got Hands-On With</h2>
             <p>Reading about tools is boring; using them is not. In my first month I opened each of these for real:</p>
             <pre><code>nmap -sV 10.10.x.x     # Enumerate open ports and service versions
 hydra -l admin -P list.txt ssh://10.10.x.x   # Password spraying demo
 gobuster dir -u http://10.10.x.x -w wordlist.txt</code></pre>
             <p>None of this is about attacking real systems — every target here was an intentionally vulnerable lab machine. The point was understanding <em>how</em> these tools behave so I can both defend against them and explain them to teammates.</p>
 
-            <h2>4. The Biggest Lessons</h2>
+            <h2 id="the-biggest-lessons">4. The Biggest Lessons</h2>
             <blockquote>Cybersecurity isn't about memorizing tools — it's about learning to think like an attacker and being methodical about evidence.</blockquote>
             <ul>
                 <li><strong>Technique matters more than tools.</strong> Enumeration first, exploit later. Check every port, look at every service banner.</li>
@@ -164,9 +201,20 @@ gobuster dir -u http://10.10.x.x -w wordlist.txt</code></pre>
                 <li><strong>Review Linux basics constantly.</strong> Every single room assumed solid terminal skills.</li>
             </ul>
 
-            <h2>5. What's Next</h2>
+            <h2 id="what-s-next">5. What's Next</h2>
             <p>Next on my list is finishing <strong>Cyber Security Awareness</strong> and aiming toward CompTIA <strong>Security+</strong> prep material. I also want to connect the dots between the home lab and these rooms — segmenting networks and watching the traffic from both sides ties everything together.</p>
         </div>
+        <nav class="post-nav" aria-label="Post navigation">
+            <a class="pn-prev" href="blog-home-lab.html" rel="prev">
+                <span class="pn-label">Previous post</span>
+                <span class="pn-title">Setting Up My Home Lab: Networking Basics</span>
+            </a>
+            <a class="pn-next" href="blog-docker-portfolio.html" rel="next">
+                <span class="pn-label">Next post</span>
+                <span class="pn-title">Dockerizing My Portfolio: Containers Made Simple</span>
+            </a>
+        </nav>
+
 
         <div class="post-footer">Thanks for reading! Connect on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer">LinkedIn</a> or check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">GitHub</a>.</div>
     </article>

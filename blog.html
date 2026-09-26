@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Write-ups on networking, cloud, DevOps, cybersecurity and help desk work by Glenn Patrick Cabansag, IT Assistant and full-stack developer from Iloilo, Philippines.">
+    <meta name="author" content="Glenn Patrick Cabansag">
+    <title>Blog | Glenn Patrick Cabansag</title>
+    <meta name="theme-color" content="#121212">
+    <script>(function(){try{var t=localStorage.getItem('theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';}document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name="theme-color"]');if(m){m.setAttribute('content',t==='light'?'#f6f7f9':'#121212');}}catch(e){}})();</script>
+    <meta property="og:title" content="Blog | Glenn Patrick Cabansag">
+    <meta property="og:description" content="Write-ups on networking, cloud, DevOps, cybersecurity and help desk work by Glenn Patrick Cabansag, IT Assistant and full-stack developer from Iloilo, Philippines.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Glenn Patrick Cabansag">
+    <meta property="og:locale" content="en_PH">
+    <meta property="og:url" content="https://gl3nnnn.github.io/Cabansag.github.io/blog.html">
+    <meta property="og:image" content="https://gl3nnnn.github.io/Cabansag.github.io/og-cover.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Glenn Patrick Cabansag - IT Professional portfolio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Blog | Glenn Patrick Cabansag">
+    <meta name="twitter:description" content="Write-ups on networking, cloud, DevOps, cybersecurity and help desk work by Glenn Patrick Cabansag, IT Assistant and full-stack developer from Iloilo, Philippines.">
+    <meta name="twitter:image" content="https://gl3nnnn.github.io/Cabansag.github.io/og-cover.jpg">
+    <meta name="twitter:image:alt" content="Glenn Patrick Cabansag - IT Professional portfolio">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="canonical" href="https://gl3nnnn.github.io/Cabansag.github.io/blog.html">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "Blog | Glenn Patrick Cabansag",
+  "url": "https://gl3nnnn.github.io/Cabansag.github.io/blog.html",
+  "description": "Write-ups on networking, cloud, DevOps, cybersecurity and help desk work by Glenn Patrick Cabansag, IT Assistant and full-stack developer from Iloilo, Philippines.",
+  "author": {
+    "@type": "Person",
+    "name": "Glenn Patrick Cabansag",
+    "url": "https://gl3nnnn.github.io/Cabansag.github.io/"
+  },
+  "blogPost": [
+    {
+      "@type": "BlogPosting",
+      "headline": "Segmenting My Home Lab with VLANs",
+      "url": "https://gl3nnnn.github.io/Cabansag.github.io/blog-vlans-home-lab.html",
+      "datePublished": "2026-04-15",
+      "description": "From flat network to isolated virtual LANs — access ports, 802.1Q trunks, and why segmentation matters at home.",
+      "author": {
+        "@type": "Person",
+        "name": "Glenn Patrick Cabansag",
+        "url": "https://gl3nnnn.github.io/Cabansag.github.io/"
+      }
+    },
+    {
+      "@type": "BlogPosting",
+      "headline": "Dockerizing My Portfolio: Containers Made Simple",
+      "url": "https://gl3nnnn.github.io/Cabansag.github.io/blog-docker-portfolio.html",
+      "datePublished": "2026-03-15",
+      "description": "How I turned this static site into a container — Dockerfiles, volume mounts, and one-command deployment.",
+      "author": {
+        "@type": "Person",
+        "name": "Glenn Patrick Cabansag",
+        "url": "https://gl3nnnn.github.io/Cabansag.github.io/"
+      }
+    },
+    {
+      "@type": "BlogPosting",
+      "headline": "My First Month on TryHackMe: Learning Cybersecurity One Room at a Time",
+      "url": "https://gl3nnnn.github.io/Cabansag.github.io/blog-tryhackme-first-month.html",
+      "datePublished": "2026-02-15",
+      "description": "Hands-on rooms, Nmap, and Burp Suite — what learning cybersecurity one lab at a time taught me about real security skills.",
+      "author": {
+        "@type": "Person",
+        "name": "Glenn Patrick Cabansag",
+        "url": "https://gl3nnnn.github.io/Cabansag.github.io/"
+      }
+    },
+    {
+      "@type": "BlogPosting",
+      "headline": "Setting Up My Home Lab: Networking Basics",
+      "url": "https://gl3nnnn.github.io/Cabansag.github.io/blog-home-lab.html",
+      "datePublished": "2026-01-15",
+      "description": "A beginner's walkthrough of configuring routers, switches, and using Wireshark to sniff traffic in a home lab setup.",
+      "author": {
+        "@type": "Person",
+        "name": "Glenn Patrick Cabansag",
+        "url": "https://gl3nnnn.github.io/Cabansag.github.io/"
+      }
+    },
+    {
+      "@type": "BlogPosting",
+      "headline": "My AWS Learning Journey: Getting Started",
+      "url": "https://gl3nnnn.github.io/Cabansag.github.io/blog-aws-journey.html",
+      "datePublished": "2025-09-20",
+      "description": "How I'm exploring cloud fundamentals, EC2, S3, and Docker to level up my DevOps and cloud skills.",
+      "author": {
+        "@type": "Person",
+        "name": "Glenn Patrick Cabansag",
+        "url": "https://gl3nnnn.github.io/Cabansag.github.io/"
+      }
+    },
+    {
+      "@type": "BlogPosting",
+      "headline": "From Help Desk to IT Assistant: What I Learned",
+      "url": "https://gl3nnnn.github.io/Cabansag.github.io/blog-helpdesk-lessons.html",
+      "datePublished": "2025-06-10",
+      "description": "Lessons from supporting end users every day — troubleshooting, patience, and the joy of solving problems.",
+      "author": {
+        "@type": "Person",
+        "name": "Glenn Patrick Cabansag",
+        "url": "https://gl3nnnn.github.io/Cabansag.github.io/"
+      }
+    }
+  ]
+}
+</script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        html{scroll-behavior:smooth;font-size:62.5%;}
+        body{font-family:'Poppins',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;display:flex;flex-direction:column;}
+        a{color:inherit;}
+        :root{--bg:#121212;--panel:#1e1e1e;--main:#1bb30e;--accent:#03dac6;--text:#e0e0e0;--muted:#9aa0a6;}
+        [data-theme="light"]{--bg:#f6f7f9;--panel:#ffffff;--main:#166534;--accent:#115e59;--text:#17181c;--muted:#5f6368;}
+        .skip-link{position:absolute;left:-9999px;top:0;background:var(--main);color:#000;padding:1rem 1.6rem;z-index:100;border-radius:0 0 8px 0;}
+        .skip-link:focus{left:0;}
+        .back-top{position:fixed;right:2.4rem;bottom:2.4rem;width:4.6rem;height:4.6rem;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:var(--panel);color:var(--text);font-size:1.7rem;cursor:pointer;opacity:0;pointer-events:none;transition:.3s;z-index:30;}
+        .back-top.show{opacity:1;pointer-events:auto;}
+        .back-top:hover{border-color:var(--main);color:var(--main);}
+        .bp-header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.4rem 6vw;background:rgba(18,18,18,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(27,179,14,.25);}
+        .logo{font-weight:700;font-size:1.8rem;text-decoration:none;}
+        .logo span{color:var(--main);}
+        #theme-toggle{width:4rem;height:4rem;border-radius:50%;border:1px solid rgba(255,255,255,.15);background:var(--panel);color:var(--text);cursor:pointer;font-size:1.6rem;}
+        #theme-toggle:hover{border-color:var(--main);color:var(--main);}
+        .back-link{font-size:1.4rem;font-weight:600;color:var(--accent);text-decoration:none;}
+        .back-link:hover{color:var(--main);}
+        .hero{padding:6rem 6vw 2rem;text-align:center;max-width:900px;margin:0 auto;}
+        .eyebrow{display:inline-block;font-size:1.2rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--main);margin-bottom:1rem;}
+        .hero h1{font-size:4.2rem;line-height:1.15;margin-bottom:1.2rem;}
+        .hero h1 span{color:var(--main);}
+        .hero p{font-size:1.6rem;color:var(--muted);max-width:640px;margin:0 auto;}
+        .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem;max-width:1000px;margin:3.4rem auto;padding:0 6vw;}
+        .stat{background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:1.4rem 1rem;text-align:center;}
+        .stat .num{font-size:2.6rem;font-weight:800;color:var(--main);line-height:1.1;}
+        .stat .lbl{font-size:1.1rem;color:var(--muted);margin-top:.3rem;}
+        .blog-wrap{max-width:900px;margin:0 auto;padding:1rem 6vw 5rem;width:100%;}
+        .toolbar{margin-bottom:2.6rem;display:flex;flex-direction:column;gap:1.3rem;align-items:center;}
+        .search-box{display:flex;align-items:center;gap:.9rem;background:var(--panel);border:1.5px solid rgba(255,255,255,.1);border-radius:999px;padding:.9rem 1.5rem;transition:border-color .3s;width:100%;}
+        .search-box i{color:var(--accent);font-size:1.1rem;}
+        .search-box input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:inherit;font-size:1rem;}
+        .search-box input::placeholder{color:var(--muted);}
+        .search-box:focus-within{border-color:var(--main);box-shadow:0 0 0 3px rgba(27,179,14,.15);}
+        .filters{display:flex;flex-wrap:wrap;gap:.7rem;justify-content:center;}
+        .filter-btn{font-family:inherit;font-size:.9rem;font-weight:600;color:var(--text);background:var(--panel);border:1px solid rgba(255,255,255,.12);padding:.55rem 1.2rem;border-radius:999px;cursor:pointer;transition:.25s;}
+        .filter-btn:hover{border-color:var(--main);color:var(--main);}
+        .filter-btn.active{background:var(--main);border-color:var(--main);color:#000;box-shadow:0 0 16px rgba(27,179,14,.35);}
+        .filter-btn:focus-visible{outline:2px solid var(--main);outline-offset:2px;}
+        .results-note{font-size:1.1rem;color:var(--muted);text-align:center;}
+        .post-list{display:flex;flex-direction:column;gap:1.4rem;}
+        .post-item{background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:1.8rem 2rem;transition:border-color .25s,transform .25s;}
+        .post-item:hover{border-color:var(--main);transform:translateY(-2px);}
+        .post-item-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.8rem;margin-bottom:.9rem;}
+        .post-cat{font-size:1.05rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--main);}
+        .post-date{font-size:1.1rem;color:var(--muted);display:inline-flex;align-items:center;gap:.45rem;}
+        .post-item h2{font-size:2rem;line-height:1.3;margin-bottom:.7rem;}
+        .post-item h2 a{text-decoration:none;}
+        .post-item h2 a:hover{color:var(--main);}
+        .post-excerpt{font-size:1.35rem;color:var(--muted);margin-bottom:1.3rem;}
+        .post-item-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;border-top:1px solid rgba(255,255,255,.08);padding-top:1.1rem;}
+        .post-read{font-size:1.1rem;color:var(--muted);}
+        .read-more{font-size:1.25rem;font-weight:600;color:var(--accent);text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;}
+        .read-more:hover{color:var(--main);}
+        .no-results{text-align:center;padding:3.4rem 0;color:var(--muted);}
+        .no-results i{font-size:2.4rem;color:#cf6679;margin-bottom:.7rem;display:block;}
+        .no-results[hidden]{display:none;}
+        .post-item.is-hidden{display:none;}
+        .faq-footer,.blog-footer{margin-top:auto;padding:2.6rem 6vw 3rem;text-align:center;color:var(--muted);font-size:.92rem;}
+        .faq-footer .social,.blog-footer .social{display:flex;justify-content:center;gap:1.1rem;margin-bottom:1.1rem;}
+        .faq-footer .social a,.blog-footer .social a{color:var(--muted);font-size:1.6rem;transition:.25s;}
+        .faq-footer .social a:hover,.blog-footer .social a:hover{color:var(--main);}
+        [data-theme="light"] .bp-header{background:rgba(255,255,255,.92);}
+        [data-theme="light"] .post-item,
+        [data-theme="light"] .stat,
+        [data-theme="light"] .search-box,
+        [data-theme="light"] .filter-btn,
+        [data-theme="light"] .back-top,
+        [data-theme="light"] #theme-toggle{ border-color:#d6d9de; }
+        [data-theme="light"] .filter-btn.active{color:#ffffff;box-shadow:0 2px 10px rgba(22,101,52,.28);}
+        [data-theme="light"] .post-item-foot{ border-top-color:#e3e6ea; }
+        @media(max-width:768px){
+            .hero{padding-top:4rem;}
+            .hero h1{font-size:3.2rem;}
+            .stats{grid-template-columns:repeat(2,1fr);}
+            .post-item{padding:1.4rem 1.5rem;}
+            .post-item h2{font-size:1.7rem;}
+        }
+        @media(max-width:480px){
+            .stats{grid-template-columns:1fr;}
+            .back-link{font-size:1.2rem;}
+        }
+        @media (prefers-reduced-motion: reduce){
+            *{scroll-behavior:auto !important;transition:none !important;}
+        }
+    </style>
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <button class="back-top" id="back-top" aria-label="Back to top" title="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+    <header class="bp-header">
+        <a href="index.html" class="logo">Glenn Patrick <span>Cabansag</span></a>
+        <button id="theme-toggle" aria-label="Toggle light and dark mode" title="Toggle light/dark mode"><i class="fa-solid fa-moon"></i></button>
+        <a href="index.html" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+    </header>
+    <section class="hero">
+        <span class="eyebrow">Notes &amp; write-ups</span>
+        <h1>Technical <span>Blog</span></h1>
+        <p>What I learn setting up networks, working in the cloud, and answering help desk tickets &mdash; written down so I do not have to remember it twice.</p>
+    </section>
+    <section class="stats">
+        <div class="stat"><div class="num">6</div><div class="lbl">Posts Published</div></div>
+        <div class="stat"><div class="num">5</div><div class="lbl">Topics Covered</div></div>
+        <div class="stat"><div class="num">2</div><div class="lbl">Years Writing</div></div>
+        <div class="stat"><div class="num">37</div><div class="lbl">Certifications</div></div>
+    </section>
+    <section class="blog-wrap" id="main" tabindex="-1">
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <label class="sr-only" for="blog-search" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;">Search posts</label>
+                <input type="search" id="blog-search" placeholder="Search posts... (e.g. Docker, VLAN, AWS)" autocomplete="off">
+            </div>
+            <div class="filters" id="blog-filters" role="group" aria-label="Filter posts by topic">
+            <button type="button" class="filter-btn active" data-filter="all" aria-pressed="true">All posts</button>
+            <button type="button" class="filter-btn" data-filter="Cloud" aria-pressed="false">Cloud</button>
+            <button type="button" class="filter-btn" data-filter="Cloud / DevOps" aria-pressed="false">Cloud / DevOps</button>
+            <button type="button" class="filter-btn" data-filter="Cybersecurity" aria-pressed="false">Cybersecurity</button>
+            <button type="button" class="filter-btn" data-filter="Experience" aria-pressed="false">Experience</button>
+            <button type="button" class="filter-btn" data-filter="Networking" aria-pressed="false">Networking</button>
+            </div>
+            <p class="results-note" id="blog-results" role="status" aria-live="polite">Showing all 6 posts</p>
+        </div>
+        <div class="no-results" id="no-results" hidden>
+            <i class="fa-solid fa-circle-question" aria-hidden="true"></i>
+            <p>No posts match that search.</p>
+        </div>
+        <div class="post-list" id="post-list">
+        <article class="post-item" data-cat="Networking">
+            <div class="post-item-top">
+                <span class="post-cat">Networking</span>
+                <span class="post-date"><i class="fa-regular fa-calendar" aria-hidden="true"></i> <time datetime="2026-04-15">April 15, 2026</time></span>
+            </div>
+            <h2><a href="blog-vlans-home-lab.html">Segmenting My Home Lab with VLANs</a></h2>
+            <p class="post-excerpt">From flat network to isolated virtual LANs — access ports, 802.1Q trunks, and why segmentation matters at home.</p>
+            <div class="post-item-foot">
+                <span class="post-read">7 min read</span>
+                <a class="read-more" href="blog-vlans-home-lab.html">Read post <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
+        </article>
+        <article class="post-item" data-cat="Cloud / DevOps">
+            <div class="post-item-top">
+                <span class="post-cat">Cloud / DevOps</span>
+                <span class="post-date"><i class="fa-regular fa-calendar" aria-hidden="true"></i> <time datetime="2026-03-15">March 15, 2026</time></span>
+            </div>
+            <h2><a href="blog-docker-portfolio.html">Dockerizing My Portfolio: Containers Made Simple</a></h2>
+            <p class="post-excerpt">How I turned this static site into a container — Dockerfiles, volume mounts, and one-command deployment.</p>
+            <div class="post-item-foot">
+                <span class="post-read">7 min read</span>
+                <a class="read-more" href="blog-docker-portfolio.html">Read post <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
+        </article>
+        <article class="post-item" data-cat="Cybersecurity">
+            <div class="post-item-top">
+                <span class="post-cat">Cybersecurity</span>
+                <span class="post-date"><i class="fa-regular fa-calendar" aria-hidden="true"></i> <time datetime="2026-02-15">February 15, 2026</time></span>
+            </div>
+            <h2><a href="blog-tryhackme-first-month.html">My First Month on TryHackMe: Learning Cybersecurity One Room at a Time</a></h2>
+            <p class="post-excerpt">Hands-on rooms, Nmap, and Burp Suite — what learning cybersecurity one lab at a time taught me about real security skills.</p>
+            <div class="post-item-foot">
+                <span class="post-read">6 min read</span>
+                <a class="read-more" href="blog-tryhackme-first-month.html">Read post <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
+        </article>
+        <article class="post-item" data-cat="Networking">
+            <div class="post-item-top">
+                <span class="post-cat">Networking</span>
+                <span class="post-date"><i class="fa-regular fa-calendar" aria-hidden="true"></i> <time datetime="2026-01-15">January 15, 2026</time></span>
+            </div>
+            <h2><a href="blog-home-lab.html">Setting Up My Home Lab: Networking Basics</a></h2>
+            <p class="post-excerpt">A beginner's walkthrough of configuring routers, switches, and using Wireshark to sniff traffic in a home lab setup.</p>
+            <div class="post-item-foot">
+                <span class="post-read">6 min read</span>
+                <a class="read-more" href="blog-home-lab.html">Read post <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
+        </article>
+        <article class="post-item" data-cat="Cloud">
+            <div class="post-item-top">
+                <span class="post-cat">Cloud</span>
+                <span class="post-date"><i class="fa-regular fa-calendar" aria-hidden="true"></i> <time datetime="2025-09-20">September 20, 2025</time></span>
+            </div>
+            <h2><a href="blog-aws-journey.html">My AWS Learning Journey: Getting Started</a></h2>
+            <p class="post-excerpt">How I'm exploring cloud fundamentals, EC2, S3, and Docker to level up my DevOps and cloud skills.</p>
+            <div class="post-item-foot">
+                <span class="post-read">7 min read</span>
+                <a class="read-more" href="blog-aws-journey.html">Read post <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
+        </article>
+        <article class="post-item" data-cat="Experience">
+            <div class="post-item-top">
+                <span class="post-cat">Experience</span>
+                <span class="post-date"><i class="fa-regular fa-calendar" aria-hidden="true"></i> <time datetime="2025-06-10">June 10, 2025</time></span>
+            </div>
+            <h2><a href="blog-helpdesk-lessons.html">From Help Desk to IT Assistant: What I Learned</a></h2>
+            <p class="post-excerpt">Lessons from supporting end users every day — troubleshooting, patience, and the joy of solving problems.</p>
+            <div class="post-item-foot">
+                <span class="post-read">5 min read</span>
+                <a class="read-more" href="blog-helpdesk-lessons.html">Read post <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
+        </article>
+        </div>
+    </section>
+    <footer class="blog-footer">
+        <div class="social">
+            <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+            <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+            <a href="https://www.facebook.com/Gl3nQt" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="mailto:patrickcabansag5@gmail.com" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+        </div>
+        <p>&copy; <span id="year">2026</span> Glenn Patrick Cabansag | All rights reserved</p>
+    </footer>
+    <script>
+        // Search + topic filter, mirroring the pattern on faq.html and the
+        // certification filter on index.html.
+        (function () {
+            var list = document.getElementById('post-list');
+            var search = document.getElementById('blog-search');
+            var note = document.getElementById('blog-results');
+            var noResults = document.getElementById('no-results');
+            var buttons = Array.prototype.slice.call(document.querySelectorAll('#blog-filters .filter-btn'));
+            if (!list || !search || !note || !noResults) return;
+            var items = Array.prototype.slice.call(list.querySelectorAll('.post-item'));
+            var total = items.length;
+            var active = 'all';
+            var haystack = items.map(function (el) { return (el.textContent || '').toLowerCase(); });
+
+            function apply() {
+                var terms = search.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+                var visible = 0;
+                items.forEach(function (el, i) {
+                    var catOk = active === 'all' || el.getAttribute('data-cat') === active;
+                    var textOk = terms.every(function (t) { return haystack[i].indexOf(t) !== -1; });
+                    var show = catOk && textOk;
+                    el.classList.toggle('is-hidden', !show);
+                    if (show) visible++;
+                });
+                noResults.hidden = visible !== 0;
+                if (visible === 0) note.textContent = 'No matching posts';
+                else if (active === 'all' && !terms.length) note.textContent = 'Showing all ' + total + ' posts';
+                else note.textContent = 'Showing ' + visible + ' of ' + total + ' posts' + (active === 'all' ? '' : ' in ' + active);
+            }
+
+            buttons.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    buttons.forEach(function (b) { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+                    btn.classList.add('active');
+                    btn.setAttribute('aria-pressed', 'true');
+                    active = btn.getAttribute('data-filter');
+                    apply();
+                });
+            });
+            search.addEventListener('input', apply);
+            search.addEventListener('search', apply);
+            search.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && search.value) { search.value = ''; apply(); }
+            });
+            apply();
+        })();
+
+        // Back to top + dynamic year
+        var backTop = document.getElementById('back-top');
+        window.addEventListener('scroll', function () {
+            backTop.classList.toggle('show', window.scrollY > 400);
+        }, { passive: true });
+        backTop.addEventListener('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Theme toggle (persisted; defaults to system preference)
+        (function initTheme() {
+            var root = document.documentElement;
+            var saved = null;
+            try { saved = localStorage.getItem('theme'); } catch (err) { /* ignore */ }
+            var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+            var theme = saved || (prefersLight ? 'light' : 'dark');
+            var toggle = document.getElementById('theme-toggle');
+            var icon = toggle ? toggle.querySelector('i') : null;
+            var themeColor = document.querySelector('meta[name="theme-color"]');
+            var applyThemeColor = function (t) { if (themeColor) themeColor.setAttribute('content', t === 'light' ? '#f6f7f9' : '#121212'); };
+            root.setAttribute('data-theme', theme);
+            try { localStorage.setItem('theme', theme); } catch (err) { /* ignore */ }
+            if (icon) icon.className = theme === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            applyThemeColor(theme);
+            if (toggle) toggle.addEventListener('click', function () {
+                var next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+                root.setAttribute('data-theme', next);
+                if (icon) icon.className = next === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+                applyThemeColor(next);
+                try { localStorage.setItem('theme', next); } catch (err) { /* ignore */ }
+            });
+        })();
+    </script>
+</body>
+</html>

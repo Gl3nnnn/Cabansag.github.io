@@ -62,7 +62,7 @@
         .meta{display:flex;flex-wrap:wrap;gap:1.4rem;color:var(--accent);font-size:.95rem;font-weight:500;padding-bottom:1.8rem;margin-bottom:2rem;border-bottom:1px solid rgba(255,255,255,.08);}
         .content{font-size:1.05rem;}
         .content p{margin-bottom:1.4rem;}
-        .content h2{color:#fff;font-size:1.5rem;margin:2.4rem 0 1rem;}
+        .content h2{color:#fff;font-size:1.5rem;margin:2.4rem 0 1rem;scroll-margin-top:6rem;}
         .content h3{color:var(--accent);font-size:1.2rem;margin:1.8rem 0 .8rem;}
         .content ul,.content ol{margin:0 0 1.4rem 1.6rem;}
         .content li{margin-bottom:.5rem;}
@@ -110,6 +110,32 @@
         [data-theme="light"] .bp-footer .social a:hover,
         [data-theme="light"] #theme-toggle:hover,
         [data-theme="light"] .skip-link{color:#ffffff;}
+    
+/* On-this-page contents */
+.toc{margin:0 0 2.6rem;padding:1.4rem 1.7rem;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:14px;}
+.toc-title{display:block;font-size:.74rem;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin:0 0 .7rem;font-weight:700;}
+.toc ol{margin:0;padding-left:1.3rem;}
+.toc li{margin:.3rem 0;font-size:.95rem;line-height:1.5;}
+.toc a{color:var(--text);text-decoration:none;}
+.toc a:hover,.toc a:focus-visible{color:var(--main);text-decoration:underline;}
+/* Previous / next post */
+.post-nav{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin-top:3rem;}
+.post-nav a{display:block;padding:1.1rem 1.3rem;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:12px;text-decoration:none;transition:border-color .25s;}
+.post-nav a:hover{border-color:var(--main);}
+.post-nav .pn-label{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin-bottom:.35rem;font-weight:700;}
+.post-nav .pn-title{display:block;font-size:.95rem;font-weight:600;color:var(--text);line-height:1.35;}
+.post-nav .pn-next{text-align:right;}
+.post-nav .pn-empty{visibility:hidden;}
+@media(max-width:600px){
+  .post-nav{grid-template-columns:1fr;}
+  .post-nav .pn-next{text-align:left;}
+}
+
+</style>
+    <style>
+[data-theme="light"] .toc,
+[data-theme="light"] .post-nav a{ border-color:#d6d9de; }
+[data-theme="light"] .post-nav .pn-title{ color:var(--text); }
     </style>
 </head>
 <body>
@@ -125,15 +151,26 @@
         <span class="category">Networking</span>
         <h1 class="title">Setting Up My Home Lab: Networking Basics</h1>
         <div class="meta">
-            <span>2026</span>
+            <time datetime="2026-01-15">January 15, 2026</time>
             <span>Glenn Patrick Cabansag</span>
             <span>6 min read</span>
         </div>
+        <nav class="toc" aria-labelledby="toc-heading">
+            <span class="toc-title" id="toc-heading">On this page</span>
+            <ol>
+                <li><a href="#the-gear">1. The Gear</a></li>
+                <li><a href="#understanding-the-topology">2. Understanding the Topology</a></li>
+                <li><a href="#ip-addressing-and-dhcp">3. IP Addressing and DHCP</a></li>
+                <li><a href="#sniffing-traffic-with-wireshark">4. Sniffing Traffic with Wireshark</a></li>
+                <li><a href="#next-steps">5. Next Steps</a></li>
+            </ol>
+        </nav>
+
 
         <div class="content">
             <p>Building a home lab is one of the best ways to learn networking hands-on. You don't need expensive gear — an old router, a switch, and a laptop running Wireshark are more than enough to start. Here's how I approached it and the basics I picked up along the way.</p>
 
-            <h2>1. The Gear</h2>
+            <h2 id="the-gear">1. The Gear</h2>
             <p>Start simple. My beginner lab consisted of:</p>
             <ul>
                 <li>A home broadband router acting as the gateway and DHCP server</li>
@@ -142,7 +179,7 @@
                 <li>A Raspberry Pi later on to run a small server and learn Linux</li>
             </ul>
 
-            <h2>2. Understanding the Topology</h2>
+            <h2 id="understanding-the-topology">2. Understanding the Topology</h2>
             <p>Draw it out. The router connects to the internet, the switch hangs off the router's LAN port, and every wired device plugs into the switch. Wireless devices reach the router directly. This flat topology is perfect for learning because traffic is easy to trace.</p>
             <pre><code>Internet
    |
@@ -150,7 +187,7 @@
    |     \---- [ Switch ] ---- [ Laptop ]
  [Pi/Wi-Fi]</code></pre>
 
-            <h2>3. IP Addressing and DHCP</h2>
+            <h2 id="ip-addressing-and-dhcp">3. IP Addressing and DHCP</h2>
             <p>By default the router hands out IP addresses via DHCP. I checked which addresses were assigned and learned to spot the difference between the gateway (e.g. <code>192.168.1.1</code>) and the devices it leases addresses to. From there I practiced setting <strong>static IPs</strong> so my Pi always had the same address.</p>
             <p>Useful commands I kept on hand:</p>
             <pre><code>ipconfig /all          # Windows - see your IP, gateway, DNS
@@ -158,13 +195,24 @@ ping 192.168.1.1       # Test connectivity to the gateway
 tracert 8.8.8.8        # Trace the path to a public host
 arp -a                 # View the local ARP table</code></pre>
 
-            <h2>4. Sniffing Traffic with Wireshark</h2>
+            <h2 id="sniffing-traffic-with-wireshark">4. Sniffing Traffic with Wireshark</h2>
             <p>Wireshark is where it gets fun. I opened it in <strong>promiscuous mode</strong> on the laptop and watched the traffic flow across my lab. I saw DHCP requests during lease renewal, ARP lookups, and DNS queries when I loaded a webpage. Being able to see the packets makes the theory finally click.</p>
             <blockquote>Capturing your own traffic in your own lab is a completely safe way to learn packet analysis — try it before touching production networks.</blockquote>
 
-            <h2>5. Next Steps</h2>
+            <h2 id="next-steps">5. Next Steps</h2>
             <p>From here I'm planning to segment the lab with VLANs, add a firewall, and eventually learn Cisco CLI with a router simulator or an old managed switch. A home lab turned out to be the best "teacher" — it breaks, and breaking things is exactly how you learn to fix them.</p>
         </div>
+        <nav class="post-nav" aria-label="Post navigation">
+            <a class="pn-prev" href="blog-aws-journey.html" rel="prev">
+                <span class="pn-label">Previous post</span>
+                <span class="pn-title">My AWS Learning Journey: Getting Started</span>
+            </a>
+            <a class="pn-next" href="blog-tryhackme-first-month.html" rel="next">
+                <span class="pn-label">Next post</span>
+                <span class="pn-title">My First Month on TryHackMe: Learning Cybersecurity One Room at a Time</span>
+            </a>
+        </nav>
+
 
         <div class="post-footer">Thanks for reading! Connect on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer">LinkedIn</a> or check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">GitHub</a>.</div>
     </article>

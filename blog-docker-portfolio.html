@@ -62,7 +62,7 @@
         .meta{display:flex;flex-wrap:wrap;gap:1.4rem;color:var(--accent);font-size:.95rem;font-weight:500;padding-bottom:1.8rem;margin-bottom:2rem;border-bottom:1px solid rgba(255,255,255,.08);}
         .content{font-size:1.05rem;}
         .content p{margin-bottom:1.4rem;}
-        .content h2{color:#fff;font-size:1.5rem;margin:2.4rem 0 1rem;}
+        .content h2{color:#fff;font-size:1.5rem;margin:2.4rem 0 1rem;scroll-margin-top:6rem;}
         .content h3{color:var(--accent);font-size:1.2rem;margin:1.8rem 0 .8rem;}
         .content ul,.content ol{margin:0 0 1.4rem 1.6rem;}
         .content li{margin-bottom:.5rem;}
@@ -110,6 +110,32 @@
         [data-theme="light"] .bp-footer .social a:hover,
         [data-theme="light"] #theme-toggle:hover,
         [data-theme="light"] .skip-link{color:#ffffff;}
+    
+/* On-this-page contents */
+.toc{margin:0 0 2.6rem;padding:1.4rem 1.7rem;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:14px;}
+.toc-title{display:block;font-size:.74rem;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin:0 0 .7rem;font-weight:700;}
+.toc ol{margin:0;padding-left:1.3rem;}
+.toc li{margin:.3rem 0;font-size:.95rem;line-height:1.5;}
+.toc a{color:var(--text);text-decoration:none;}
+.toc a:hover,.toc a:focus-visible{color:var(--main);text-decoration:underline;}
+/* Previous / next post */
+.post-nav{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin-top:3rem;}
+.post-nav a{display:block;padding:1.1rem 1.3rem;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:12px;text-decoration:none;transition:border-color .25s;}
+.post-nav a:hover{border-color:var(--main);}
+.post-nav .pn-label{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin-bottom:.35rem;font-weight:700;}
+.post-nav .pn-title{display:block;font-size:.95rem;font-weight:600;color:var(--text);line-height:1.35;}
+.post-nav .pn-next{text-align:right;}
+.post-nav .pn-empty{visibility:hidden;}
+@media(max-width:600px){
+  .post-nav{grid-template-columns:1fr;}
+  .post-nav .pn-next{text-align:left;}
+}
+
+</style>
+    <style>
+[data-theme="light"] .toc,
+[data-theme="light"] .post-nav a{ border-color:#d6d9de; }
+[data-theme="light"] .post-nav .pn-title{ color:var(--text); }
     </style>
 </head>
 <body>
@@ -125,18 +151,30 @@
         <span class="category">Cloud / DevOps</span>
         <h1 class="title">Dockerizing My Portfolio: Containers Made Simple</h1>
         <div class="meta">
-            <span>2026</span>
+            <time datetime="2026-03-15">March 15, 2026</time>
             <span>Glenn Patrick Cabansag</span>
             <span>7 min read</span>
         </div>
+        <nav class="toc" aria-labelledby="toc-heading">
+            <span class="toc-title" id="toc-heading">On this page</span>
+            <ol>
+                <li><a href="#images-vs-containers">1. Images vs. Containers</a></li>
+                <li><a href="#writing-the-dockerfile">2. Writing the Dockerfile</a></li>
+                <li><a href="#build-and-run">3. Build and Run</a></li>
+                <li><a href="#live-reload-with-volume-mounts">4. Live Reload with Volume Mounts</a></li>
+                <li><a href="#one-command-with-docker-compose">5. One Command with Docker Compose</a></li>
+                <li><a href="#why-this-matters">6. Why This Matters</a></li>
+            </ol>
+        </nav>
+
 
         <div class="content">
             <p>My portfolio is a plain static site — HTML, CSS, and a bit of JavaScript. It's simple enough to open with a double-click, so why bother with Docker at all? Because learning to ship even a tiny project in a container teaches you how deployment behaves on a real server. Here's how I containerized this very site.</p>
 
-            <h2>1. Images vs. Containers</h2>
+            <h2 id="images-vs-containers">1. Images vs. Containers</h2>
             <p>The mental model that finally made Docker click: an <strong>image</strong> is a frozen recipe — a snapshot of the OS, runtime, and files. A <strong>container</strong> is a running instance of that recipe. You can run five containers from one image, like running five copies of the same app in isolated boxes.</p>
 
-            <h2>2. Writing the Dockerfile</h2>
+            <h2 id="writing-the-dockerfile">2. Writing the Dockerfile</h2>
             <p>For a static site, the classic approach is a small web server. I used <code>nginx:alpine</code> because it's tiny and purpose-built for serving files. The Dockerfile is just three lines:</p>
             <pre><code>FROM nginx:alpine
 COPY . /usr/share/nginx/html
@@ -147,18 +185,18 @@ EXPOSE 80</code></pre>
                 <li><code>EXPOSE</code> documents that the container listens on port 80</li>
             </ul>
 
-            <h2>3. Build and Run</h2>
+            <h2 id="build-and-run">3. Build and Run</h2>
             <p>Two commands turn the Dockerfile into a working site:</p>
             <pre><code>docker build -t portfolio .
 docker run -d -p 8080:80 --name portfolio portfolio</code></pre>
             <p>Now <code>http://localhost:8080</code> serves the exact same files that GitHub Pages serves. The <code>-p 8080:80</code> maps my host port to the container's port 80, so <strong>any port on the host can point at the container's port</strong>.</p>
 
-            <h2>4. Live Reload with Volume Mounts</h2>
+            <h2 id="live-reload-with-volume-mounts">4. Live Reload with Volume Mounts</h2>
             <p>Rebuilding the image after every edit gets old fast. A <strong>bind mount</strong> overrides a folder in the container with a folder on my machine, so changes appear instantly:</p>
             <pre><code>docker run -d -p 8080:80 -v "%cd%":/usr/share/nginx/html --name portfolio portfolio</code></pre>
             <p>Now I edit <code>index.html</code> locally, refresh the browser, and the container already serves the new file. No restart needed.</p>
 
-            <h2>5. One Command with Docker Compose</h2>
+            <h2 id="one-command-with-docker-compose">5. One Command with Docker Compose</h2>
             <p>As soon as an app grows past one container, typing <code>docker run</code> for each one becomes error-prone. <code>docker-compose.yml</code> turns everything into a single command:</p>
             <pre><code>services:
   portfolio:
@@ -169,10 +207,21 @@ docker run -d -p 8080:80 --name portfolio portfolio</code></pre>
       - .:/usr/share/nginx/html</code></pre>
             <pre><code>docker compose up -d</code></pre>
 
-            <h2>6. Why This Matters</h2>
+            <h2 id="why-this-matters">6. Why This Matters</h2>
             <blockquote>If it runs the same way on my laptop as it does on a server, half of the mysteries of deployment disappear.</blockquote>
             <p>Containerizing this site gave me the vocabulary and confidence to approach bigger things — the Laravel and PHP apps I work with at my job, and eventually pushing images for real cloud deployments. The skill transfers; the static site is just the cheapest possible scaffold to practice on.</p>
         </div>
+        <nav class="post-nav" aria-label="Post navigation">
+            <a class="pn-prev" href="blog-tryhackme-first-month.html" rel="prev">
+                <span class="pn-label">Previous post</span>
+                <span class="pn-title">My First Month on TryHackMe: Learning Cybersecurity One Room at a Time</span>
+            </a>
+            <a class="pn-next" href="blog-vlans-home-lab.html" rel="next">
+                <span class="pn-label">Next post</span>
+                <span class="pn-title">Segmenting My Home Lab with VLANs</span>
+            </a>
+        </nav>
+
 
         <div class="post-footer">Thanks for reading! Connect on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer">LinkedIn</a> or check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">GitHub</a>.</div>
     </article>

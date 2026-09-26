@@ -62,7 +62,7 @@
         .meta{display:flex;flex-wrap:wrap;gap:1.4rem;color:var(--accent);font-size:.95rem;font-weight:500;padding-bottom:1.8rem;margin-bottom:2rem;border-bottom:1px solid rgba(255,255,255,.08);}
         .content{font-size:1.05rem;}
         .content p{margin-bottom:1.4rem;}
-        .content h2{color:#fff;font-size:1.5rem;margin:2.4rem 0 1rem;}
+        .content h2{color:#fff;font-size:1.5rem;margin:2.4rem 0 1rem;scroll-margin-top:6rem;}
         .content h3{color:var(--accent);font-size:1.2rem;margin:1.8rem 0 .8rem;}
         .content ul,.content ol{margin:0 0 1.4rem 1.6rem;}
         .content li{margin-bottom:.5rem;}
@@ -110,6 +110,32 @@
         [data-theme="light"] .bp-footer .social a:hover,
         [data-theme="light"] #theme-toggle:hover,
         [data-theme="light"] .skip-link{color:#ffffff;}
+    
+/* On-this-page contents */
+.toc{margin:0 0 2.6rem;padding:1.4rem 1.7rem;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:14px;}
+.toc-title{display:block;font-size:.74rem;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin:0 0 .7rem;font-weight:700;}
+.toc ol{margin:0;padding-left:1.3rem;}
+.toc li{margin:.3rem 0;font-size:.95rem;line-height:1.5;}
+.toc a{color:var(--text);text-decoration:none;}
+.toc a:hover,.toc a:focus-visible{color:var(--main);text-decoration:underline;}
+/* Previous / next post */
+.post-nav{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin-top:3rem;}
+.post-nav a{display:block;padding:1.1rem 1.3rem;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:12px;text-decoration:none;transition:border-color .25s;}
+.post-nav a:hover{border-color:var(--main);}
+.post-nav .pn-label{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin-bottom:.35rem;font-weight:700;}
+.post-nav .pn-title{display:block;font-size:.95rem;font-weight:600;color:var(--text);line-height:1.35;}
+.post-nav .pn-next{text-align:right;}
+.post-nav .pn-empty{visibility:hidden;}
+@media(max-width:600px){
+  .post-nav{grid-template-columns:1fr;}
+  .post-nav .pn-next{text-align:left;}
+}
+
+</style>
+    <style>
+[data-theme="light"] .toc,
+[data-theme="light"] .post-nav a{ border-color:#d6d9de; }
+[data-theme="light"] .post-nav .pn-title{ color:var(--text); }
     </style>
 </head>
 <body>
@@ -125,15 +151,26 @@
         <span class="category">Networking</span>
         <h1 class="title">Segmenting My Home Lab with VLANs</h1>
         <div class="meta">
-            <span>2026</span>
+            <time datetime="2026-04-15">April 15, 2026</time>
             <span>Glenn Patrick Cabansag</span>
             <span>7 min read</span>
         </div>
+        <nav class="toc" aria-labelledby="toc-heading">
+            <span class="toc-title" id="toc-heading">On this page</span>
+            <ol>
+                <li><a href="#why-bother-segmenting">1. Why Bother Segmenting?</a></li>
+                <li><a href="#vlan-basics">2. VLAN Basics</a></li>
+                <li><a href="#my-segmentation-plan">3. My Segmentation Plan</a></li>
+                <li><a href="#configuring-a-managed-switch">4. Configuring a Managed Switch</a></li>
+                <li><a href="#what-i-d-do-differently">5. What I'd Do Differently</a></li>
+            </ol>
+        </nav>
+
 
         <div class="content">
             <p>After my flat home lab got comfortable, I wanted the network to match how companies actually run things. That meant VLANs — splitting one physical switch into several logical networks. It sounded intimidating until I realized it's mostly about <strong>deciding which ports belong to which group</strong>.</p>
 
-            <h2>1. Why Bother Segmenting?</h2>
+            <h2 id="why-bother-segmenting">1. Why Bother Segmenting?</h2>
             <p>A flat network means every device can talk to every other device directly. That's fine with a laptop and a phone, but it gets risky once you mix devices you don't fully trust — cheap IoT gadgets, cameras, or lab machines running intentionally vulnerable services.</p>
             <ul>
                 <li><strong>Smaller broadcast domains</strong> — less unnecessary chatter and cleaner traffic captures</li>
@@ -141,20 +178,20 @@
                 <li><strong>Real-world practice</strong> — trunking and tagging are core enterprise networking skills</li>
             </ul>
 
-            <h2>2. VLAN Basics</h2>
+            <h2 id="vlan-basics">2. VLAN Basics</h2>
             <p>Each VLAN is a virtual LAN with a number (1–4094). Devices in the same VLAN behave as if they're on the same switch segment; devices in different VLANs don't see each other unless traffic is routed between them.</p>
             <ul>
                 <li><strong>Access port</strong> — belongs to one VLAN, carries untagged traffic for devices like PCs and printers</li>
                 <li><strong>Trunk port</strong> — carries many VLANs between switches/routers using 802.1Q <strong>tagging</strong>, where each frame gets a small header saying which VLAN it belongs to</li>
             </ul>
 
-            <h2>3. My Segmentation Plan</h2>
+            <h2 id="my-segmentation-plan">3. My Segmentation Plan</h2>
             <pre><code>VLAN 10  TRUSTED  - desktop, laptops, Raspberry Pi
 VLAN 20  IOT      - smart plugs, cameras, streaming sticks
 VLAN 30  LAB      - intentionally vulnerable / practice machines</code></pre>
             <p>The lab VLAN is the whole point: now my vulnerable practice boxes are cut off from everything I actually care about, and any traffic between the zones has to go through control I can inspect.</p>
 
-            <h2>4. Configuring a Managed Switch</h2>
+            <h2 id="configuring-a-managed-switch">4. Configuring a Managed Switch</h2>
             <p>On a small Cisco-style switch the config is short. First create the VLANs, then assign access ports, then define a trunk:</p>
             <pre><code>vlan 10
  name TRUSTED
@@ -176,7 +213,7 @@ interface GigabitEthernet0/1
  switchport trunk allowed vlan 10,20,30</code></pre>
             <p><code>show vlan brief</code> confirms which ports sit in which VLAN — the single most useful verification command you'll run while learning this.</p>
 
-            <h2>5. What I'd Do Differently</h2>
+            <h2 id="what-i-d-do-differently">5. What I'd Do Differently</h2>
             <p>Two lessons after breaking (and fixing) this setup a few times:</p>
             <ol>
                 <li><strong>Give each VLAN its own DHCP scope.</strong> Without it, devices on VLAN 20 and 30 get no address until you route or relay appropriately.</li>
@@ -184,6 +221,14 @@ interface GigabitEthernet0/1
             </ol>
             <blockquote>VLANs turned one switch into three isolated networks, and taught me more in an afternoon than any lecture on segmentation ever did.</blockquote>
         </div>
+        <nav class="post-nav" aria-label="Post navigation">
+            <a class="pn-prev" href="blog-docker-portfolio.html" rel="prev">
+                <span class="pn-label">Previous post</span>
+                <span class="pn-title">Dockerizing My Portfolio: Containers Made Simple</span>
+            </a>
+            <div class="pn-empty" aria-hidden="true"></div>
+        </nav>
+
 
         <div class="post-footer">Thanks for reading! Connect on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer">LinkedIn</a> or check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">GitHub</a>.</div>
     </article>

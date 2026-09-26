@@ -716,6 +716,22 @@ top: 10px;
     margin-bottom: 3rem;
     color: white;
 }
+.blog-all{
+    text-align: center;
+    margin: -1.5rem auto 3.5rem;
+}
+.blog-all a{
+    display: inline-block;
+    font-family: inherit;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--main-color);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 2px;
+    transition: border-color .25s ease-in-out;
+}
+.blog-all a:hover{ border-bottom-color: var(--main-color); }
 .blog-intro{
     text-align: center;
     font-size: 1.8rem;
@@ -3011,41 +3027,15 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 <section class="blog" id="blog">
     <h2 class="heading">Technical <span>Blog</span></h2>
     <p class="blog-intro">Notes and write-ups from my journey in IT, networking, and cloud.</p>
+    <p class="blog-all"><a href="blog.html">Browse all posts &rarr;</a></p>
     <div class="blog-grid">
         <article class="blog-card">
             <span class="blog-category">Networking</span>
-            <h3>Setting Up My Home Lab: Networking Basics</h3>
-            <p class="blog-excerpt">A beginner's walkthrough of configuring routers, switches, and using Wireshark to sniff traffic in a home lab setup.</p>
+            <h3>Segmenting My Home Lab with VLANs</h3>
+            <p class="blog-excerpt">From flat network to isolated virtual LANs — access ports, 802.1Q trunks, and why segmentation matters at home.</p>
             <div class="blog-footer">
-                <span class="blog-date"><i class="fa-regular fa-calendar"></i> 2026</span>
-                <a href="blog-home-lab.html" class="blog-read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
-            </div>
-        </article>
-        <article class="blog-card">
-            <span class="blog-category">Experience</span>
-            <h3>From Help Desk to IT Assistant: What I Learned</h3>
-            <p class="blog-excerpt">Lessons from supporting end users every day — troubleshooting, patience, and the joy of solving problems.</p>
-            <div class="blog-footer">
-                <span class="blog-date"><i class="fa-regular fa-calendar"></i> 2025</span>
-                <a href="blog-helpdesk-lessons.html" class="blog-read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
-            </div>
-        </article>
-        <article class="blog-card">
-            <span class="blog-category">Cloud</span>
-            <h3>My AWS Learning Journey: Getting Started</h3>
-            <p class="blog-excerpt">How I'm exploring cloud fundamentals, EC2, S3, and Docker to level up my DevOps and cloud skills.</p>
-            <div class="blog-footer">
-                <span class="blog-date"><i class="fa-regular fa-calendar"></i> 2025</span>
-                <a href="blog-aws-journey.html" class="blog-read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
-            </div>
-        </article>
-        <article class="blog-card">
-            <span class="blog-category">Cybersecurity</span>
-            <h3>My First Month on TryHackMe</h3>
-            <p class="blog-excerpt">Hands-on rooms, Nmap, and Burp Suite — what learning cybersecurity one lab at a time taught me about real security skills.</p>
-            <div class="blog-footer">
-                <span class="blog-date"><i class="fa-regular fa-calendar"></i> 2026</span>
-                <a href="blog-tryhackme-first-month.html" class="blog-read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
+                <span class="blog-date"><i class="fa-regular fa-calendar" aria-hidden="true"></i> <time datetime="2026-04-15">April 15, 2026</time></span>
+                <a href="blog-vlans-home-lab.html" class="blog-read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         </article>
         <article class="blog-card">
@@ -3053,17 +3043,44 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <h3>Dockerizing My Portfolio: Containers Made Simple</h3>
             <p class="blog-excerpt">How I turned this static site into a container — Dockerfiles, volume mounts, and one-command deployment.</p>
             <div class="blog-footer">
-                <span class="blog-date"><i class="fa-regular fa-calendar"></i> 2026</span>
+                <span class="blog-date"><i class="fa-regular fa-calendar" aria-hidden="true"></i> <time datetime="2026-03-15">March 15, 2026</time></span>
                 <a href="blog-docker-portfolio.html" class="blog-read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         </article>
         <article class="blog-card">
-            <span class="blog-category">Networking</span>
-            <h3>Segmenting My Home Lab with VLANs</h3>
-            <p class="blog-excerpt">From flat network to isolated virtual LANs — access ports, 802.1Q trunks, and why segmentation matters at home.</p>
+            <span class="blog-category">Cybersecurity</span>
+            <h3>My First Month on TryHackMe</h3>
+            <p class="blog-excerpt">Hands-on rooms, Nmap, and Burp Suite — what learning cybersecurity one lab at a time taught me about real security skills.</p>
             <div class="blog-footer">
-                <span class="blog-date"><i class="fa-regular fa-calendar"></i> 2026</span>
-                <a href="blog-vlans-home-lab.html" class="blog-read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
+                <span class="blog-date"><i class="fa-regular fa-calendar" aria-hidden="true"></i> <time datetime="2026-02-15">February 15, 2026</time></span>
+                <a href="blog-tryhackme-first-month.html" class="blog-read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </article>
+        <article class="blog-card">
+            <span class="blog-category">Networking</span>
+            <h3>Setting Up My Home Lab: Networking Basics</h3>
+            <p class="blog-excerpt">A beginner's walkthrough of configuring routers, switches, and using Wireshark to sniff traffic in a home lab setup.</p>
+            <div class="blog-footer">
+                <span class="blog-date"><i class="fa-regular fa-calendar" aria-hidden="true"></i> <time datetime="2026-01-15">January 15, 2026</time></span>
+                <a href="blog-home-lab.html" class="blog-read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </article>
+        <article class="blog-card">
+            <span class="blog-category">Cloud</span>
+            <h3>My AWS Learning Journey: Getting Started</h3>
+            <p class="blog-excerpt">How I'm exploring cloud fundamentals, EC2, S3, and Docker to level up my DevOps and cloud skills.</p>
+            <div class="blog-footer">
+                <span class="blog-date"><i class="fa-regular fa-calendar" aria-hidden="true"></i> <time datetime="2025-09-20">September 20, 2025</time></span>
+                <a href="blog-aws-journey.html" class="blog-read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </article>
+        <article class="blog-card">
+            <span class="blog-category">Experience</span>
+            <h3>From Help Desk to IT Assistant: What I Learned</h3>
+            <p class="blog-excerpt">Lessons from supporting end users every day — troubleshooting, patience, and the joy of solving problems.</p>
+            <div class="blog-footer">
+                <span class="blog-date"><i class="fa-regular fa-calendar" aria-hidden="true"></i> <time datetime="2025-06-10">June 10, 2025</time></span>
+                <a href="blog-helpdesk-lessons.html" class="blog-read-more">Read More <i class="fa-solid fa-arrow-right"></i></a>
             </div>
         </article>
     </div>

@@ -62,7 +62,7 @@
         .meta{display:flex;flex-wrap:wrap;gap:1.4rem;color:var(--accent);font-size:.95rem;font-weight:500;padding-bottom:1.8rem;margin-bottom:2rem;border-bottom:1px solid rgba(255,255,255,.08);}
         .content{font-size:1.05rem;}
         .content p{margin-bottom:1.4rem;}
-        .content h2{color:#fff;font-size:1.5rem;margin:2.4rem 0 1rem;}
+        .content h2{color:#fff;font-size:1.5rem;margin:2.4rem 0 1rem;scroll-margin-top:6rem;}
         .content h3{color:var(--accent);font-size:1.2rem;margin:1.8rem 0 .8rem;}
         .content ul,.content ol{margin:0 0 1.4rem 1.6rem;}
         .content li{margin-bottom:.5rem;}
@@ -110,6 +110,32 @@
         [data-theme="light"] .bp-footer .social a:hover,
         [data-theme="light"] #theme-toggle:hover,
         [data-theme="light"] .skip-link{color:#ffffff;}
+    
+/* On-this-page contents */
+.toc{margin:0 0 2.6rem;padding:1.4rem 1.7rem;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:14px;}
+.toc-title{display:block;font-size:.74rem;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin:0 0 .7rem;font-weight:700;}
+.toc ol{margin:0;padding-left:1.3rem;}
+.toc li{margin:.3rem 0;font-size:.95rem;line-height:1.5;}
+.toc a{color:var(--text);text-decoration:none;}
+.toc a:hover,.toc a:focus-visible{color:var(--main);text-decoration:underline;}
+/* Previous / next post */
+.post-nav{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin-top:3rem;}
+.post-nav a{display:block;padding:1.1rem 1.3rem;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:12px;text-decoration:none;transition:border-color .25s;}
+.post-nav a:hover{border-color:var(--main);}
+.post-nav .pn-label{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin-bottom:.35rem;font-weight:700;}
+.post-nav .pn-title{display:block;font-size:.95rem;font-weight:600;color:var(--text);line-height:1.35;}
+.post-nav .pn-next{text-align:right;}
+.post-nav .pn-empty{visibility:hidden;}
+@media(max-width:600px){
+  .post-nav{grid-template-columns:1fr;}
+  .post-nav .pn-next{text-align:left;}
+}
+
+</style>
+    <style>
+[data-theme="light"] .toc,
+[data-theme="light"] .post-nav a{ border-color:#d6d9de; }
+[data-theme="light"] .post-nav .pn-title{ color:var(--text); }
     </style>
 </head>
 <body>
@@ -125,15 +151,27 @@
         <span class="category">Cloud</span>
         <h1 class="title">My AWS Learning Journey: Getting Started</h1>
         <div class="meta">
-            <span>2025</span>
+            <time datetime="2025-09-20">September 20, 2025</time>
             <span>Glenn Patrick Cabansag</span>
             <span>7 min read</span>
         </div>
+        <nav class="toc" aria-labelledby="toc-heading">
+            <span class="toc-title" id="toc-heading">On this page</span>
+            <ol>
+                <li><a href="#start-with-the-big-three-services">1. Start With the Big Three Services</a></li>
+                <li><a href="#spin-up-a-free-tier-ec2-instance">2. Spin Up a Free-Tier EC2 Instance</a></li>
+                <li><a href="#manage-firewalls-with-security-groups">3. Manage Firewalls With Security Groups</a></li>
+                <li><a href="#docker-changed-how-i-think-about-deployment">4. Docker Changed How I Think About Deployment</a></li>
+                <li><a href="#keep-the-bill-at-zero">5. Keep the Bill at Zero</a></li>
+                <li><a href="#what-s-next">What's Next</a></li>
+            </ol>
+        </nav>
+
 
         <div class="content">
             <p>Cloud computing felt overwhelming at first, but after certifying in Digital Transformation with Google Cloud, I decided to go deeper with AWS. Here's my starter roadmap and the concepts that made everything click.</p>
 
-            <h2>1. Start With the Big Three Services</h2>
+            <h2 id="start-with-the-big-three-services">1. Start With the Big Three Services</h2>
             <p>Don't try to learn all 200+ AWS services. The foundation tier is really three things:</p>
             <ul>
                 <li><strong>EC2</strong> — virtual servers. Learn to launch, connect via SSH, and run a simple web server.</li>
@@ -141,28 +179,39 @@
                 <li><strong>IAM</strong> — identity and access. Learn users, roles, and the principle of least privilege.</li>
             </ul>
 
-            <h2>2. Spin Up a Free-Tier EC2 Instance</h2>
+            <h2 id="spin-up-a-free-tier-ec2-instance">2. Spin Up a Free-Tier EC2 Instance</h2>
             <p>Hands-on beats reading every time. I launched a free-tier t2.micro, connected with SSH, and hosted a tiny page with Python:</p>
             <pre><code># Install a web server + write a quick page
 sudo apt update
 sudo apt install -y nginx
 echo "&lt;h1&gt;Hello from EC2&lt;/h1&gt;" | sudo tee /var/www/html/index.html</code></pre>
 
-            <h2>3. Manage Firewalls With Security Groups</h2>
+            <h2 id="manage-firewalls-with-security-groups">3. Manage Firewalls With Security Groups</h2>
             <p>The default security group blocks most traffic. I opened port 22 (SSH) and port 80 (HTTP) and immediately understood why permissions matter — a misconfigured group can expose your instance to the whole internet. Least privilege is not optional.</p>
 
-            <h2>4. Docker Changed How I Think About Deployment</h2>
+            <h2 id="docker-changed-how-i-think-about-deployment">4. Docker Changed How I Think About Deployment</h2>
             <p>Containerizing projects with Docker made my local code run identically in the cloud. A simple <code>Dockerfile</code> plus an image pull means the same app runs on my laptop and on EC2 without setup drama:</p>
             <pre><code>docker build -t my-app .
 docker run -d -p 8080:80 my-app</code></pre>
 
-            <h2>5. Keep the Bill at Zero</h2>
+            <h2 id="keep-the-bill-at-zero">5. Keep the Bill at Zero</h2>
             <p>The biggest fear for a fresh grad is the AWS bill. My rule: use the free tier, always tag resources, and <strong>terminate</strong> what I'm not using. Checking the billing dashboard after every session is a habit I refuse to skip.</p>
             <blockquote>Cloud skills are about making systems scalable and reliable — but wisdom is knowing when to shut things down.</blockquote>
 
-            <h2>What's Next</h2>
+            <h2 id="what-s-next">What's Next</h2>
             <p>I'm moving toward CI/CD pipelines next — building a small project, pushing it to GitHub, and letting an automated workflow test and deploy it to EC2. The path from developer to cloud-ready is just a series of small, repeated experiments.</p>
         </div>
+        <nav class="post-nav" aria-label="Post navigation">
+            <a class="pn-prev" href="blog-helpdesk-lessons.html" rel="prev">
+                <span class="pn-label">Previous post</span>
+                <span class="pn-title">From Help Desk to IT Assistant: What I Learned</span>
+            </a>
+            <a class="pn-next" href="blog-home-lab.html" rel="next">
+                <span class="pn-label">Next post</span>
+                <span class="pn-title">Setting Up My Home Lab: Networking Basics</span>
+            </a>
+        </nav>
+
 
         <div class="post-footer">Thanks for reading! Connect on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer">LinkedIn</a> or check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">GitHub</a>.</div>
     </article>

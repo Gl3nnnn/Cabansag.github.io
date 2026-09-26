@@ -62,7 +62,7 @@
         .meta{display:flex;flex-wrap:wrap;gap:1.4rem;color:var(--accent);font-size:.95rem;font-weight:500;padding-bottom:1.8rem;margin-bottom:2rem;border-bottom:1px solid rgba(255,255,255,.08);}
         .content{font-size:1.05rem;}
         .content p{margin-bottom:1.4rem;}
-        .content h2{color:#fff;font-size:1.5rem;margin:2.4rem 0 1rem;}
+        .content h2{color:#fff;font-size:1.5rem;margin:2.4rem 0 1rem;scroll-margin-top:6rem;}
         .content h3{color:var(--accent);font-size:1.2rem;margin:1.8rem 0 .8rem;}
         .content ul,.content ol{margin:0 0 1.4rem 1.6rem;}
         .content li{margin-bottom:.5rem;}
@@ -110,6 +110,32 @@
         [data-theme="light"] .bp-footer .social a:hover,
         [data-theme="light"] #theme-toggle:hover,
         [data-theme="light"] .skip-link{color:#ffffff;}
+    
+/* On-this-page contents */
+.toc{margin:0 0 2.6rem;padding:1.4rem 1.7rem;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:14px;}
+.toc-title{display:block;font-size:.74rem;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin:0 0 .7rem;font-weight:700;}
+.toc ol{margin:0;padding-left:1.3rem;}
+.toc li{margin:.3rem 0;font-size:.95rem;line-height:1.5;}
+.toc a{color:var(--text);text-decoration:none;}
+.toc a:hover,.toc a:focus-visible{color:var(--main);text-decoration:underline;}
+/* Previous / next post */
+.post-nav{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin-top:3rem;}
+.post-nav a{display:block;padding:1.1rem 1.3rem;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:12px;text-decoration:none;transition:border-color .25s;}
+.post-nav a:hover{border-color:var(--main);}
+.post-nav .pn-label{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin-bottom:.35rem;font-weight:700;}
+.post-nav .pn-title{display:block;font-size:.95rem;font-weight:600;color:var(--text);line-height:1.35;}
+.post-nav .pn-next{text-align:right;}
+.post-nav .pn-empty{visibility:hidden;}
+@media(max-width:600px){
+  .post-nav{grid-template-columns:1fr;}
+  .post-nav .pn-next{text-align:left;}
+}
+
+</style>
+    <style>
+[data-theme="light"] .toc,
+[data-theme="light"] .post-nav a{ border-color:#d6d9de; }
+[data-theme="light"] .post-nav .pn-title{ color:var(--text); }
     </style>
 </head>
 <body>
@@ -125,15 +151,26 @@
         <span class="category">Experience</span>
         <h1 class="title">From Help Desk to IT Assistant: What I Learned</h1>
         <div class="meta">
-            <span>2025</span>
+            <time datetime="2025-06-10">June 10, 2025</time>
             <span>Glenn Patrick Cabansag</span>
             <span>5 min read</span>
         </div>
+        <nav class="toc" aria-labelledby="toc-heading">
+            <span class="toc-title" id="toc-heading">On this page</span>
+            <ol>
+                <li><a href="#troubleshooting-is-a-process-not-magic">1. Troubleshooting Is a Process, Not Magic</a></li>
+                <li><a href="#patience-and-communication-are-half-the-job">2. Patience and Communication Are Half the Job</a></li>
+                <li><a href="#documentation-is-a-superpower">3. Documentation Is a Superpower</a></li>
+                <li><a href="#every-day-teaches-you-something-new">4. Every Day Teaches You Something New</a></li>
+                <li><a href="#tips-for-fresh-grads">Tips for Fresh Grads</a></li>
+            </ol>
+        </nav>
+
 
         <div class="content">
             <p>My first real role in IT was as a Help Desk associate, and now I work as an IT Assistant at COMPASS Training Center. Both jobs taught me that support is about so much more than fixing computers. Here are the biggest lessons.</p>
 
-            <h2>1. Troubleshooting Is a Process, Not Magic</h2>
+            <h2 id="troubleshooting-is-a-process-not-magic">1. Troubleshooting Is a Process, Not Magic</h2>
             <p>The first question is always the same: <strong>healthy or broken?</strong> I learned to work top-down — check cables and power, check the obvious settings, then dig deeper. Write everything you try down; it keeps you from repeating steps and helps you spot patterns across tickets.</p>
             <ol>
                 <li>Gather information from the user first</li>
@@ -142,19 +179,27 @@
                 <li>Communicate the fix back in plain language</li>
             </ol>
 
-            <h2>2. Patience and Communication Are Half the Job</h2>
+            <h2 id="patience-and-communication-are-half-the-job">2. Patience and Communication Are Half the Job</h2>
             <p>Users describe issues in their own words, not network terms. A "my internet is slow" report can hide dozens of root causes. I learned to ask clear questions, explain what I'm doing, and always close the loop with the end user so they know the issue is resolved.</p>
 
-            <h2>3. Documentation Is a Superpower</h2>
+            <h2 id="documentation-is-a-superpower">3. Documentation Is a Superpower</h2>
             <p>Repeating tickets are the best signal that something needs documentation. Over time I built quick reference notes for common fixes — printer issues, login problems, connectivity checks. Ten minutes of writing saves an hour of re-diagnosing later.</p>
 
-            <h2>4. Every Day Teaches You Something New</h2>
+            <h2 id="every-day-teaches-you-something-new">4. Every Day Teaches You Something New</h2>
             <p>From setup and deployment to backups, network configs, and user management, support roles touch everything. That breadth is exactly what helped me grow from Help Desk into an IT Assistant — and what keeps pushing me toward cloud, networking, and development.</p>
             <blockquote>Support roles are the best foundation for a career in IT. You touch every layer of the stack and learn how real systems actually behave.</blockquote>
 
-            <h2>Tips for Fresh Grads</h2>
+            <h2 id="tips-for-fresh-grads">Tips for Fresh Grads</h2>
             <p>Say yes to the messy tickets, keep a learning log, and be honest when you're unsure — then go find the answer. Curiosity compounds. Two years in, I can trace problems that used to leave me stuck, and I'm still just getting started.</p>
         </div>
+        <nav class="post-nav" aria-label="Post navigation">
+            <div class="pn-empty" aria-hidden="true"></div>
+            <a class="pn-next" href="blog-aws-journey.html" rel="next">
+                <span class="pn-label">Next post</span>
+                <span class="pn-title">My AWS Learning Journey: Getting Started</span>
+            </a>
+        </nav>
+
 
         <div class="post-footer">Thanks for reading! Connect on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer">LinkedIn</a> or check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">GitHub</a>.</div>
     </article>
