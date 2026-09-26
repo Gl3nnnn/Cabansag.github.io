@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#121212">
+    <script>(function(){try{var t=localStorage.getItem('theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';}document.querySelector('meta[name="theme-color"]').setAttribute('content',t==='light'?'#f6f7f9':'#121212');}catch(e){}})();</script>
     <title>404 - Page Not Found | Glenn Patrick Cabansag</title>
     <meta name="robots" content="noindex">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="canonical" href="https://gl3nnnn.github.io/">
+    <link rel="canonical" href="https://gl3nnnn.github.io/Cabansag.github.io/">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -31,9 +32,23 @@
         footer{margin-top:3.5rem;color:var(--muted);font-size:.85rem;}
         footer span{color:var(--accent);}
         :focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:.3rem;}
+        /* Theme toggle (no header on 404, so fixed to the corner) */
+        #theme-toggle{position:fixed;top:1.4rem;right:1.4rem;z-index:60;display:inline-flex;align-items:center;justify-content:center;width:2.8rem;height:2.8rem;border-radius:50%;border:1.5px solid var(--main);background:transparent;color:var(--main);font-size:1rem;cursor:pointer;transition:.25s;}
+        #theme-toggle:hover{background:var(--main);color:#000;box-shadow:0 0 14px rgba(27,179,14,.5);}
+        /* Light theme */
+        [data-theme="light"]{--bg:#f6f7f9;--panel:#ffffff;--main:#166534;--accent:#115e59;--text:#17181c;--muted:#5f6368;}
+        [data-theme="light"] h1{color:#14161a;}
+        [data-theme="light"] #theme-toggle:hover{color:#fff;}
+        [data-theme="light"] .code{text-shadow:none;}
+        [data-theme="light"] .code i{text-shadow:none;}
+        [data-theme="light"] .btn{background:#ffffff;color:var(--main);border:2px solid var(--main);}
+        [data-theme="light"] .btn:hover{background:var(--main);color:#ffffff;box-shadow:0 6px 18px rgba(22,101,52,.3);}
+        [data-theme="light"] .btn-ghost{color:var(--accent);border:2px solid var(--accent);}
+        [data-theme="light"] .btn-ghost:hover{background:var(--accent);color:#ffffff;box-shadow:0 6px 18px rgba(17,94,89,.3);}
     </style>
 </head>
 <body>
+    <button id="theme-toggle" aria-label="Toggle light and dark mode" title="Toggle light/dark mode"><i class="fa-solid fa-moon"></i></button>
     <div class="code"><i class="fa-solid fa-bug"></i> 4<i>0</i>4</div>
     <h1>Oops! That page got lost.</h1>
     <p>The link may be broken, or the page may have moved. Let's get you back on track — try the home page or the FAQ.</p>
@@ -44,6 +59,30 @@
     <footer>&copy; <span id="year"></span> Glenn Patrick Cabansag</footer>
     <script>
         document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Theme toggle (persisted; defaults to system preference)
+        (function initTheme() {
+            const root = document.documentElement;
+            let saved = null;
+            try { saved = localStorage.getItem('theme'); } catch (err) { /* ignore */ }
+            const prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+            const theme = saved || (prefersLight ? 'light' : 'dark');
+            const toggle = document.getElementById('theme-toggle');
+            const icon = toggle ? toggle.querySelector('i') : null;
+            const themeColor = document.querySelector('meta[name="theme-color"]');
+            const applyThemeColor = (t) => { if (themeColor) themeColor.setAttribute('content', t === 'light' ? '#f6f7f9' : '#121212'); };
+            root.setAttribute('data-theme', theme);
+            try { localStorage.setItem('theme', theme); } catch (err) { /* ignore */ }
+            if (icon) icon.className = theme === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            applyThemeColor(theme);
+            if (toggle) toggle.addEventListener('click', () => {
+                const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+                root.setAttribute('data-theme', next);
+                if (icon) icon.className = next === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+                applyThemeColor(next);
+                try { localStorage.setItem('theme', next); } catch (err) { /* ignore */ }
+            });
+        })();
     </script>
 </body>
 </html>
