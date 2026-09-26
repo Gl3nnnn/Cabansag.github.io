@@ -1393,6 +1393,85 @@ padding-left:37px;
 }
 
 /* Certifications */
+/* About */
+.about{
+    padding: 100px 9%;
+    background: var(--second-bg-color);
+}
+.about h2{
+    text-align: center;
+    margin-bottom: 4.5rem;
+    color: white;
+}
+.about-grid{
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap: 4rem;
+    align-items: start;
+}
+.about-lead{
+    font-size: 1.7rem;
+    line-height: 1.75;
+    color: var(--text-color);
+}
+.about-lead + .about-lead{ margin-top: 1.6rem; }
+.about-lead strong{ color: var(--main-color); font-weight: 600; }
+.about-facts{
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.about-fact{
+    display: flex;
+    align-items: flex-start;
+    gap: 1.1rem;
+    background: var(--bg-color);
+    border: 1px solid #333;
+    border-radius: 1.2rem;
+    padding: 1.2rem 1.5rem;
+    transition: border-color .25s ease-in-out, transform .25s ease-in-out;
+}
+.about-fact:hover{
+    border-color: var(--main-color);
+    transform: translateY(-2px);
+}
+.about-fact > i{
+    color: var(--main-color);
+    font-size: 1.5rem;
+    line-height: 1.4;
+    flex-shrink: 0;
+    width: 1.6rem;
+    text-align: center;
+}
+.about-fact .about-fact-label{
+    display: block;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    color: var(--muted-color);
+    margin-bottom: .2rem;
+}
+.about-fact .about-fact-value{
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+    line-height: 1.4;
+}
+@media(max-width:991px){
+    .about-grid{
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+}
+@media(max-width:600px){
+    .about{ padding: 80px 5%; }
+    .about-lead{ font-size: 1.5rem; }
+}
 .certifications{
     background: var(--second-bg-color);
 }
@@ -1830,6 +1909,7 @@ section{
 [data-theme="light"] .services h2,
 [data-theme="light"] .contact h2,
 [data-theme="light"] .certifications h2,
+[data-theme="light"] .about h2,
 [data-theme="light"] .cert-category-heading h3,
 [data-theme="light"] .cert-card h4,
 [data-theme="light"] .skill-heading,
@@ -1843,7 +1923,8 @@ section{
 [data-theme="light"] .blog-post-content code,
 [data-theme="light"] .blog-post-content img,
 [data-theme="light"] .cert-card,
-[data-theme="light"] .blog-card{ border-color: #d6d9de; }
+[data-theme="light"] .blog-card,
+[data-theme="light"] .about-fact{ border-color: #d6d9de; }
 /* Cert search/filter: soften the hard #333 border for the light theme. */
 [data-theme="light"] .cert-search,
 [data-theme="light"] .cert-filter-btn{ border-color: #d6d9de; }
@@ -2141,6 +2222,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
         <i class="fa-solid fa-bars" id="menu-icon"></i>
         <nav class="navbar">
             <a href="#home" class="active">Home</a>
+            <a href="#about">About</a>
             <a href="#education">Education</a>
             <a href="#experience">Experience</a>
             <a href="#certifications">Certifications</a>
@@ -2196,6 +2278,59 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <span class="hero-stat-label">Skill Areas</span>
         </div>
     </div>
+
+    <section class="about" id="about" tabindex="-1">
+        <h2 class="heading">About <span>Me</span></h2>
+        <div class="about-grid">
+            <div class="about-text">
+                <p class="about-lead">I'm an Information Technology professional based in Iloilo, Philippines. I graduated from the
+                    University of San Agustin with a <strong>Bachelor of Science in Information Technology</strong> in 2024, and I work
+                    as an IT Assistant at COMPASS Training Center.</p>
+                <p class="about-lead">Most of my work sits where software meets the people who depend on it: building web
+                    applications, supporting users, and keeping networks and systems running. I care about the unglamorous parts
+                    too — clear documentation, accessible interfaces, and things that keep working after I leave.</p>
+                <p class="about-lead">Outside of work I keep building small projects to learn, which is where most of what I've
+                    picked up in PHP, JavaScript, Python and networking actually came from.</p>
+            </div>
+            <ul class="about-facts">
+                <li class="about-fact">
+                    <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                    <span>
+                        <span class="about-fact-label">Based in</span>
+                        <span class="about-fact-value">Iloilo, Philippines</span>
+                    </span>
+                </li>
+                <li class="about-fact">
+                    <i class="fa-solid fa-graduation-cap" aria-hidden="true"></i>
+                    <span>
+                        <span class="about-fact-label">Education</span>
+                        <span class="about-fact-value">BS Information Technology, University of San Agustin (2024)</span>
+                    </span>
+                </li>
+                <li class="about-fact">
+                    <i class="fa-solid fa-briefcase" aria-hidden="true"></i>
+                    <span>
+                        <span class="about-fact-label">Current role</span>
+                        <span class="about-fact-value">IT Assistant, COMPASS Training Center</span>
+                    </span>
+                </li>
+                <li class="about-fact">
+                    <i class="fa-solid fa-code" aria-hidden="true"></i>
+                    <span>
+                        <span class="about-fact-label">Daily languages</span>
+                        <span class="about-fact-value">PHP, JavaScript, Python, SQL</span>
+                    </span>
+                </li>
+                <li class="about-fact">
+                    <i class="fa-solid fa-compass" aria-hidden="true"></i>
+                    <span>
+                        <span class="about-fact-label">Currently learning</span>
+                        <span class="about-fact-value">AWS and cloud architecture</span>
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </section>
 
     <section class="education" id="education">
         <h2 class="heading">Education</h2>
@@ -3189,6 +3324,7 @@ submitBtn.textContent = 'Send Message';
     <ul class="list">
         <li> <a href="RESUME_Cabansag_GlennPatrick.pdf" download="RESUME_Cabansag_GlennPatrick.pdf">Resume</a></li>
         <li> <a href="faq.html">FAQ</a></li>
+        <li> <a href="#about">About</a></li>
         <li> <a href="#education">Education</a></li>
         <li> <a href="#experience">Experience</a></li>
         <li> <a href="#certifications">Certifications</a></li>
