@@ -68,7 +68,9 @@ The Projects section on the site loads live from GitHub and includes language fi
 - `profile.jpg`, `og-cover.jpg` — profile photo and social share card
 - `favicon.svg`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png` — branding and icons
 - `sitemap.xml`, `robots.txt` — SEO files
-- `RESUME_Cabansag_GlennPatrick.pdf` — downloadable resume
+- `resume.html` — printable resume source (2 pages, A4). Experience, education, skills, all 37 certifications and the 12 projects are generated from this site's own data by the build script, so the resume cannot drift from the site. Edit the data, regenerate, then print to PDF.
+- `resume-2026.pdf` — the generated resume served to visitors
+- `RESUME_Cabansag_GlennPatrick.pdf` — superseded 2024 resume, kept for reference and no longer linked
 
 ## Contact Me
 
