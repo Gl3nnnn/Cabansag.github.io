@@ -96,18 +96,18 @@ const GITHUB_API_URL = `https://api.github.com/users/${GITHUB_USER}/repos?sort=u
 // The API is still queried, but only to enrich these entries with live star
 // counts, last-pushed dates and demo URLs.
 const PROJECTS = [
-    { name: 'INVENTORY-NEW', language: 'PHP', description: 'Inventory management web system for tracking stock, suppliers and item movement in a small business.' },
-    { name: 'accounting', language: 'Blade', description: 'Accounting and financial web application built with Laravel and Blade templating.' },
-    { name: 'TechDesk', language: 'PHP', description: 'IT tech-desk ticketing app for logging, assigning and tracking technical support requests.' },
-    { name: 'helpdesk', language: 'PHP', description: 'Helpdesk support system built to manage end-user tickets and recurring IT issues.' },
-    { name: 'it_inventory', language: 'PHP', description: 'IT asset inventory system for recording hardware, assignments and equipment lifecycle.' },
-    { name: 'InventoryTBF', language: 'JavaScript', description: 'Browser-based inventory tracker for monitoring stock levels and item records.' },
-    { name: 'Issue-Tracker', language: 'JavaScript', description: 'Issue and bug tracking web application for capturing, triaging and managing defects.' },
-    { name: 'games', language: 'JavaScript', description: 'Collection of small browser games built with vanilla JavaScript.' },
-    { name: 'radios', language: 'JavaScript', description: 'Streaming-style radio player web app built with JavaScript.' },
-    { name: 'SimpleStudentManager', language: 'Python', description: 'Command-line student management app for storing, searching and updating student records.' },
-    { name: 'SimpleAssistant', language: 'Python', description: 'Desktop assistant application with task helpers and lightweight automation.' },
-    { name: 'simplecalculator', language: 'Python', description: 'Desktop calculator application with a clean graphical interface.' }
+    { name: 'INVENTORY-NEW', language: 'PHP', tags: ['Inventory', 'Web App'], description: 'Inventory management web system for tracking stock, suppliers and item movement in a small business.' },
+    { name: 'accounting', language: 'Blade', tags: ['Accounting', 'Laravel'], description: 'Accounting and financial web application built with Laravel and Blade templating.' },
+    { name: 'TechDesk', language: 'PHP', tags: ['Ticketing', 'Helpdesk'], description: 'IT tech-desk ticketing app for logging, assigning and tracking technical support requests.' },
+    { name: 'helpdesk', language: 'PHP', tags: ['Helpdesk', 'Ticketing'], description: 'Helpdesk support system built to manage end-user tickets and recurring IT issues.' },
+    { name: 'it_inventory', language: 'PHP', tags: ['IT Assets', 'Inventory'], description: 'IT asset inventory system for recording hardware, assignments and equipment lifecycle.' },
+    { name: 'InventoryTBF', language: 'JavaScript', tags: ['Inventory', 'Web App'], description: 'Browser-based inventory tracker for monitoring stock levels and item records.' },
+    { name: 'Issue-Tracker', language: 'JavaScript', tags: ['Issue Tracking', 'Web App'], description: 'Issue and bug tracking web application for capturing, triaging and managing defects.' },
+    { name: 'games', language: 'JavaScript', tags: ['Games', 'Browser'], description: 'Collection of small browser games built with vanilla JavaScript.' },
+    { name: 'radios', language: 'JavaScript', tags: ['Audio', 'Web App'], description: 'Streaming-style radio player web app built with JavaScript.' },
+    { name: 'SimpleStudentManager', language: 'Python', tags: ['Student Records', 'CLI'], description: 'Command-line student management app for storing, searching and updating student records.' },
+    { name: 'SimpleAssistant', language: 'Python', tags: ['Automation', 'Desktop'], description: 'Desktop assistant application with task helpers and lightweight automation.' },
+    { name: 'simplecalculator', language: 'Python', tags: ['Calculator', 'Desktop'], description: 'Desktop calculator application with a clean graphical interface.' }
 ];
 
 // Rendered when nothing has loaded yet and before enrichment completes.
@@ -116,6 +116,7 @@ function projectsFromCurated() {
         name: p.name,
         language: p.language,
         description: p.description,
+        tags: p.tags || [],
         stargazers_count: 0,
         html_url: `https://github.com/${GITHUB_USER}/${p.name}`,
         homepage: '',
@@ -134,6 +135,7 @@ function enrichProjects(apiRepos) {
                 name: p.name,
                 language: p.language,
                 description: p.description,
+                tags: p.tags || [],
                 stargazers_count: 0,
                 html_url: `https://github.com/${GITHUB_USER}/${p.name}`,
                 homepage: '',
@@ -144,6 +146,7 @@ function enrichProjects(apiRepos) {
             name: p.name,
             language: live.language || p.language,
             description: p.description,
+            tags: p.tags || [],
             stargazers_count: live.stargazers_count || 0,
             html_url: live.html_url || `https://github.com/${GITHUB_USER}/${p.name}`,
             homepage: live.homepage || '',
@@ -185,6 +188,9 @@ function buildProjectCard(repo) {
     const ctaLabel = hasDemo ? 'Live Demo' : 'View Project';
     const ctaIcon = hasDemo ? 'fa-solid fa-rocket' : 'fa-solid fa-arrow-right';
     const pushed = formatPushed(repo.pushed_at);
+    const tags = (repo.tags || [])
+        .map(tag => `<span class="project-tag">${tag}</span>`)
+        .join('');
 
     return `
         <a class="project-card" href="${url}" target="_blank" rel="noopener">
@@ -193,6 +199,7 @@ function buildProjectCard(repo) {
                 <span class="project-star"><i class="fa-solid fa-star"></i> ${stars}</span>
             </div>
             <p>${description}</p>
+            ${tags ? `<div class="project-tags">${tags}</div>` : ''}
             <div class="project-meta">
                 <span class="project-lang"><i class="${langIcon(language)}"></i> ${language}</span>
                 ${pushed ? `<span class="project-updated"><i class="fa-regular fa-clock"></i> ${pushed}</span>` : ''}
@@ -218,9 +225,12 @@ function renderProjectFilters() {
     if (!container) return;
     const counts = projectLangCounts();
     const langs = Object.keys(counts).sort((a, b) => (counts[b] - counts[a]) || a.localeCompare(b));
-    container.innerHTML = ['All', ...langs].map(lang =>
-        `<button type="button" class="chip${lang === activeLang ? ' active' : ''}" data-lang="${lang}">${lang}</button>`
-    ).join('');
+    const total = activeProjects.length;
+    const options = ['All', ...langs].map(lang => {
+        const n = lang === 'All' ? total : (counts[lang] || 0);
+        return `<button type="button" class="chip${lang === activeLang ? ' active' : ''}" data-lang="${lang}" aria-pressed="${lang === activeLang}">${lang} <span class="chip-count">${n}</span></button>`;
+    });
+    container.innerHTML = options.join('');
     container.querySelectorAll('.chip').forEach(chip => {
         chip.addEventListener('click', () => {
             activeLang = chip.dataset.lang;
@@ -234,6 +244,13 @@ function renderProjectGrid() {
     const list = activeLang === 'All'
         ? activeProjects
         : activeProjects.filter(repo => (repo.language || 'N/A') === activeLang);
+
+    const counter = document.getElementById('project-results-count');
+    if (counter) {
+        counter.textContent = list.length === activeProjects.length
+            ? `Showing all ${list.length} projects`
+            : `Showing ${list.length} of ${activeProjects.length} projects`;
+    }
 
     if (list.length === 0) {
         projectsGrid.innerHTML = `<p class="project-error">No projects in this category.</p>`;
@@ -263,7 +280,10 @@ function renderProjects(projects) {
 }
 
 async function loadProjects() {
-    const CACHE_KEY = 'portfolio_projects_v2';
+    // v3: cached v2 payloads predate the per-project tags, so they'd render
+    // cards with an empty tag row until the TTL expired. Bumped to force one
+    // refetch instead.
+    const CACHE_KEY = 'portfolio_projects_v3';
     const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
     const readCache = () => {

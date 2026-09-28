@@ -52,15 +52,16 @@ Some featured public repositories:
 - **InventoryTBF** / **Issue-Tracker** / **radios** / **games** — JavaScript apps
 - **SimpleStudentManager** / **SimpleAssistant** / **simplecalculator** — Python utilities
 
-The Projects section on the site loads live from GitHub and includes language filters. View the full list on my [GitHub](https://github.com/Gl3nnnn).
+The Projects section on the site loads live from GitHub and includes language filters with per-language counts, a "Showing X of Y" result counter, and two topic tags per project. The list itself is a curated set of repositories in `script.js`, so the section never shrinks or reorders when the API is rate limited or a repo is renamed. View the full list on my [GitHub](https://github.com/Gl3nnnn).
 
 ## Site Structure
 
-- `index.html` — main portfolio page (home, education, experience, certifications, skills, projects, testimonials, blog, contact)
+- `index.html` — main portfolio page (home, about, education, experience, certifications, skills, projects, testimonials, blog, contact)
 - `faq.html` — frequently asked questions
+- `blog.html` — blog archive with search and topic filters
 - `blog-home-lab.html`, `blog-helpdesk-lessons.html`, `blog-aws-journey.html`, `blog-tryhackme-first-month.html`, `blog-docker-portfolio.html`, `blog-vlans-home-lab.html` — blog posts
 - `404.html` — custom 404 page
-- `script.js` — shared interactivity (nav, scroll spy, projects via GitHub API, reveal-on-scroll, theme toggle, hero stats, skill bars, cert links, copy-email). Loaded only by `index.html`.
+- `script.js` — shared interactivity (nav, scroll spy, projects via GitHub API with curated fallback, language filters, reveal-on-scroll, theme toggle, hero stats, skill bars, cert links, copy-email). Loaded only by `index.html`.
 - Inline in `index.html` — the EmailJS contact form handler, honeypot, field validation and status popups
 - Inline in `faq.html` — FAQ accordion, search and category filter
 - `manifest.webmanifest` — PWA/install metadata
