@@ -21,13 +21,16 @@ const certs = [...certSection.matchAll(/<div class="cert-card">[\s\S]*?<h4>([\s\
 if (certs.length !== 37) throw new Error(`expected 37 certifications, parsed ${certs.length}`);
 
 // ---------- the certifications that make the cut ----------
-// Seven of the 37, chosen for recognised issuer and relevance to an IT
+// Eight of the 37, chosen for recognised issuer and relevance to an IT
 // support / cloud / Linux career: Cisco CCNA for networking, the ISC2 CC for
 // security, both Red Hat RHCSA levels for Linux, Google Cloud Fundamentals and
-// Technical Support Fundamentals, and TryHackMe Advent of Cyber.
+// Technical Support Fundamentals, TryHackMe Advent of Cyber, and the DataCamp
+// AI Engineer for Developers Associate.
 // Everything else - the TESDA and design courses, the intro and gen-AI
 // Google tracks, Udemy, Alteryx and the rest - stays on the site's filterable
-// list. Order here is the order they appear on the resume.
+// list. Order here is the order they were chosen in; the resume itself groups
+// them by issuer, sorted alphabetically, which is where this order stops
+// mattering.
 const SHORTLIST = [
   'CCNA: Switching, Routing, and Wireless Essentials',
   'Red Hat System Administration I (RH124)',
@@ -35,7 +38,8 @@ const SHORTLIST = [
   'Google Cloud Fundamentals: Core Infrastructure',
   'Technical Support Fundamentals',
   'Certified in Cybersecurity (CC)',
-  'Advent of Cyber 2024'
+  'Advent of Cyber 2024',
+  'AI Engineer for Developers Associate'
 ];
 const short = SHORTLIST.map(t => {
   const hit = certs.find(c => c.title === t);

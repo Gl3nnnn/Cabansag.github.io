@@ -68,7 +68,7 @@ The Projects section on the site loads live from GitHub and includes language fi
 - `profile.jpg`, `og-cover.jpg` — profile photo and social share card
 - `favicon.svg`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png` — branding and icons
 - `sitemap.xml`, `robots.txt` — SEO files
-- `resume.html` — printable resume source (1 page, A4). Experience, education, skills and the seven highest-signal certifications are generated from this site's own data by the build script, so the resume cannot drift from the site. Edit the data, regenerate, then print to PDF. The other 30 certifications and all 12 projects deliberately stay off the resume and live on the site's filterable list instead.
+- `resume.html` — printable resume source (1 page, A4). Experience, education, skills and the eight highest-signal certifications are generated from this site's own data by the build script, so the resume cannot drift from the site. Edit the data, regenerate, then print to PDF. The other 29 certifications and all 12 projects deliberately stay off the resume and live on the site's filterable list instead.
 - `resume-2026.pdf` — the generated resume served to visitors
 - `RESUME_Cabansag_GlennPatrick.pdf` — superseded 2024 resume, kept for reference and no longer linked
 
