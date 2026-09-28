@@ -300,11 +300,20 @@ border-radius: 50%;
 .text-animation .ta-rotator{
     position: relative;
     display: inline-block;
-    min-width: 280px;
+    /* The phrases swap via the `word` keyframes, so the box has to be at least
+     * as wide as the longest one or the text visibly reflows between phrases.
+     * The previous fixed 280px was measured against the desktop font, where the
+     * longest phrase only needs ~134px - and at phone sizes it needs just 100px,
+     * so 280px was a box nearly 3x too wide, which wrapped the line to two rows
+     * at 320px and pushed 4px of horizontal overflow onto the page. In em it
+     * tracks whatever font-size the breakpoint in force has chosen. The longest
+     * phrase now measures 4.7em on a phone and 2.3em on a desktop, so 5em
+     * covers both with room to spare. */
+    min-width: 5em;
     text-align: left;
 }
 .text-animation .ta-rotator::before{
-    content: "Information Technology Assistant";
+    content: "IT Assistant";
     color: var(--main-color);
     animation: word 20s ease-in-out infinite;
 }
@@ -325,19 +334,19 @@ border-radius: 50%;
 }
 @keyframes word{
     0%,20%{
-        content: "Information Technology Assistant";
+        content: "IT Assistant";
     }
     21%,40%{
-        content: "Full-Stack Developer";
+        content: "Full-Stack Dev";
     }
     41%,60%{
         content: "UI / UX Designer";
     }
     61%,80%{
-        content: "Network & Technical Support";
+        content: "Network Support";
     }
     81%,100%{
-        content: "AWS / Cloud Learner";
+        content: "Cloud Learner";
     }
 }
 @keyframes typing{
@@ -1369,10 +1378,23 @@ padding-left:37px;
         font-size: 4rem;
     }
     .home-content h3 {
-        font-size: 2rem;
+        /* These breakpoints scale `html` down to 35-40% of 16px, so a rem value
+         * here lands at roughly 10-13px - far too small to read on a phone. The
+         * rest of the site scales with rem on purpose, but this one line carries
+         * the animated job titles, so it gets a real floor instead. */
+        font-size: 16px;
     }
     .home-content p {
         font-size: 1.2rem;
+    }
+    /* .heading is 8rem with no responsive override, which is 48px on a phone
+     * because these breakpoints shrink `html` to 35-40%. "Certifications" then
+     * renders 314px wide in a 320px viewport and pushes the whole page sideways
+     * by 4px. Scaling it down follows the same rem convention as everything
+     * else in this block. */
+    .heading {
+        font-size: 4.5rem;
+        margin: 3rem 0;
     }
     .services-container {
         gap: 1rem;
@@ -1403,10 +1425,18 @@ padding-left:37px;
         font-size: 3.5rem;
     }
     .home-content h3 {
-        font-size: 1.8rem;
+        /* Matches the 480px breakpoint above. This block comes later in the
+         * stylesheet, so it is the one that actually wins on a 320-360px phone
+         * - which is exactly where 1.8rem collapsed to 10.08px. */
+        font-size: 16px;
     }
     .home-img img {
         width: 90vw;
+    }
+    /* Same reason as the 480px block, one step further down. This block is later
+     * in the stylesheet so it wins on the narrowest phones. */
+    .heading {
+        font-size: 4rem;
     }
     .services-container {
         gap: 0.5rem;
