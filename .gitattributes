@@ -1,0 +1,20 @@
+# Keep line endings consistent across clones.
+#
+# Without this file, text normalization is decided by each machine's
+# core.autocrlf setting. On Windows that meant the working copy used CRLF while
+# the repository stored LF, so every changed line showed up as trailing
+# whitespace in `git diff --check` and two clones could disagree about a file.
+#
+# Settings here take precedence over core.autocrlf, so behaviour no longer
+# depends on how a contributor has git configured.
+* text=auto
+
+# Binary assets: never line-ending normalized, and never diffed.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.pdf  binary
+*.woff binary
+*.woff2 binary
