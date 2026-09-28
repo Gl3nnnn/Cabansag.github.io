@@ -228,7 +228,7 @@ const out = `<!DOCTYPE html>
 
   <section>
     <h2>Certifications</h2>
-    <p class="note">${short.length} of ${certs.length}. The complete filterable list, with every issuer and date, is at gl3nnnn.github.io/Cabansag.github.io</p>
+    <p class="note">${short.length} of ${certs.length}. The complete filterable list, with every issuer and date, is at gl3nnnn.github.io/Cabansag.github.io &middot; Full list and profile also on LinkedIn: linkedin.com/in/glenpatrick</p>
     ${shortlistHtml}
   </section>
 
