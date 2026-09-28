@@ -7,7 +7,13 @@
 #
 # Settings here take precedence over core.autocrlf, so behaviour no longer
 # depends on how a contributor has git configured.
-* text=auto
+#
+# eol=lf pins the working copy to LF on every platform rather than deferring to
+# the local convention. That removes the "LF will be replaced by CRLF" warning
+# on every add. It suits this repository because the committed file is exactly
+# what GitHub Pages serves, so there is no reason for the working copy to
+# differ from it.
+* text=auto eol=lf
 
 # Binary assets: never line-ending normalized, and never diffed.
 *.png  binary

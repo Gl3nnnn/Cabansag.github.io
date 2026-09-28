@@ -279,6 +279,17 @@ function renderProjects(projects) {
     renderProjectGrid();
 }
 
+// Tells the visitor when the section is showing the curated list instead of
+// live GitHub data. Star counts and last-updated dates only exist in the API
+// response, so on the fallback path those fields are simply absent and used to
+// disappear without explanation. Hidden by default so a healthy load never
+// flashes it.
+function setProjectsLive(isLive) {
+    const note = document.getElementById('project-data-note');
+    if (!note) return;
+    note.hidden = Boolean(isLive);
+}
+
 async function loadProjects() {
     // v3: cached v2 payloads predate the per-project tags, so they'd render
     // cards with an empty tag row until the TTL expired. Bumped to force one
@@ -298,7 +309,10 @@ async function loadProjects() {
 
     const cached = readCache();
 
+    // Only the API path writes the cache, so a cache hit is always live-derived
+    // data, just possibly an hour old.
     if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
+        setProjectsLive(true);
         renderProjects(cached.projects);
         return;
     }
@@ -307,8 +321,9 @@ async function loadProjects() {
         const res = await fetch(GITHUB_API_URL);
         if (res.status === 403 || res.status === 429) {
             // A rate limit is not a reason to blank the section - the curated
-            // list is authoritative, so fall back to it and say so quietly.
-            if (cached) { renderProjects(cached.projects); return; }
+            // list is authoritative, so fall back to it and say so.
+            if (cached) { setProjectsLive(true); renderProjects(cached.projects); return; }
+            setProjectsLive(false);
             renderProjects(projectsFromCurated());
             return;
         }
@@ -316,10 +331,12 @@ async function loadProjects() {
         const data = await res.json();
         const projects = enrichProjects(data);
         try { localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: Date.now(), projects })); } catch (err) { /* ignore */ }
+        setProjectsLive(true);
         renderProjects(projects);
     } catch (error) {
         console.warn('Could not load projects from GitHub; showing the curated list.', error);
-        if (cached) { renderProjects(cached.projects); return; }
+        if (cached) { setProjectsLive(true); renderProjects(cached.projects); return; }
+        setProjectsLive(false);
         renderProjects(projectsFromCurated());
     }
 }

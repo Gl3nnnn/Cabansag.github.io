@@ -1846,6 +1846,19 @@ section{
     margin: -1.5rem auto 2.5rem;
     min-height: 1.8rem;
 }
+.projects-note{
+    max-width: 820px;
+    margin: 0 auto 2.5rem;
+    text-align: center;
+    font-size: 1.35rem;
+    line-height: 1.5;
+    color: var(--text-color);
+    background: rgba(176, 58, 78, 0.08);
+    border: 1px solid rgba(176, 58, 78, 0.35);
+    border-radius: 1.2rem;
+    padding: 1.2rem 1.6rem;
+}
+.projects-note[hidden]{ display: none; }
 .project-filters .chip.active{
     background: var(--main-color);
     color: black;
@@ -3023,6 +3036,8 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
     <div class="project-filters" id="project-filters"></div>
 
     <p class="projects-count" id="project-results-count" role="status" aria-live="polite"></p>
+
+    <p class="projects-note" id="project-data-note" role="status" hidden>Live GitHub data is unavailable right now, so star counts and last-updated dates are not shown. The project list below is curated and complete.</p>
 
     <div class="projects-grid" id="projects-grid">
         <div class="project-card">

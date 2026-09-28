@@ -210,6 +210,12 @@ const out = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Patrick Cabansag — Resume</title>
+<!-- This is a print-formatted document, not a page to browse: the homepage
+     links to it with a download attribute, so nobody ever lands here. Left
+     unlisted in the sitemap and kept out of search results, because the only
+     thing it adds to what is already indexed is a thin duplicate of the
+     homepage content. follow is deliberate: link equity should still flow. -->
+<meta name="robots" content="noindex, follow">
 <style>${css}</style>
 </head>
 <body>
