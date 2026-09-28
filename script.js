@@ -297,14 +297,31 @@ async function loadProjects() {
     const CACHE_KEY = 'portfolio_projects_v3';
     const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
+    // renderProjects renders whatever array it is handed, so a truncated or
+    // hand-mangled cache entry would quietly shrink the section instead of
+    // failing. Only trust a cache that still describes the same projects, in
+    // the same order, as the curated list - which is also exactly what the
+    // enrichProjects() output looks like, since it maps over PROJECTS.
+    const isUsable = list =>
+        Array.isArray(list) &&
+        list.length === PROJECTS.length &&
+        PROJECTS.every((p, i) => list[i] && list[i].name === p.name);
+
     const readCache = () => {
-        try {
-            const raw = localStorage.getItem(CACHE_KEY);
-            if (!raw) return null;
-            const parsed = JSON.parse(raw);
-            if (!parsed || !Array.isArray(parsed.projects)) return null;
-            return parsed;
-        } catch (err) { return null; }
+        let raw = null;
+        try { raw = localStorage.getItem(CACHE_KEY); } catch (err) { return null; }
+        if (!raw) return null;
+
+        let parsed = null;
+        try { parsed = JSON.parse(raw); } catch (err) { parsed = null; }
+
+        if (parsed && isUsable(parsed.projects)) return parsed;
+
+        // Anything else - wrong shape, truncated, reordered, or not JSON at all
+        // - is unusable. Delete it so it does not fail again on every load,
+        // rather than just ignoring it and leaving it to be re-read next time.
+        try { localStorage.removeItem(CACHE_KEY); } catch (err) { /* ignore */ }
+        return null;
     };
 
     const cached = readCache();
