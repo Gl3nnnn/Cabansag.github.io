@@ -1,13 +1,17 @@
 // Generates resume.html from the portfolio's own data so the resume cannot
-// drift from the site. Certifications are parsed out of index.html and the
-// project list is parsed out of script.js; experience, education and skills are
-// transcribed from the matching site sections and flagged below for review.
+// drift from the site. Certifications are parsed out of index.html; experience,
+// education and skills are transcribed from the matching site sections and
+// flagged below for review.
+//
+// The resume is deliberately one page: Patrick asked for the strongest
+// credentials only, no projects, and everything to fit on a single A4 sheet.
+// The full 37-certification list and the project catalogue stay on the
+// filterable site, which is where the resume points for them.
 const fs = require('fs');
 const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 
 const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
-const js = fs.readFileSync(path.join(ROOT, 'script.js'), 'utf8');
 const dec = s => s.replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').trim();
 
 // ---------- certifications (source of truth: index.html) ----------
@@ -16,36 +20,32 @@ const certs = [...certSection.matchAll(/<div class="cert-card">[\s\S]*?<h4>([\s\
   .map(m => ({ title: dec(m[1]), issuer: dec(m[2]), date: dec(m[3]) }));
 if (certs.length !== 37) throw new Error(`expected 37 certifications, parsed ${certs.length}`);
 
-// ---------- projects (source of truth: script.js curated list) ----------
-const projects = [...js.matchAll(/\{\s*name:\s*'([^']+)'[^}]*?language:\s*'([^']+)'[^}]*?tags:\s*\[([^\]]*)\][^}]*?description:\s*'([^']*)'/g)]
-  .map(m => ({
-    name: m[1],
-    language: m[2],
-    tags: m[3].split(',').map(s => s.trim().replace(/^'|'$/g, '')).filter(Boolean),
-    description: m[4].replace(/\\'/g, "'")
-  }));
-if (projects.length !== 12) throw new Error(`expected 12 projects, parsed ${projects.length}`);
-
-// ---------- page 1 shortlist: highest-signal credentials by issuer ----------
+// ---------- the certifications that make the cut ----------
+// Seven of the 37, chosen for recognised issuer and relevance to an IT
+// support / cloud / Linux career: Cisco CCNA for networking, the ISC2 CC for
+// security, both Red Hat RHCSA levels for Linux, Google Cloud Fundamentals and
+// Technical Support Fundamentals, and TryHackMe Advent of Cyber.
+// Everything else - the TESDA and design courses, the intro and gen-AI
+// Google tracks, Udemy, Alteryx and the rest - stays on the site's filterable
+// list. Order here is the order they appear on the resume.
 const SHORTLIST = [
-  'Google Cloud Fundamentals: Core Infrastructure',
-  'Digital Transformation with Google Cloud',
-  'Technical Support Fundamentals',
   'CCNA: Switching, Routing, and Wireless Essentials',
-  'Network Support and Security',
-  'CSS Essentials',
   'Red Hat System Administration I (RH124)',
   'Red Hat System Administration II (RH134)',
-  'Cybersecurity Essentials (LFC108)',
+  'Google Cloud Fundamentals: Core Infrastructure',
+  'Technical Support Fundamentals',
   'Certified in Cybersecurity (CC)',
-  'Advent of Cyber 2024',
-  'Introduction to Software Engineering'
+  'Advent of Cyber 2024'
 ];
 const short = SHORTLIST.map(t => {
   const hit = certs.find(c => c.title === t);
   if (!hit) throw new Error(`shortlist title not found in index.html: "${t}"`);
   return hit;
 });
+
+// ---------- projects: intentionally not on the resume ----------
+// Patrick asked for the projects to come off the resume, so script.js is no
+// longer read here. The project catalogue stays on the site.
 
 const groupByIssuer = list => {
   const map = new Map();
@@ -143,37 +143,15 @@ p.summary { margin: 0 0 1.4mm; }
 .cert-items .when { color: #6b7078; white-space: nowrap; }
 .skill-row { display: flex; gap: 2.5mm; font-size: 8.4pt; padding: 0.28mm 0; border-bottom: 0.4pt dotted #d7dade; break-inside: avoid; }
 .skill-key { font-weight: 600; min-width: 36mm; }
-.proj { break-inside: avoid; margin-bottom: 1.2mm; }
-.proj-head { display: flex; justify-content: space-between; gap: 3mm; align-items: baseline; }
-.proj-name { font-weight: 600; font-size: 8.7pt; }
-.proj-lang { color: #6b7078; font-size: 8pt; white-space: nowrap; }
-.proj-desc { font-size: 8.2pt; color: #33383f; margin-top: 0.3mm; }
-.proj-tags { font-size: 7.8pt; color: #166534; margin-top: 0.2mm; }
-.footnote { margin-top: 1.4mm; padding-top: 1mm; border-top: 0.4pt solid #d7dade; font-size: 7.1pt; color: #6b7078; }
-.page2-head { font-size: 8.2pt; text-transform: uppercase; letter-spacing: 1pt; color: #166534; border-bottom: 1pt solid #166534; margin-bottom: 2.2mm; padding-bottom: 0.9mm; }
-.two-col { column-count: 2; column-gap: 6mm; }
-.two-col .cert-group, .two-col .proj { break-inside: avoid; }
 .note { color: #6b7078; font-size: 7.6pt; margin: 0 0 2.2mm; }
 @media print {
   body { background: #fff; }
   .sheet { width: auto; min-height: 0; margin: 0; padding: 0; }
-  .page-break { break-before: page; }
-}
-@media screen {
-  .page-break { margin-top: 8mm; }
 }`;
 
 const shortlistHtml = groupByIssuer(short).map(([issuer, items]) => `
       <div class="cert-group">
         <div class="cert-issuer">${esc(issuer)}</div>
-        <ul class="cert-items">
-          ${items.map(c => `<li><span>${esc(c.title)}</span><span class="when">${esc(c.date)}</span></li>`).join('\n          ')}
-        </ul>
-      </div>`).join('');
-
-const allCertsHtml = groupByIssuer(certs).map(([issuer, items]) => `
-      <div class="cert-group">
-        <div class="cert-issuer">${esc(issuer)} <span style="font-weight:400;color:#6b7078">(${items.length})</span></div>
         <ul class="cert-items">
           ${items.map(c => `<li><span>${esc(c.title)}</span><span class="when">${esc(c.date)}</span></li>`).join('\n          ')}
         </ul>
@@ -194,22 +172,12 @@ const expHtml = EXPERIENCE.map(e => `
         </ul>
       </div>`).join('');
 
-const projHtml = projects.map(p => `
-      <div class="proj">
-        <div class="proj-head">
-          <span class="proj-name">${esc(p.name)}</span>
-          <span class="proj-lang">${esc(p.language)}</span>
-        </div>
-        <div class="proj-desc">${esc(p.description)}</div>
-        <div class="proj-tags">${p.tags.map(esc).join(' · ')}</div>
-      </div>`).join('');
-
 const out = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Patrick Cabansag — Resume</title>
+<title>Glenn Patrick Cabansag — Resume</title>
 <!-- This is a print-formatted document, not a page to browse: the homepage
      links to it with a download attribute, so nobody ever lands here. Left
      unlisted in the sitemap and kept out of search results, because the only
@@ -220,11 +188,10 @@ const out = `<!DOCTYPE html>
 </head>
 <body>
 
-<!-- ============================ PAGE 1 ============================ -->
 <div class="sheet">
   <header>
-    <h1>Patrick Cabansag</h1>
-    <div class="role-line">IT Assistant &amp; Full-Stack Developer</div>
+    <h1>Glenn Patrick Cabansag</h1>
+    <div class="role-line">Information Technology Professional</div>
     <div class="contact">
       <span>Iloilo, Philippines</span><span class="sep">|</span>
       <span>09388759110</span><span class="sep">|</span>
@@ -256,8 +223,8 @@ const out = `<!DOCTYPE html>
   </section>
 
   <section>
-    <h2>Selected Certifications</h2>
-    <p class="note">Complete list of all ${certs.length} certifications with issuers and dates on page 2.</p>
+    <h2>Certifications</h2>
+    <p class="note">${short.length} of ${certs.length}. The complete filterable list, with every issuer and date, is at gl3nnnn.github.io/Cabansag.github.io</p>
     ${shortlistHtml}
   </section>
 
@@ -267,26 +234,12 @@ const out = `<!DOCTYPE html>
   </section>
 </div>
 
-<!-- ============================ PAGE 2 ============================ -->
-<div class="sheet page-break">
-  <div class="page2-head">All ${certs.length} certifications (${groupByIssuer(certs).length} issuers)</div>
-  <p class="note">Filterable credential list, full blog and project links: gl3nnnn.github.io/Cabansag.github.io &middot; github.com/Gl3nnnn</p>
-  <div class="two-col">
-    ${allCertsHtml}
-  </div>
-
-  <h2>Projects</h2>
-  <div class="two-col">
-    ${projHtml}
-  </div>
-</div>
-
 </body>
 </html>
 `;
 
 fs.writeFileSync(path.join(ROOT, 'resume.html'), out);
 console.log(`Wrote resume.html`);
-console.log(`  certifications parsed : ${certs.length} (page 1 shortlist: ${short.length}, page 2: ${certs.length})`);
-console.log(`  issuers               : ${groupByIssuer(certs).length}`);
-console.log(`  projects parsed       : ${projects.length}`);
+console.log(`  certifications parsed : ${certs.length}`);
+console.log(`  on the resume         : ${short.length} across ${groupByIssuer(short).length} issuers`);
+console.log(`  projects              : none (removed by request)`);
