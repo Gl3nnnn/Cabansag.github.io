@@ -16,8 +16,8 @@
 html, body { margin: 0; padding: 0; }
 body {
   font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-size: 9.1pt;
-  line-height: 1.32;
+  font-size: 10pt;
+  line-height: 1.3;
   color: #1a1d21;
   background: #f2f3f5;
   -webkit-print-color-adjust: exact;
@@ -30,34 +30,37 @@ body {
   background: #fff;
 }
 h1, h2, h3 { margin: 0; }
-h1 { font-size: 19pt; letter-spacing: -0.2pt; line-height: 1.1; }
-.role-line { font-size: 9.6pt; color: #4a4f57; margin-top: 0.6mm; }
-.contact { margin-top: 2mm; font-size: 8.2pt; color: #33383f; line-height: 1.4; }
+h1 { font-size: 20pt; letter-spacing: -0.2pt; line-height: 1.1; }
+.role-line { font-size: 10.5pt; color: #3f444c; margin-top: 0.5mm; }
+.contact { margin-top: 1.6mm; font-size: 9.2pt; color: #33383f; line-height: 1.4; }
 .contact span { white-space: nowrap; }
-.contact .sep { color: #a8adb5; margin: 0 4px; }
+.contact .sep { color: #a8adb5; margin: 0 3px; }
 h2 {
-  font-size: 8.2pt; text-transform: uppercase; letter-spacing: 1pt;
+  font-size: 9pt; text-transform: uppercase; letter-spacing: 1pt;
   color: #166534; border-bottom: 1pt solid #166534;
-  margin: 2.4mm 0 1.9mm; padding-bottom: 0.9mm;
+  margin: 2.1mm 0 1.5mm; padding-bottom: 0.7mm;
 }
 section { break-inside: auto; }
-.entry { break-inside: avoid; margin-bottom: 1.8mm; }
+.entry { break-inside: avoid; margin-bottom: 1.6mm; }
+.entry:last-child { margin-bottom: 0; }
 .entry-head { display: flex; justify-content: space-between; align-items: baseline; gap: 5mm; }
-.entry-title { font-weight: 600; font-size: 9.6pt; }
-.entry-org { font-weight: 400; color: #4a4f57; }
-.entry-when { color: #4a4f57; font-size: 8.4pt; white-space: nowrap; }
-.entry-meta { color: #6b7078; font-size: 8.2pt; }
-ul.bullets { margin: 0.9mm 0 0; padding-left: 4.2mm; }
-ul.bullets li { margin-bottom: 0.3mm; }
-p.summary { margin: 0 0 1.4mm; }
-.cert-group { break-inside: avoid; margin-bottom: 1.5mm; }
-.cert-issuer { font-weight: 600; font-size: 8.6pt; color: #166534; }
-.cert-items { margin: 0.5mm 0 0; padding: 0; list-style: none; }
-.cert-items li { display: flex; justify-content: space-between; gap: 3mm; font-size: 8.3pt; padding: 0.2mm 0; }
-.cert-items .when { color: #6b7078; white-space: nowrap; }
-.skill-row { display: flex; gap: 2.5mm; font-size: 8.4pt; padding: 0.28mm 0; border-bottom: 0.4pt dotted #d7dade; break-inside: avoid; }
-.skill-key { font-weight: 600; min-width: 36mm; }
-.note { color: #6b7078; font-size: 7.6pt; margin: 0 0 2.2mm; }
+.entry-title { font-weight: 600; font-size: 10.5pt; }
+.entry-org { font-weight: 400; color: #3f444c; }
+.entry-when { color: #3f444c; font-size: 9.2pt; white-space: nowrap; }
+.entry-meta { color: #5f646c; font-size: 9.2pt; }
+ul.bullets { margin: 0.7mm 0 0; padding-left: 4.2mm; }
+ul.bullets li { margin-bottom: 0.25mm; }
+p.summary { margin: 0 0 1.2mm; }
+.cert-items { margin: 0; padding: 0; list-style: none; }
+.cert-items li { font-size: 9.2pt; padding: 0.25mm 0; }
+.cert-issuer { font-weight: 600; color: #166534; }
+.skill-row { display: flex; gap: 2.5mm; font-size: 9.4pt; padding: 0.25mm 0; border-bottom: 0.4pt dotted #d7dade; break-inside: avoid; }
+.skill-key { font-weight: 600; min-width: 34mm; }
+.proj-items { margin: 0; padding: 0; list-style: none; }
+.proj-items li { font-size: 9.2pt; padding: 0.3mm 0; }
+.proj-name { font-weight: 600; }
+.proj-lang { color: #5f646c; }
+.note { color: #5f646c; font-size: 8.8pt; margin: 0 0 1.6mm; }
 @media print {
   body { background: #fff; }
   .sheet { width: auto; min-height: 0; margin: 0; padding: 0; }
@@ -68,19 +71,20 @@ p.summary { margin: 0 0 1.4mm; }
 <div class="sheet">
   <header>
     <h1>Glenn Patrick Cabansag</h1>
-    <div class="role-line">Information Technology Professional</div>
+    <div class="role-line">IT Support &amp; Systems Professional</div>
     <div class="contact">
-      <span>Iloilo, Philippines</span><span class="sep">|</span>
+      <span>Iloilo City, Philippines</span><span class="sep">|</span>
       <span>09388759110</span><span class="sep">|</span>
       <span>patrickcabansag5@gmail.com</span><span class="sep">|</span>
       <span>linkedin.com/in/glenpatrick</span><span class="sep">|</span>
+      <span>github.com/Gl3nnnn</span><span class="sep">|</span>
       <span>gl3nnnn.github.io/Cabansag.github.io</span>
     </div>
   </header>
 
   <section>
     <h2>Summary</h2>
-    <p class="summary">Information Technology professional in Iloilo, Philippines, working as an IT Assistant at COMPASS Training Center. BS Information Technology, University of San Agustin (2024). My work sits where software meets the people who depend on it: building web applications, supporting users, and keeping networks running. Most of my PHP, JavaScript and networking experience comes from projects I build outside of work.</p>
+    <p class="summary">IT Assistant at COMPASS Training Center in Iloilo, Philippines, providing day-to-day support to staff and trainees and keeping classroom systems running throughout each training day. Brings CCNA networking fundamentals, Red Hat system administration and hands-on build experience with PHP, Laravel and JavaScript. Builds practical tools outside of work, including a help-desk ticketing app, an IT asset inventory tracker and an accounting web application.</p>
   </section>
 
   <section>
@@ -88,13 +92,14 @@ p.summary { margin: 0 0 1.4mm; }
     
       <div class="entry">
         <div class="entry-head">
-          <div class="entry-title">IT Assistant <span class="entry-org">— COMPASS Training Center, Inc.</span></div>
+          <div class="entry-title">IT Assistant <span class="entry-org">— COMPASS Training Center</span></div>
           <div class="entry-when">Oct 2024 – Present</div>
         </div>
         <div class="entry-meta">Iloilo City, Philippines</div>
         <ul class="bullets">
-          <li>Provide IT support and assistance at the COMPASS Training Center, helping maintain systems, devices and network infrastructure that support daily operations.</li>
-          <li>Support staff and trainees directly, resolving technical issues and keeping classroom and administrative systems available.</li>
+          <li>Provide day-to-day IT support to staff and trainees, troubleshooting and resolving hardware and software issues.</li>
+          <li>Maintain systems, devices and network infrastructure that support daily operations.</li>
+          <li>Keep classroom and administrative systems available throughout each training day.</li>
         </ul>
       </div>
       <div class="entry">
@@ -105,9 +110,36 @@ p.summary { margin: 0 0 1.4mm; }
         <div class="entry-meta">Iloilo City, Philippines</div>
         <ul class="bullets">
           <li>Responded to technical requests and incidents, troubleshooting hardware and software issues for end users.</li>
-          <li>Documented recurring problems and worked with users through resolution to keep daily operations running.</li>
+          <li>Documented recurring problems and followed issues through to resolution to keep daily operations running.</li>
         </ul>
       </div>
+  </section>
+
+  <section>
+    <h2>Skills</h2>
+    
+      <div class="skill-row"><span class="skill-key">Technical Support</span><span>Hardware and software troubleshooting, Windows workstation support, user support, incident handling</span></div>
+      <div class="skill-row"><span class="skill-key">Networking</span><span>TCP/IP fundamentals and subnetting; CCNA switching, routing and wireless; network troubleshooting</span></div>
+      <div class="skill-row"><span class="skill-key">Systems &amp; Linux</span><span>Red Hat System Administration I and II (RH124, RH134)</span></div>
+      <div class="skill-row"><span class="skill-key">Programming</span><span>PHP, JavaScript, Python</span></div>
+      <div class="skill-row"><span class="skill-key">Web Development</span><span>Laravel and Blade, server-side and browser-based applications</span></div>
+      <div class="skill-row"><span class="skill-key">Databases</span><span>MySQL; relational database design and SQL</span></div>
+      <div class="skill-row"><span class="skill-key">Cybersecurity</span><span>Security fundamentals and threat awareness; ISC2 CC, TryHackMe Advent of Cyber</span></div>
+      <div class="skill-row"><span class="skill-key">Cloud</span><span>Google Cloud fundamentals, Docker containers</span></div>
+  </section>
+
+  <section>
+    <h2>Certifications</h2>
+    <ul class="cert-items">
+      
+      <li><span class="cert-issuer">Cisco</span> — CCNA: Switching, Routing, and Wireless Essentials <span class="proj-lang">(Dec 2022)</span></li>
+      <li><span class="cert-issuer">DataCamp</span> — AI Engineer for Developers Associate <span class="proj-lang">(Aug 2026)</span></li>
+      <li><span class="cert-issuer">Google</span> — Google Cloud Fundamentals: Core Infrastructure <span class="proj-lang">(Mar 2024)</span>; Technical Support Fundamentals <span class="proj-lang">(Oct 2021)</span></li>
+      <li><span class="cert-issuer">ISC2</span> — Certified in Cybersecurity (CC) <span class="proj-lang">(Jul 2024)</span></li>
+      <li><span class="cert-issuer">Red Hat</span> — Red Hat System Administration I (RH124) <span class="proj-lang">(Apr 2023)</span>; Red Hat System Administration II (RH134) <span class="proj-lang">(Jun 2023)</span></li>
+      <li><span class="cert-issuer">TryHackMe</span> — Advent of Cyber 2024 <span class="proj-lang">(Dec 2024)</span></li>
+    </ul>
+    <p class="note" style="margin-top:1.6mm">Additional certifications available on LinkedIn and portfolio.</p>
   </section>
 
   <section>
@@ -122,61 +154,13 @@ p.summary { margin: 0 0 1.4mm; }
   </section>
 
   <section>
-    <h2>Certifications</h2>
-    <p class="note">8 of 37. The complete filterable list, with every issuer and date, is at gl3nnnn.github.io/Cabansag.github.io &middot; Full list and profile also on LinkedIn: linkedin.com/in/glenpatrick</p>
-    
-      <div class="cert-group">
-        <div class="cert-issuer">Cisco</div>
-        <ul class="cert-items">
-          <li><span>CCNA: Switching, Routing, and Wireless Essentials</span><span class="when">Dec 2022</span></li>
-        </ul>
-      </div>
-      <div class="cert-group">
-        <div class="cert-issuer">DataCamp</div>
-        <ul class="cert-items">
-          <li><span>AI Engineer for Developers Associate</span><span class="when">Aug 2026</span></li>
-        </ul>
-      </div>
-      <div class="cert-group">
-        <div class="cert-issuer">Google</div>
-        <ul class="cert-items">
-          <li><span>Google Cloud Fundamentals: Core Infrastructure</span><span class="when">Mar 2024</span></li>
-          <li><span>Technical Support Fundamentals</span><span class="when">Oct 2021</span></li>
-        </ul>
-      </div>
-      <div class="cert-group">
-        <div class="cert-issuer">ISC2</div>
-        <ul class="cert-items">
-          <li><span>Certified in Cybersecurity (CC)</span><span class="when">Jul 2024</span></li>
-        </ul>
-      </div>
-      <div class="cert-group">
-        <div class="cert-issuer">Red Hat</div>
-        <ul class="cert-items">
-          <li><span>Red Hat System Administration I (RH124)</span><span class="when">Apr 2023</span></li>
-          <li><span>Red Hat System Administration II (RH134)</span><span class="when">Jun 2023</span></li>
-        </ul>
-      </div>
-      <div class="cert-group">
-        <div class="cert-issuer">TryHackMe</div>
-        <ul class="cert-items">
-          <li><span>Advent of Cyber 2024</span><span class="when">Dec 2024</span></li>
-        </ul>
-      </div>
-  </section>
-
-  <section>
-    <h2>Skills</h2>
-    
-      <div class="skill-row"><span class="skill-key">Technical Support</span><span>Hardware and software troubleshooting, user support, incident handling</span></div>
-      <div class="skill-row"><span class="skill-key">Networking</span><span>CCNA switching, routing and wireless fundamentals; network troubleshooting</span></div>
-      <div class="skill-row"><span class="skill-key">Linux &amp; Systems</span><span>Red Hat System Administration I and II (RH124, RH134)</span></div>
-      <div class="skill-row"><span class="skill-key">Programming</span><span>PHP, JavaScript, Python</span></div>
-      <div class="skill-row"><span class="skill-key">Web Development</span><span>Laravel, server-side web applications, browser-based apps</span></div>
-      <div class="skill-row"><span class="skill-key">Cloud &amp; DevOps</span><span>Google Cloud fundamentals, Docker containers</span></div>
-      <div class="skill-row"><span class="skill-key">Databases &amp; SQL</span><span>Relational database design and querying</span></div>
-      <div class="skill-row"><span class="skill-key">Cybersecurity</span><span>Security fundamentals, threat awareness; ISC2 CC and TryHackMe Advent of Cyber</span></div>
-      <div class="skill-row"><span class="skill-key">Tools &amp; Productivity</span><span>Microsoft Office, Google Workspace, documentation</span></div>
+    <h2>Projects</h2>
+    <ul class="proj-items">
+      
+      <li><span class="proj-name">IT Asset Inventory System</span> <span class="proj-lang">(PHP)</span> — Tracks hardware, assignments and equipment lifecycle across IT assets.</li>
+      <li><span class="proj-name">TechDesk Ticketing App</span> <span class="proj-lang">(PHP)</span> — Logs, assigns and tracks technical support requests.</li>
+      <li><span class="proj-name">Accounting Web Application</span> <span class="proj-lang">(Blade)</span> — Financial web application built with Laravel and Blade.</li>
+    </ul>
   </section>
 </div>
 

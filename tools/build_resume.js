@@ -1,17 +1,19 @@
 // Generates resume.html from the portfolio's own data so the resume cannot
-// drift from the site. Certifications are parsed out of index.html; experience,
-// education and skills are transcribed from the matching site sections and
-// flagged below for review.
+// drift from the site. Certifications are parsed out of index.html and the
+// three featured projects are looked up in script.js; experience, education and
+// skills are transcribed from the matching site sections and flagged below for
+// review.
 //
-// The resume is deliberately one page: Patrick asked for the strongest
-// credentials only, no projects, and everything to fit on a single A4 sheet.
-// The full 37-certification list and the project catalogue stay on the
-// filterable site, which is where the resume points for them.
+// The resume is deliberately one page. Patrick asked for the strongest
+// credentials only, 3 relevant projects, and everything on a single A4 sheet at
+// a body size no smaller than 10pt. The full 37-certification list and the other
+// 9 projects stay on the filterable site, which is where the resume points.
 const fs = require('fs');
 const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
 
 const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+const js = fs.readFileSync(path.join(ROOT, 'script.js'), 'utf8');
 const dec = s => s.replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').trim();
 
 // ---------- certifications (source of truth: index.html) ----------
@@ -22,15 +24,13 @@ if (certs.length !== 37) throw new Error(`expected 37 certifications, parsed ${c
 
 // ---------- the certifications that make the cut ----------
 // Eight of the 37, chosen for recognised issuer and relevance to an IT
-// support / cloud / Linux career: Cisco CCNA for networking, the ISC2 CC for
+// support / systems / cloud career: Cisco CCNA for networking, the ISC2 CC for
 // security, both Red Hat RHCSA levels for Linux, Google Cloud Fundamentals and
 // Technical Support Fundamentals, TryHackMe Advent of Cyber, and the DataCamp
 // AI Engineer for Developers Associate.
 // Everything else - the TESDA and design courses, the intro and gen-AI
 // Google tracks, Udemy, Alteryx and the rest - stays on the site's filterable
-// list. Order here is the order they were chosen in; the resume itself groups
-// them by issuer, sorted alphabetically, which is where this order stops
-// mattering.
+// list, which the Certifications note points to.
 const SHORTLIST = [
   'CCNA: Switching, Routing, and Wireless Essentials',
   'Red Hat System Administration I (RH124)',
@@ -47,9 +47,41 @@ const short = SHORTLIST.map(t => {
   return hit;
 });
 
-// ---------- projects: intentionally not on the resume ----------
-// Patrick asked for the projects to come off the resume, so script.js is no
-// longer read here. The project catalogue stays on the site.
+// ---------- projects (source of truth: script.js curated list) ----------
+const projects = [...js.matchAll(/\{\s*name:\s*'([^']+)'[^}]*?language:\s*'([^']+)'[^}]*?tags:\s*\[([^\]]*)\][^}]*?description:\s*'([^']*)'/g)]
+  .map(m => ({
+    name: m[1],
+    language: m[2],
+    tags: m[3].split(',').map(s => s.trim().replace(/^'|'$/g, '')).filter(Boolean),
+    description: m[4].replace(/\\'/g, "'")
+  }));
+if (projects.length !== 12) throw new Error(`expected 12 projects, parsed ${projects.length}`);
+
+// Three of the twelve, covering the three areas he asked for: asset/inventory
+// management, help-desk ticketing, and full-stack web work. `src` must match the
+// project name in script.js, so renaming a project there breaks this build
+// rather than silently dropping it. `line` is a tightened restatement of that
+// project's own script.js description, kept to one line; the source wording is
+// recorded beside it so the two can be compared.
+const PROJECTS = [
+  {
+    src: 'it_inventory', label: 'IT Asset Inventory System',
+    line: 'Tracks hardware, assignments and equipment lifecycle across IT assets.'
+  },
+  {
+    src: 'TechDesk', label: 'TechDesk Ticketing App',
+    line: 'Logs, assigns and tracks technical support requests.'
+  },
+  {
+    src: 'accounting', label: 'Accounting Web Application',
+    line: 'Financial web application built with Laravel and Blade.'
+  }
+];
+const featured = PROJECTS.map(p => {
+  const hit = projects.find(x => x.name === p.src);
+  if (!hit) throw new Error(`featured project "${p.src}" not found in script.js`);
+  return { ...p, language: hit.language, description: hit.description };
+});
 
 const groupByIssuer = list => {
   const map = new Map();
@@ -63,18 +95,22 @@ const groupByIssuer = list => {
 const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 // ---------- transcribed from the site; review these ----------
+// Windows, TCP/IP and MySQL are deliberately absent from the summary: he asked
+// for them in the skills list only, so the prose does not repeat them.
 const SUMMARY = [
-  'Information Technology professional in Iloilo, Philippines, working as an IT Assistant at COMPASS Training Center. BS Information Technology, University of San Agustin (2024). My work sits where software meets the people who depend on it: building web applications, supporting users, and keeping networks running. Most of my PHP, JavaScript and networking experience comes from projects I build outside of work.'
+  'IT Assistant at COMPASS Training Center in Iloilo, Philippines, providing day-to-day support to staff and trainees and keeping classroom systems running throughout each training day. Brings CCNA networking fundamentals, Red Hat system administration and hands-on build experience with PHP, Laravel and JavaScript. Builds practical tools outside of work, including a help-desk ticketing app, an IT asset inventory tracker and an accounting web application.'
 ];
+
 const EXPERIENCE = [
   {
     role: 'IT Assistant',
-    org: 'COMPASS Training Center, Inc.',
+    org: 'COMPASS Training Center',
     when: 'Oct 2024 – Present',
     where: 'Iloilo City, Philippines',
     bullets: [
-      'Provide IT support and assistance at the COMPASS Training Center, helping maintain systems, devices and network infrastructure that support daily operations.',
-      'Support staff and trainees directly, resolving technical issues and keeping classroom and administrative systems available.'
+      'Provide day-to-day IT support to staff and trainees, troubleshooting and resolving hardware and software issues.',
+      'Maintain systems, devices and network infrastructure that support daily operations.',
+      'Keep classroom and administrative systems available throughout each training day.'
     ]
   },
   {
@@ -84,20 +120,37 @@ const EXPERIENCE = [
     where: 'Iloilo City, Philippines',
     bullets: [
       'Responded to technical requests and incidents, troubleshooting hardware and software issues for end users.',
-      'Documented recurring problems and worked with users through resolution to keep daily operations running.'
+      'Documented recurring problems and followed issues through to resolution to keep daily operations running.'
     ]
   }
 ];
+
+// ---------- skills: one keyword-dense line per category ----------
+// Windows, TCP/IP and MySQL are asserted by Patrick directly and are not on the
+// site yet, so they have no site source for the audit to check. They are named
+// here so the guarantee still covers everything else: a fourth unsourced
+// keyword fails the audit rather than slipping through. Nothing beyond this set
+// may be added on assertion alone.
+const USER_CONFIRMED = new Set(['Windows', 'TCP/IP', 'MySQL']);
+
 const SKILLS = [
-  { k: 'Technical Support', v: 'Hardware and software troubleshooting, user support, incident handling' },
-  { k: 'Networking', v: 'CCNA switching, routing and wireless fundamentals; network troubleshooting' },
-  { k: 'Linux & Systems', v: 'Red Hat System Administration I and II (RH124, RH134)' },
+  { k: 'Technical Support', v: 'Hardware and software troubleshooting, Windows workstation support, user support, incident handling' },
+  { k: 'Networking', v: 'TCP/IP fundamentals and subnetting; CCNA switching, routing and wireless; network troubleshooting' },
+  { k: 'Systems & Linux', v: 'Red Hat System Administration I and II (RH124, RH134)' },
   { k: 'Programming', v: 'PHP, JavaScript, Python' },
-  { k: 'Web Development', v: 'Laravel, server-side web applications, browser-based apps' },
-  { k: 'Cloud & DevOps', v: 'Google Cloud fundamentals, Docker containers' },
-  { k: 'Databases & SQL', v: 'Relational database design and querying' },
-  { k: 'Cybersecurity', v: 'Security fundamentals, threat awareness; ISC2 CC and TryHackMe Advent of Cyber' },
-  { k: 'Tools & Productivity', v: 'Microsoft Office, Google Workspace, documentation' }
+  { k: 'Web Development', v: 'Laravel and Blade, server-side and browser-based applications' },
+  { k: 'Databases', v: 'MySQL; relational database design and SQL' },
+  { k: 'Cybersecurity', v: 'Security fundamentals and threat awareness; ISC2 CC, TryHackMe Advent of Cyber' },
+  { k: 'Cloud', v: 'Google Cloud fundamentals, Docker containers' }
+];
+
+const CONTACT = [
+  'Iloilo City, Philippines',
+  '09388759110',
+  'patrickcabansag5@gmail.com',
+  'linkedin.com/in/glenpatrick',
+  'github.com/Gl3nnnn',
+  'gl3nnnn.github.io/Cabansag.github.io'
 ];
 
 const css = `
@@ -106,8 +159,8 @@ const css = `
 html, body { margin: 0; padding: 0; }
 body {
   font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-size: 9.1pt;
-  line-height: 1.32;
+  font-size: 10pt;
+  line-height: 1.3;
   color: #1a1d21;
   background: #f2f3f5;
   -webkit-print-color-adjust: exact;
@@ -120,46 +173,47 @@ body {
   background: #fff;
 }
 h1, h2, h3 { margin: 0; }
-h1 { font-size: 19pt; letter-spacing: -0.2pt; line-height: 1.1; }
-.role-line { font-size: 9.6pt; color: #4a4f57; margin-top: 0.6mm; }
-.contact { margin-top: 2mm; font-size: 8.2pt; color: #33383f; line-height: 1.4; }
+h1 { font-size: 20pt; letter-spacing: -0.2pt; line-height: 1.1; }
+.role-line { font-size: 10.5pt; color: #3f444c; margin-top: 0.5mm; }
+.contact { margin-top: 1.6mm; font-size: 9.2pt; color: #33383f; line-height: 1.4; }
 .contact span { white-space: nowrap; }
-.contact .sep { color: #a8adb5; margin: 0 4px; }
+.contact .sep { color: #a8adb5; margin: 0 3px; }
 h2 {
-  font-size: 8.2pt; text-transform: uppercase; letter-spacing: 1pt;
+  font-size: 9pt; text-transform: uppercase; letter-spacing: 1pt;
   color: #166534; border-bottom: 1pt solid #166534;
-  margin: 2.4mm 0 1.9mm; padding-bottom: 0.9mm;
+  margin: 2.1mm 0 1.5mm; padding-bottom: 0.7mm;
 }
 section { break-inside: auto; }
-.entry { break-inside: avoid; margin-bottom: 1.8mm; }
+.entry { break-inside: avoid; margin-bottom: 1.6mm; }
+.entry:last-child { margin-bottom: 0; }
 .entry-head { display: flex; justify-content: space-between; align-items: baseline; gap: 5mm; }
-.entry-title { font-weight: 600; font-size: 9.6pt; }
-.entry-org { font-weight: 400; color: #4a4f57; }
-.entry-when { color: #4a4f57; font-size: 8.4pt; white-space: nowrap; }
-.entry-meta { color: #6b7078; font-size: 8.2pt; }
-ul.bullets { margin: 0.9mm 0 0; padding-left: 4.2mm; }
-ul.bullets li { margin-bottom: 0.3mm; }
-p.summary { margin: 0 0 1.4mm; }
-.cert-group { break-inside: avoid; margin-bottom: 1.5mm; }
-.cert-issuer { font-weight: 600; font-size: 8.6pt; color: #166534; }
-.cert-items { margin: 0.5mm 0 0; padding: 0; list-style: none; }
-.cert-items li { display: flex; justify-content: space-between; gap: 3mm; font-size: 8.3pt; padding: 0.2mm 0; }
-.cert-items .when { color: #6b7078; white-space: nowrap; }
-.skill-row { display: flex; gap: 2.5mm; font-size: 8.4pt; padding: 0.28mm 0; border-bottom: 0.4pt dotted #d7dade; break-inside: avoid; }
-.skill-key { font-weight: 600; min-width: 36mm; }
-.note { color: #6b7078; font-size: 7.6pt; margin: 0 0 2.2mm; }
+.entry-title { font-weight: 600; font-size: 10.5pt; }
+.entry-org { font-weight: 400; color: #3f444c; }
+.entry-when { color: #3f444c; font-size: 9.2pt; white-space: nowrap; }
+.entry-meta { color: #5f646c; font-size: 9.2pt; }
+ul.bullets { margin: 0.7mm 0 0; padding-left: 4.2mm; }
+ul.bullets li { margin-bottom: 0.25mm; }
+p.summary { margin: 0 0 1.2mm; }
+.cert-items { margin: 0; padding: 0; list-style: none; }
+.cert-items li { font-size: 9.2pt; padding: 0.25mm 0; }
+.cert-issuer { font-weight: 600; color: #166534; }
+.skill-row { display: flex; gap: 2.5mm; font-size: 9.4pt; padding: 0.25mm 0; border-bottom: 0.4pt dotted #d7dade; break-inside: avoid; }
+.skill-key { font-weight: 600; min-width: 34mm; }
+.proj-items { margin: 0; padding: 0; list-style: none; }
+.proj-items li { font-size: 9.2pt; padding: 0.3mm 0; }
+.proj-name { font-weight: 600; }
+.proj-lang { color: #5f646c; }
+.note { color: #5f646c; font-size: 8.8pt; margin: 0 0 1.6mm; }
 @media print {
   body { background: #fff; }
   .sheet { width: auto; min-height: 0; margin: 0; padding: 0; }
 }`;
 
-const shortlistHtml = groupByIssuer(short).map(([issuer, items]) => `
-      <div class="cert-group">
-        <div class="cert-issuer">${esc(issuer)}</div>
-        <ul class="cert-items">
-          ${items.map(c => `<li><span>${esc(c.title)}</span><span class="when">${esc(c.date)}</span></li>`).join('\n          ')}
-        </ul>
-      </div>`).join('');
+// One line per issuer rather than a heading plus a list: same information,
+// roughly half the vertical space, and a flatter list for an ATS to read.
+const certsHtml = groupByIssuer(short).map(([issuer, items]) => `
+      <li><span class="cert-issuer">${esc(issuer)}</span> — ${items
+        .map(c => `${esc(c.title)} <span class="proj-lang">(${esc(c.date)})</span>`).join('; ')}</li>`).join('');
 
 const skillsHtml = SKILLS.map(s => `
       <div class="skill-row"><span class="skill-key">${esc(s.k)}</span><span>${esc(s.v)}</span></div>`).join('');
@@ -175,6 +229,9 @@ const expHtml = EXPERIENCE.map(e => `
           ${e.bullets.map(b => `<li>${esc(b)}</li>`).join('\n          ')}
         </ul>
       </div>`).join('');
+
+const projHtml = featured.map(p => `
+      <li><span class="proj-name">${esc(p.label)}</span> <span class="proj-lang">(${esc(p.language)})</span> — ${esc(p.line)}</li>`).join('');
 
 const out = `<!DOCTYPE html>
 <html lang="en">
@@ -195,13 +252,9 @@ const out = `<!DOCTYPE html>
 <div class="sheet">
   <header>
     <h1>Glenn Patrick Cabansag</h1>
-    <div class="role-line">Information Technology Professional</div>
+    <div class="role-line">IT Support &amp; Systems Professional</div>
     <div class="contact">
-      <span>Iloilo, Philippines</span><span class="sep">|</span>
-      <span>09388759110</span><span class="sep">|</span>
-      <span>patrickcabansag5@gmail.com</span><span class="sep">|</span>
-      <span>linkedin.com/in/glenpatrick</span><span class="sep">|</span>
-      <span>gl3nnnn.github.io/Cabansag.github.io</span>
+      ${CONTACT.map((c, i) => `<span>${esc(c)}</span>${i < CONTACT.length - 1 ? '<span class="sep">|</span>' : ''}`).join('\n      ')}
     </div>
   </header>
 
@@ -216,6 +269,19 @@ const out = `<!DOCTYPE html>
   </section>
 
   <section>
+    <h2>Skills</h2>
+    ${skillsHtml}
+  </section>
+
+  <section>
+    <h2>Certifications</h2>
+    <ul class="cert-items">
+      ${certsHtml}
+    </ul>
+    <p class="note" style="margin-top:1.6mm">Additional certifications available on LinkedIn and portfolio.</p>
+  </section>
+
+  <section>
     <h2>Education</h2>
     <div class="entry">
       <div class="entry-head">
@@ -227,14 +293,10 @@ const out = `<!DOCTYPE html>
   </section>
 
   <section>
-    <h2>Certifications</h2>
-    <p class="note">${short.length} of ${certs.length}. The complete filterable list, with every issuer and date, is at gl3nnnn.github.io/Cabansag.github.io &middot; Full list and profile also on LinkedIn: linkedin.com/in/glenpatrick</p>
-    ${shortlistHtml}
-  </section>
-
-  <section>
-    <h2>Skills</h2>
-    ${skillsHtml}
+    <h2>Projects</h2>
+    <ul class="proj-items">
+      ${projHtml}
+    </ul>
   </section>
 </div>
 
@@ -246,4 +308,8 @@ fs.writeFileSync(path.join(ROOT, 'resume.html'), out);
 console.log(`Wrote resume.html`);
 console.log(`  certifications parsed : ${certs.length}`);
 console.log(`  on the resume         : ${short.length} across ${groupByIssuer(short).length} issuers`);
-console.log(`  projects              : none (removed by request)`);
+console.log(`  projects              : ${featured.length} of ${projects.length} (${featured.map(p => p.src).join(', ')})`);
+console.log(`  body font             : 10pt`);
+console.log(`  user-confirmed skills : ${[...USER_CONFIRMED].join(', ')}`);
+console.log('\n  featured project source descriptions, for comparison with the one-liners:');
+featured.forEach(p => console.log(`    ${p.src}: ${p.description}`));
