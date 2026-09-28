@@ -300,15 +300,31 @@ border-radius: 50%;
 .text-animation .ta-rotator{
     position: relative;
     display: inline-block;
-    /* The phrases swap via the `word` keyframes, so the box has to be at least
-     * as wide as the longest one or the text visibly reflows between phrases.
-     * The previous fixed 280px was measured against the desktop font, where the
-     * longest phrase only needs ~134px - and at phone sizes it needs just 100px,
-     * so 280px was a box nearly 3x too wide, which wrapped the line to two rows
-     * at 320px and pushed 4px of horizontal overflow onto the page. In em it
-     * tracks whatever font-size the breakpoint in force has chosen. The longest
-     * phrase now measures 4.7em on a phone and 2.3em on a desktop, so 5em
-     * covers both with room to spare. */
+    /* This box is sized to its content, on purpose, and that is what keeps the
+     * typing cursor attached to the text. The cursor is the ::after below: it
+     * has no width of its own, it is the left border of an opaque mask the same
+     * colour as the page, and @keyframes typing grows and shrinks that mask
+     * between 0 and 103% while `right: -8px` holds it still. So the border -
+     * the visible caret - is the leading edge of the mask, sweeping rightward
+     * as the phrase is uncovered, and it comes to rest just past the last
+     * character. Widen the box beyond the text and the caret ends up stranded
+     * in empty space beside short phrases.
+     *
+     * The old fixed 280px did exactly that, and it was also simply too wide: it
+     * had been measured against the desktop font, where the longest phrase only
+     * needs ~134px, while on a phone it needed 100px - a box nearly 3x the text,
+     * which wrapped the line to two rows at 320px and added 4px of horizontal
+     * overflow. A fixed box is not the alternative either, because at 1024px
+     * the hero text column is only ~319px wide, which leaves ~230px, and the
+     * widest phrase needs 262px at that font - every fixed value big enough to
+     * clear the widest phrase wraps the line at 1024px and 1100px.
+     *
+     * So the phrases are instead kept within a narrow width band of each other,
+     * to stop the box changing size much as they swap. Measured against the
+     * current five, the widest is "UI/UX Designer" at 7.63em and the narrowest
+     * is "IT Assistant" at 5.81em - a spread of 1.82em, down from 2.69em before
+     * they were rebalanced. 5em below is only a floor while `content` swaps; it
+     * is not what sizes the box, and no phrase is close to reaching it. */
     min-width: 5em;
     text-align: left;
 }
@@ -340,10 +356,10 @@ border-radius: 50%;
         content: "Full-Stack Dev";
     }
     41%,60%{
-        content: "UI / UX Designer";
+        content: "UI/UX Designer";
     }
     61%,80%{
-        content: "Network Support";
+        content: "Tech Support";
     }
     81%,100%{
         content: "Cloud Learner";
