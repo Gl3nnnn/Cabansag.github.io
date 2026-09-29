@@ -28,7 +28,7 @@ Welcome to my portfolio website! I'm Glenn Patrick Cabansag, an Information Tech
 
 ## Certifications
 
-37 licenses and certifications across 7 categories, spanning cloud, networking, cybersecurity,
+38 licenses and certifications across 7 categories, spanning cloud, networking, cybersecurity,
 development, design, systems support and data. Highlights include:
 
 - **Cloud & DevOps (7)** — Digital Transformation with Google Cloud · Google Cloud Fundamentals: Core Infrastructure · Infrastructure and Application Modernization with Google Cloud · Understanding Google Cloud Security and Operations · Introduction to Large Language Models · Introduction to Responsible AI · Introduction to Generative AI

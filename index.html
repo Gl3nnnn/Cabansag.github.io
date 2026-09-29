@@ -1581,7 +1581,7 @@ padding-left:37px;
 }
 /* Certifications search + category filter.
    Mirrors the search/filter pattern already proven on faq.html, adapted to
-   the category-wrapper structure here (7 groups of 37 cards). */
+   the category-wrapper structure here (7 groups of 38 cards). */
 .cert-toolbar{
     max-width: 1200px;
     margin: 0 auto 4rem;
@@ -2392,7 +2392,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <span class="hero-stat-label">Years Experience</span>
         </div>
         <div class="hero-stat">
-            <span class="hero-stat-count" data-target="37">0</span>
+            <span class="hero-stat-count" data-target="38">0</span>
             <span class="hero-stat-label">Certifications</span>
         </div>
         <div class="hero-stat">
@@ -2544,7 +2544,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
 <section class="certifications" id="certifications">
     <h2 class="heading">Licenses & <span>Certifications</span></h2>
-    <p class="certifications-intro">37 licenses and certifications covering Google Cloud, Cisco, Red Hat, Linux Foundation, ISC2, IBM, TESDA and more — from cloud architecture and networking to cybersecurity, development, design and systems support.
+    <p class="certifications-intro">38 licenses and certifications covering Google Cloud, Cisco, Red Hat, Linux Foundation, ISC2, IBM, TESDA and more — from cloud architecture and networking to cybersecurity, development, design and systems support.
         <span class="cert-verify">All credentials can be viewed and verified on my <a href="https://www.linkedin.com/in/glenpatrick/details/certifications/" target="_blank" rel="noopener noreferrer">LinkedIn certifications page</a>.</span>
     </p>
 
@@ -2552,7 +2552,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
         <div class="cert-search">
             <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
             <label class="sr-only" for="cert-search">Search certifications</label>
-            <input type="search" id="cert-search" placeholder="Search 37 certifications... (e.g. Google, Cisco, AWS, security)" autocomplete="off">
+            <input type="search" id="cert-search" placeholder="Search 38 certifications... (e.g. Google, Cisco, AWS, security)" autocomplete="off">
         </div>
         <div class="cert-filters" id="cert-filters" role="group" aria-label="Filter certifications by category">
             <button type="button" class="cert-filter-btn active" data-filter="all" aria-pressed="true">All</button>
@@ -2564,7 +2564,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <button type="button" class="cert-filter-btn" data-filter="Systems &amp; Support" aria-pressed="false">Systems &amp; Support</button>
             <button type="button" class="cert-filter-btn" data-filter="Data &amp; Professional" aria-pressed="false">Data &amp; Professional</button>
         </div>
-        <p class="cert-results-count" id="cert-results-count" role="status" aria-live="polite">Showing all 37 certifications</p>
+        <p class="cert-results-count" id="cert-results-count" role="status" aria-live="polite">Showing all 38 certifications</p>
     </div>
 
     <div class="cert-no-results" id="cert-no-results" hidden>
@@ -2688,7 +2688,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <div class="cert-category-heading">
                 <div class="cert-cat-badge"><i class="fa-solid fa-shield-halved"></i></div>
                 <h3>Cybersecurity</h3>
-                <span class="cert-count">(7)</span>
+                <span class="cert-count">(8)</span>
             </div>
             <div class="cert-grid">
                 <div class="cert-card">
@@ -2754,12 +2754,21 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Cybersecurity for Everyone</h4>
-                            <span class="cert-issuer">University of Maryland</span>
+                <h4>Cybersecurity for Everyone</h4>
+                        <span class="cert-issuer">University of Maryland</span>
                         </div>
                         <span class="cert-date">Jun 2024</span>
                     </div>
                     <span class="cert-credential">Credential ID 9DW76PQY36CK</span>
+                </div>
+                <div class="cert-card">
+                    <div class="cert-card-top">
+                        <div class="cert-info">
+                            <h4>Cybersecurity Professionals Portal (CyberPRO) – Level 1 (Entry-Level)</h4>
+                            <span class="cert-issuer">DICT</span>
+                        </div>
+                        <span class="cert-date">Sep 2026</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -3368,7 +3377,7 @@ submitBtn.textContent = 'Send Message';
 
     // Certifications: live search + category filter.
     // Follows the pattern already working on faq.html, adapted to this
-    // section's structure of 7 category wrappers holding 37 cards.
+    // section's structure of 7 category wrappers holding 38 cards.
     (function() {
         var container = document.getElementById('cert-filters');
         var searchInput = document.getElementById('cert-search');

@@ -5,7 +5,7 @@
 //
 // The resume is deliberately one page. Patrick asked for the strongest
 // credentials only, 4 relevant projects, and everything on a single A4 sheet at
-// a body size no smaller than 10pt. The full 37-certification list and the other
+// a body size no smaller than 10pt. The full 38-certification list and the other
 // projects stay on the filterable site, which is where the resume points.
 const fs = require('fs');
 const path = require('path');
@@ -19,17 +19,23 @@ const dec = s => s.replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').trim();
 const certSection = html.match(/<section class="certifications" id="certifications">[\s\S]*?<\/section>/)[0];
 const certs = [...certSection.matchAll(/<div class="cert-card">[\s\S]*?<h4>([\s\S]*?)<\/h4>\s*<span class="cert-issuer">([\s\S]*?)<\/span>[\s\S]*?<span class="cert-date">([\s\S]*?)<\/span>/g)]
   .map(m => ({ title: dec(m[1]), issuer: dec(m[2]), date: dec(m[3]) }));
-if (certs.length !== 37) throw new Error(`expected 37 certifications, parsed ${certs.length}`);
+if (certs.length !== 38) throw new Error(`expected 38 certifications, parsed ${certs.length}`);
 
 // ---------- the certifications that make the cut ----------
-// Eight of the 37, chosen for recognised issuer and relevance to an IT
+// Nine of the 38, chosen for recognised issuer and relevance to an IT
 // support / systems / cloud career: Cisco CCNA for networking, the ISC2 CC for
 // security, both Red Hat RHCSA levels for Linux, Google Cloud Fundamentals and
-// Technical Support Fundamentals, TryHackMe Advent of Cyber, and the DataCamp
-// AI Engineer for Developers Associate.
+// Technical Support Fundamentals, TryHackMe Advent of Cyber, the DataCamp
+// AI Engineer for Developers Associate, and the DICT CyberPRO entry-level
+// cybersecurity portal, which is a Philippine government credential and the
+// only one a local recruiter is likely to recognise on sight.
 // Everything else - the TESDA and design courses, the intro and gen-AI
 // Google tracks, Udemy, Alteryx and the rest - stays on the site's filterable
 // list, which the Certifications note points to.
+//
+// Titles here must match the index.html <h4> byte for byte, including the en
+// dash in CyberPRO: `short` throws on a miss, so a typo fails the build rather
+// than silently dropping the credential from the resume.
 const SHORTLIST = [
   'CCNA: Switching, Routing, and Wireless Essentials',
   'Red Hat System Administration I (RH124)',
@@ -38,7 +44,8 @@ const SHORTLIST = [
   'Technical Support Fundamentals',
   'Certified in Cybersecurity (CC)',
   'Advent of Cyber 2024',
-  'AI Engineer for Developers Associate'
+  'AI Engineer for Developers Associate',
+  'Cybersecurity Professionals Portal (CyberPRO) – Level 1 (Entry-Level)'
 ];
 const short = SHORTLIST.map(t => {
   const hit = certs.find(c => c.title === t);
@@ -244,11 +251,13 @@ h1 { font-size: 19pt; letter-spacing: -0.2pt; line-height: 1.1; }
      vertical-align: -0.45mm;
      fill: #6b7280;
    }
-h2 {
-  font-size: 9pt; text-transform: uppercase; letter-spacing: 1pt;
-  color: #166534; border-bottom: 1pt solid #166534;
-  margin: 1.7mm 0 1.25mm; padding-bottom: 0.6mm;
-}
+  h2 {
+    font-size: 9pt; text-transform: uppercase; letter-spacing: 1pt;
+    color: #166534; border-bottom: 1pt solid #166534;
+    /* the six section headings are the page's cheapest vertical slack: trimmed
+       to hold a 9th certification on one page without touching the 10pt body */
+    margin: 1.2mm 0 0.9mm; padding-bottom: 0.4mm;
+    }
 section { break-inside: auto; }
 .entry { break-inside: avoid; margin-bottom: 1.15mm; }
 .entry:last-child { margin-bottom: 0; }
