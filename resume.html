@@ -33,8 +33,17 @@ h1, h2, h3 { margin: 0; }
 h1 { font-size: 19pt; letter-spacing: -0.2pt; line-height: 1.1; }
 .role-line { font-size: 10.5pt; color: #3f444c; margin-top: 0.4mm; }
 .contact { margin-top: 1.3mm; font-size: 9.2pt; color: #33383f; line-height: 1.35; }
-.contact span { white-space: nowrap; }
-.contact .sep { color: #a8adb5; margin: 0 3px; }
+   .contact .c-item { white-space: nowrap; }
+   .contact .c-item + .sep { margin: 0 3px; }
+   .contact .sep { color: #a8adb5; }
+   /* decorative marker only: the value beside it is always the full text, so the
+      icon never becomes the only carrier of the information */
+   .c-icon {
+     width: 2.5mm; height: 2.5mm;
+     margin-right: 0.9mm;
+     vertical-align: -0.35mm;
+     fill: #6b7280;
+   }
 h2 {
   font-size: 9pt; text-transform: uppercase; letter-spacing: 1pt;
   color: #166534; border-bottom: 1pt solid #166534;
@@ -74,12 +83,12 @@ p.summary { margin: 0 0 1.1mm; line-height: 1.22; }
     <h1>Glenn Patrick Cabansag</h1>
     <div class="role-line">IT Support &amp; Systems Professional</div>
     <div class="contact">
-      <span>Iloilo City, Philippines</span><span class="sep">|</span>
-      <span>09388759110</span><span class="sep">|</span>
-      <span>patrickcabansag5@gmail.com</span><span class="sep">|</span>
-      <span>linkedin.com/in/glenpatrick</span><span class="sep">|</span>
-      <span>github.com/Gl3nnnn</span><span class="sep">|</span>
-      <span>Portfolio: gl3nnnn.github.io/Cabansag.github.io</span>
+      <span class="c-item"><svg class="c-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 1.5a5 5 0 0 0-5 5c0 3.9 5 10 5 10s5-6.1 5-10a5 5 0 0 0-5-5zm0 7a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg>Iloilo City, Philippines</span><span class="sep">|</span>
+      <span class="c-item"><svg class="c-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M14.5 2.5h-3l-1.5 3.5 2 1.2a9 9 0 0 0 3.8 3.8l1.2 2 3.5-1.5v-3c0-.6-.4-1-1-1.1l-2.3-.4-1 1a12 12 0 0 1-4.7-4.7l1-1-.4-2.3c-.1-.6-.5-1-1.1-1z"/></svg>09388759110</span><span class="sep">|</span>
+      <span class="c-item"><svg class="c-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M2 4.5h12c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1H2c-.6 0-1-.4-1-1v-7c0-.6.4-1 1-1zm.9 1.5L8 9.6l5.1-3.6H2.9z"/></svg>patrickcabansag5@gmail.com</span><span class="sep">|</span>
+      <span class="c-item"><svg class="c-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3 6.5h2.2V14H3V6.5zM4.1 2a1.3 1.3 0 1 0 0 2.6A1.3 1.3 0 0 0 4.1 2zM7 6.5h2.1v1c.3-.5 1-1.2 2.2-1.2 1.6 0 2.2 1 2.2 2.6V14h-2.2v-4.4c0-1.1-.2-1.8-1.2-1.8-.9 0-1.3.7-1.3 1.8V14H7V6.5z"/></svg>linkedin.com/in/glenpatrick</span><span class="sep">|</span>
+      <span class="c-item"><svg class="c-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 .8a7.2 7.2 0 0 0-2.3 14c.4.1.5-.2.5-.4v-1.4c-2 .4-2.5-.5-2.6-1-.1-.3-.6-1-1-1.2-.3-.2-.8-.6 0-.6.7 0 1.2.7 1.4 1 .8 1.3 2 1 2.4.7.1-.5.3-.9.6-1.1-1.8-.2-3.6-.9-3.6-3.9 0-.9.3-1.6.8-2.1-.1-.2-.4-1 .1-2 0 0 .7-.2 2.2.8a7.5 7.5 0 0 1 4 0c1.5-1 2.2-.8 2.2-.8.5 1 .2 1.8.1 2 .5.5.8 1.2.8 2.1 0 3-1.8 3.7-3.6 3.9.3.3.6.8.6 1.5v2.2c0 .2.1.5.5.4A7.2 7.2 0 0 0 8 .8z"/></svg>github.com/Gl3nnnn</span><span class="sep">|</span>
+      <span class="c-item"><svg class="c-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13zm0 1.4c.6 0 1.4 1 1.8 3.2H6.2C6.6 3.9 7.4 2.9 8 2.9zM6 3.7C5.6 4.7 5.4 5.7 5.3 6.7H3.6c.3-1.3 1.1-2.4 2.4-3zM3.6 8.1h1.7c.1 1 .3 2 .7 2.8H3.6a5.1 5.1 0 0 1 0-2.8zm1.9 1.4h3.4c-.3 2-.9 3-1.7 3s-1.4-1-1.7-3zm4.8 0h3.4c-.3 2-.9 3-1.7 3s-1.4-1-1.7-3zm4.8-1.4h-1.7c.1-1 .3-2 .7-2.8h1.7a5.1 5.1 0 0 1 0 2.8zm-2-4.2c.4.8.6 1.8.7 2.8H10c-.1-1-.3-2-.7-2.8a5.1 5.1 0 0 1 2.8 0zm1.4-1.1c1.3.4 2.1 1.5 2.4 2.8h-1.7c.1-1 .3-2 .7-2.8zM8 13.1c-.6 0-1.4-1-1.8-3.2h3.6c-.4 2.2-1.2 3.2-1.8 3.2zM6 13.1a5.1 5.1 0 0 1-2.8 0c-.4-.8-.6-1.8-.7-2.8h1.7c.1 1 .3 2 .7 2.8zm6 0c.4-.8.6-1.8.7-2.8h1.7c-.3 1.3-1.1 2.4-2.4 2.8z"/></svg>Portfolio: gl3nnnn.github.io/Cabansag.github.io</span>
     </div>
   </header>
 
