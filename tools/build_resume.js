@@ -178,9 +178,12 @@ const CONTACT = [
   '09388759110',
   'patrickcabansag5@gmail.com',
   'linkedin.com/in/glenpatrick',
-  'github.com/Gl3nnnn',
-  'gl3nnnn.github.io/Cabansag.github.io'
-];
+     'github.com/Gl3nnnn',
+     // labelled, because a bare github.io path reads as a typo to a recruiter
+     // skimming the header. The label is also the pointer to the rest of the
+     // work, since the resume carries 4 of the 13 projects.
+     'Portfolio: gl3nnnn.github.io/Cabansag.github.io'
+   ];
 
 const css = `
 @page { size: A4; margin: 12mm 14mm; }
@@ -327,7 +330,8 @@ const out = `<!DOCTYPE html>
     <ul class="proj-items">
       ${projHtml}
     </ul>
-    <p class="proj-more">More projects on GitHub: github.com/Gl3nnnn</p>
+    <p class="proj-more">More projects on GitHub: github.com/Gl3nnnn &middot; Full portfolio and
+      13 projects: gl3nnnn.github.io/Cabansag.github.io</p>
   </section>
 </div>
 
