@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="Illustrated portrait of a person with glasses">
+  <defs>
+    <clipPath id="a3"><circle cx="60" cy="60" r="60"/></clipPath>
+    <linearGradient id="a3bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b06a12"/>
+      <stop offset="1" stop-color="#6b3d05"/>
+    </linearGradient>
+    <linearGradient id="a3skin" x1="0.3" y1="0" x2="0.7" y2="1">
+      <stop offset="0" stop-color="#a9714b"/>
+      <stop offset="1" stop-color="#8a5533"/>
+    </linearGradient>
+    <linearGradient id="a3hair" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#1c1512"/>
+      <stop offset="1" stop-color="#0f0b09"/>
+    </linearGradient>
+    <linearGradient id="a3hood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4b5563"/>
+      <stop offset="1" stop-color="#31393f"/>
+    </linearGradient>
+  </defs>
+
+  <g clip-path="url(#a3)">
+    <rect width="120" height="120" fill="url(#a3bg)"/>
+
+    <!-- shoulders and hoodie -->
+    <path d="M60 79c-19 0-33 11-36 26l-2 15h76l-2-15c-3-15-17-26-36-26z" fill="url(#a3hood)"/>
+    <!-- hood rim behind the neck -->
+    <path d="M60 74c-12 0-20 5-24 12 6 3 14 5 24 5s18-2 24-5c-4-7-12-12-24-12z" fill="#3a4249"/>
+    <!-- drawstrings -->
+    <path d="M52 88c-1 8-1 14 0 19" stroke="#e8e2d6" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <path d="M68 88c1 8 1 14 0 19" stroke="#e8e2d6" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <!-- neck -->
+    <path d="M53 63h14v14c0 4-14 4-14 0V63z" fill="#8a5533"/>
+    <path d="M53 63h14v6c-4 3-10 3-14 0v-6z" fill="#6f4427"/>
+
+    <!-- head -->
+    <ellipse cx="60" cy="46" rx="22" ry="25" fill="url(#a3skin)"/>
+    <!-- ears -->
+    <ellipse cx="38.5" cy="48" rx="3.6" ry="5" fill="#98603a"/>
+    <ellipse cx="81.5" cy="48" rx="3.6" ry="5" fill="#98603a"/>
+
+    <!-- rounded afro-style hair -->
+    <path d="M60 18c-19 0-29 12-29 28 0 4 .5 7 1.5 9 1-9 3-14 6-17 4 4 12 6 21.5 6s17.5-2 21.5-6c3 3 5 8 6 17 1-2 1.5-5 1.5-9 0-16-10-28-29-28z" fill="url(#a3hair)"/>
+    <circle cx="45" cy="30" r="5" fill="#241a15"/>
+    <circle cx="60" cy="25" r="5.5" fill="#2b201a"/>
+    <circle cx="75" cy="30" r="5" fill="#241a15"/>
+
+    <!-- brows -->
+    <path d="M48 42.5c3-2 7-2 10 0" stroke="#1a1210" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <path d="M62 42.5c3-2 7-2 10 0" stroke="#1a1210" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <!-- eyes -->
+    <ellipse cx="53" cy="50" rx="3" ry="3.4" fill="#1c1410"/>
+    <ellipse cx="67" cy="50" rx="3" ry="3.4" fill="#1c1410"/>
+    <circle cx="54.1" cy="49" r="1" fill="#ffffff"/>
+    <circle cx="68.1" cy="49" r="1" fill="#ffffff"/>
+
+    <!-- glasses -->
+    <g stroke="#1b1b1f" stroke-width="2.2" fill="#ffffff" fill-opacity="0.22">
+      <rect x="45.5" y="44.5" width="14" height="11" rx="4"/>
+      <rect x="60.5" y="44.5" width="14" height="11" rx="4"/>
+    </g>
+    <path d="M59.5 49.5h1M45.5 48.5l-5-1.5M74.5 48.5l5-1.5" stroke="#1b1b1f" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+
+    <!-- nose -->
+    <path d="M60 52v6c0 1.5-1 2-2.4 2" stroke="#6f4427" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <!-- smile -->
+    <path d="M52.5 62.5c3.5 3.5 11.5 3.5 15 0" stroke="#4a2415" stroke-width="2.7" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>

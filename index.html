@@ -732,14 +732,20 @@ top: 10px;
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--main-color), var(--accent-color));
-    color: #000;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
     margin-bottom: 0.5rem;
-    box-shadow: 0 0 16px rgba(27, 179, 14, 0.35);
+    overflow: hidden;
+    box-shadow: 0 0 0 2px rgba(27, 179, 14, 0.55), 0 0 16px rgba(27, 179, 14, 0.35);
+}
+/* the illustrated portrait fills the circle; the SVG carries its own background
+   and clip, so no theme colours are needed here */
+.testimonial-avatar img{
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
 }
 .testimonial-card p{
     font-size: 1.6rem;
@@ -2172,10 +2178,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 [data-theme="light"] .skill-fill{ background: linear-gradient(90deg, #22c55e, #14b8a6); }
 /* Light: testimonial avatars -> outlined circles; cards softened */
 [data-theme="light"] .testimonial-avatar{
-    background: #ffffff;
-    color: var(--main-color);
-    border: 2px solid var(--main-color);
-    box-shadow: none;
+    box-shadow: 0 0 0 2px var(--main-color);
 }
 [data-theme="light"] .testimonial-card{ border-color: #d6d9de; }
 [data-theme="light"] .testimonial-card:hover{
@@ -3115,7 +3118,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <i class="fa-solid fa-quote-left testimonial-quote"></i>
             <p>Patrick is reliable and quick to help with any technical issue. His support helps keep our daily operations running smoothly.</p>
             <div class="testimonial-person">
-                <span class="testimonial-avatar"><i class="fa-solid fa-user-tie"></i></span>
+                <span class="testimonial-avatar"><img src="assets/avatars/supervisor.svg" alt="Illustrated portrait of a man in a collared shirt" width="56" height="56" loading="lazy" decoding="async"></span>
                 <h4>Work Supervisor</h4>
                 <span>Lead Generation and Donor Creation Inc.</span>
             </div>
@@ -3124,7 +3127,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <i class="fa-solid fa-quote-left testimonial-quote"></i>
             <p>Clean code, a keen eye for UI design, and always eager to learn new technologies. A really well-rounded developer.</p>
             <div class="testimonial-person">
-                <span class="testimonial-avatar"><i class="fa-solid fa-user-graduate"></i></span>
+                <span class="testimonial-avatar"><img src="assets/avatars/classmate.svg" alt="Illustrated portrait of a woman with long hair" width="56" height="56" loading="lazy" decoding="async"></span>
                 <h4>Classmate &amp; Teammate</h4>
                 <span>University of San Agustin</span>
             </div>
@@ -3133,7 +3136,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <i class="fa-solid fa-quote-left testimonial-quote"></i>
             <p>Great with both frontend interfaces and backend logic. He turns ideas into working systems with follow-through.</p>
             <div class="testimonial-person">
-                <span class="testimonial-avatar"><i class="fa-solid fa-users"></i></span>
+                <span class="testimonial-avatar"><img src="assets/avatars/collaborator.svg" alt="Illustrated portrait of a person with glasses" width="56" height="56" loading="lazy" decoding="async"></span>
                 <h4>Project Collaborator</h4>
                 <span>IT Projects</span>
             </div>

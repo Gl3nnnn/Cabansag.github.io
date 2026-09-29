@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="Illustrated portrait of a man in a collared shirt">
+  <defs>
+    <clipPath id="a1"><circle cx="60" cy="60" r="60"/></clipPath>
+    <linearGradient id="a1bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1f6f43"/>
+      <stop offset="1" stop-color="#0d3d26"/>
+    </linearGradient>
+    <linearGradient id="a1skin" x1="0.3" y1="0" x2="0.7" y2="1">
+      <stop offset="0" stop-color="#e8b48b"/>
+      <stop offset="1" stop-color="#c98b5f"/>
+    </linearGradient>
+    <linearGradient id="a1shirt" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3f7fd0"/>
+      <stop offset="1" stop-color="#2a5fa8"/>
+    </linearGradient>
+  </defs>
+
+  <g clip-path="url(#a1)">
+    <rect width="120" height="120" fill="url(#a1bg)"/>
+
+    <!-- shoulders and shirt -->
+    <path d="M60 78c-19 0-33 11-36 26l-2 16h76l-2-16c-3-15-17-26-36-26z" fill="url(#a1shirt)"/>
+    <!-- collar -->
+    <path d="M60 79l-13 5 9 13 4-9 4 9 9-13-13-5z" fill="#eef4fb"/>
+    <path d="M60 79l-4 1 4 8 4-8-4-1z" fill="#d7e4f2"/>
+    <!-- neck -->
+    <path d="M52 64h16v16c0 4-16 4-16 0V64z" fill="#c98b5f"/>
+    <path d="M52 64h16v6c-4 3-12 3-16 0v-6z" fill="#a86f47"/>
+
+    <!-- head -->
+    <ellipse cx="60" cy="47" rx="23" ry="26" fill="url(#a1skin)"/>
+    <!-- ears -->
+    <ellipse cx="37.5" cy="49" rx="4" ry="5.5" fill="#d69c72"/>
+    <ellipse cx="82.5" cy="49" rx="4" ry="5.5" fill="#d69c72"/>
+    <!-- hair -->
+    <path d="M37 45c0-16 10-25 23-25s23 9 23 25c0-6-2-10-5-13-4 3-11 5-18 5s-14-2-18-5c-3 3-5 7-5 13z" fill="#2b2119"/>
+    <path d="M38 42c1-12 9-20 22-20s21 8 22 20c-3-8-10-13-22-13S41 34 38 42z" fill="#3d2f24"/>
+
+    <!-- brows -->
+    <path d="M48 44c3-2 7-2 10 0" stroke="#2b2119" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <path d="M62 44c3-2 7-2 10 0" stroke="#2b2119" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <!-- eyes -->
+    <ellipse cx="53" cy="51" rx="3" ry="3.4" fill="#20180f"/>
+    <ellipse cx="67" cy="51" rx="3" ry="3.4" fill="#20180f"/>
+    <circle cx="54.1" cy="50" r="1" fill="#ffffff"/>
+    <circle cx="68.1" cy="50" r="1" fill="#ffffff"/>
+    <!-- nose -->
+    <path d="M60 52v6c0 1.5-1 2-2.5 2" stroke="#b87c52" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <!-- mouth -->
+    <path d="M53 63c3 3 11 3 14 0" stroke="#8a4a2c" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>
