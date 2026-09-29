@@ -30,36 +30,37 @@ body {
   background: #fff;
 }
 h1, h2, h3 { margin: 0; }
-h1 { font-size: 20pt; letter-spacing: -0.2pt; line-height: 1.1; }
-.role-line { font-size: 10.5pt; color: #3f444c; margin-top: 0.5mm; }
-.contact { margin-top: 1.6mm; font-size: 9.2pt; color: #33383f; line-height: 1.4; }
+h1 { font-size: 19pt; letter-spacing: -0.2pt; line-height: 1.1; }
+.role-line { font-size: 10.5pt; color: #3f444c; margin-top: 0.4mm; }
+.contact { margin-top: 1.3mm; font-size: 9.2pt; color: #33383f; line-height: 1.35; }
 .contact span { white-space: nowrap; }
 .contact .sep { color: #a8adb5; margin: 0 3px; }
 h2 {
   font-size: 9pt; text-transform: uppercase; letter-spacing: 1pt;
   color: #166534; border-bottom: 1pt solid #166534;
-  margin: 2.1mm 0 1.5mm; padding-bottom: 0.7mm;
+  margin: 1.7mm 0 1.25mm; padding-bottom: 0.6mm;
 }
 section { break-inside: auto; }
-.entry { break-inside: avoid; margin-bottom: 1.6mm; }
+.entry { break-inside: avoid; margin-bottom: 1.15mm; }
 .entry:last-child { margin-bottom: 0; }
 .entry-head { display: flex; justify-content: space-between; align-items: baseline; gap: 5mm; }
 .entry-title { font-weight: 600; font-size: 10.5pt; }
 .entry-org { font-weight: 400; color: #3f444c; }
 .entry-when { color: #3f444c; font-size: 9.2pt; white-space: nowrap; }
 .entry-meta { color: #5f646c; font-size: 9.2pt; }
-ul.bullets { margin: 0.7mm 0 0; padding-left: 4.2mm; }
-ul.bullets li { margin-bottom: 0.25mm; }
-p.summary { margin: 0 0 1.2mm; }
+ul.bullets { margin: 0.6mm 0 0; padding-left: 4.2mm; }
+ul.bullets li { margin-bottom: 0.15mm; }
+p.summary { margin: 0 0 1.1mm; line-height: 1.22; }
 .cert-items { margin: 0; padding: 0; list-style: none; }
-.cert-items li { font-size: 9.2pt; padding: 0.25mm 0; }
+.cert-items li { font-size: 9.2pt; padding: 0.2mm 0; }
 .cert-issuer { font-weight: 600; color: #166534; }
-.skill-row { display: flex; gap: 2.5mm; font-size: 9.4pt; padding: 0.25mm 0; border-bottom: 0.4pt dotted #d7dade; break-inside: avoid; }
+.skill-row { display: flex; gap: 2.5mm; font-size: 9.4pt; padding: 0.2mm 0; border-bottom: 0.4pt dotted #d7dade; break-inside: avoid; }
 .skill-key { font-weight: 600; min-width: 34mm; }
 .proj-items { margin: 0; padding: 0; list-style: none; }
-.proj-items li { font-size: 9.2pt; padding: 0.3mm 0; }
+.proj-items li { font-size: 9.2pt; padding: 0.25mm 0; }
 .proj-name { font-weight: 600; }
 .proj-lang { color: #5f646c; }
+.proj-more { margin: 0.7mm 0 0; font-size: 8.8pt; font-style: italic; color: #4b515a; }
 .note { color: #5f646c; font-size: 8.8pt; margin: 0 0 1.6mm; }
 @media print {
   body { background: #fff; }
@@ -84,7 +85,7 @@ p.summary { margin: 0 0 1.2mm; }
 
   <section>
     <h2>Summary</h2>
-    <p class="summary">IT Assistant at COMPASS Training Center in Iloilo, Philippines, providing day-to-day support to staff and trainees and keeping classroom systems running throughout each training day. Brings CCNA networking fundamentals, Red Hat system administration and hands-on build experience with PHP, Laravel and JavaScript. Builds practical tools outside of work, including a help-desk ticketing app, an IT asset inventory tracker and an accounting web application.</p>
+    <p class="summary">IT Assistant with hands-on experience providing technical support, troubleshooting hardware and software issues, maintaining IT systems, and assisting staff and trainees in a training-center environment. Skilled in networking fundamentals, Windows support, hardware troubleshooting, and basic system administration, with practical development experience in PHP, Laravel, JavaScript, and MySQL. Experienced in building IT solutions such as purchasing, asset management, and queue management systems, combining technical support with practical problem-solving and automation.</p>
   </section>
 
   <section>
@@ -101,6 +102,7 @@ p.summary { margin: 0 0 1.2mm; }
           <li>Maintain systems, devices and network infrastructure that support daily operations.</li>
           <li>Keep classroom and administrative systems available throughout each training day.</li>
           <li>Write small scripts and tools to automate routine tasks and cut down repetitive support work.</li>
+          <li>Built the registration-area queue system, and develop an accounting web application in beta.</li>
         </ul>
       </div>
       <div class="entry">
@@ -110,8 +112,9 @@ p.summary { margin: 0 0 1.2mm; }
         </div>
         <div class="entry-meta">Iloilo City, Philippines</div>
         <ul class="bullets">
-          <li>Responded to technical requests and incidents, troubleshooting hardware and software issues for end users.</li>
-          <li>Documented recurring problems and followed issues through to resolution to keep daily operations running.</li>
+          <li>Responded to technical requests and incidents, troubleshooting hardware, software, and basic network issues for end users.</li>
+          <li>Installed, configured, and maintained computers, peripherals, applications, and user workstations to support daily operations.</li>
+          <li>Documented recurring problems, tracked incidents to resolution, and escalated to the right team when needed.</li>
         </ul>
       </div>
   </section>
@@ -119,12 +122,12 @@ p.summary { margin: 0 0 1.2mm; }
   <section>
     <h2>Skills</h2>
     
-      <div class="skill-row"><span class="skill-key">Technical Support</span><span>Hardware and software troubleshooting, Windows workstation support, user support, incident handling</span></div>
-      <div class="skill-row"><span class="skill-key">Networking</span><span>TCP/IP fundamentals and subnetting; CCNA switching, routing and wireless; network troubleshooting</span></div>
+      <div class="skill-row"><span class="skill-key">Technical Support</span><span>Hardware/software troubleshooting, Windows workstation support, user support, incident handling</span></div>
+      <div class="skill-row"><span class="skill-key">Networking</span><span>TCP/IP fundamentals and subnetting; CCNA switching, routing, wireless; network troubleshooting</span></div>
       <div class="skill-row"><span class="skill-key">Systems &amp; Linux</span><span>Red Hat System Administration I and II (RH124, RH134)</span></div>
       <div class="skill-row"><span class="skill-key">Programming</span><span>PHP, JavaScript, Python</span></div>
-      <div class="skill-row"><span class="skill-key">Web Development</span><span>Laravel and Blade, server-side and browser-based applications</span></div>
-      <div class="skill-row"><span class="skill-key">Databases</span><span>MySQL; relational database design and SQL</span></div>
+      <div class="skill-row"><span class="skill-key">Web Development</span><span>Laravel and Blade; server-side and browser-based applications</span></div>
+      <div class="skill-row"><span class="skill-key">Databases</span><span>MySQL; relational design and SQL</span></div>
       <div class="skill-row"><span class="skill-key">Cybersecurity</span><span>Security fundamentals and threat awareness; ISC2 CC, TryHackMe Advent of Cyber</span></div>
       <div class="skill-row"><span class="skill-key">Cloud</span><span>Google Cloud fundamentals, Docker containers</span></div>
   </section>
@@ -163,6 +166,7 @@ p.summary { margin: 0 0 1.2mm; }
       <li><span class="proj-name">Accounting Web Application</span> <span class="proj-lang">(Blade)</span> — Financial web application built with Laravel and Blade.</li>
       <li><span class="proj-name">Queue Management System</span> <span class="proj-lang">(JavaScript)</span> — Real-time queue for registrations, documents and inquiries, numbered per service.</li>
     </ul>
+    <p class="proj-more">More projects on GitHub: github.com/Gl3nnnn</p>
   </section>
 </div>
 

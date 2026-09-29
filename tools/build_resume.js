@@ -1,13 +1,12 @@
 // Generates resume.html from the portfolio's own data so the resume cannot
-// drift from the site. Certifications are parsed out of index.html and the
-// three featured projects are looked up in script.js; experience, education and
-// skills are transcribed from the matching site sections and flagged below for
-// review.
+// drift from the site. Certifications are parsed out of index.html and the four
+// featured projects are looked up in script.js; experience, education, skills
+// and the summary are transcribed below and flagged for review.
 //
 // The resume is deliberately one page. Patrick asked for the strongest
-// credentials only, 3 relevant projects, and everything on a single A4 sheet at
+// credentials only, 4 relevant projects, and everything on a single A4 sheet at
 // a body size no smaller than 10pt. The full 37-certification list and the other
-// 9 projects stay on the filterable site, which is where the resume points.
+// projects stay on the filterable site, which is where the resume points.
 const fs = require('fs');
 const path = require('path');
 const ROOT = path.resolve(__dirname, '..');
@@ -99,11 +98,9 @@ const groupByIssuer = list => {
 
 const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-// ---------- transcribed from the site; review these ----------
-// Windows, TCP/IP and MySQL are deliberately absent from the summary: he asked
-// for them in the skills list only, so the prose does not repeat them.
+// ---------- supplied by the user; review these ----------
 const SUMMARY = [
-  'IT Assistant at COMPASS Training Center in Iloilo, Philippines, providing day-to-day support to staff and trainees and keeping classroom systems running throughout each training day. Brings CCNA networking fundamentals, Red Hat system administration and hands-on build experience with PHP, Laravel and JavaScript. Builds practical tools outside of work, including a help-desk ticketing app, an IT asset inventory tracker and an accounting web application.'
+  'IT Assistant with hands-on experience providing technical support, troubleshooting hardware and software issues, maintaining IT systems, and assisting staff and trainees in a training-center environment. Skilled in networking fundamentals, Windows support, hardware troubleshooting, and basic system administration, with practical development experience in PHP, Laravel, JavaScript, and MySQL. Experienced in building IT solutions such as purchasing, asset management, and queue management systems, combining technical support with practical problem-solving and automation.'
 ];
 
 const EXPERIENCE = [
@@ -116,7 +113,8 @@ const EXPERIENCE = [
       'Provide day-to-day IT support to staff and trainees, troubleshooting and resolving hardware and software issues.',
       'Maintain systems, devices and network infrastructure that support daily operations.',
       'Keep classroom and administrative systems available throughout each training day.',
-      'Write small scripts and tools to automate routine tasks and cut down repetitive support work.'
+      'Write small scripts and tools to automate routine tasks and cut down repetitive support work.',
+      'Built the registration-area queue system, and develop an accounting web application in beta.'
     ]
   },
   {
@@ -125,8 +123,9 @@ const EXPERIENCE = [
     when: 'Jan 2024 – Apr 2024',
     where: 'Iloilo City, Philippines',
     bullets: [
-      'Responded to technical requests and incidents, troubleshooting hardware and software issues for end users.',
-      'Documented recurring problems and followed issues through to resolution to keep daily operations running.'
+      'Responded to technical requests and incidents, troubleshooting hardware, software, and basic network issues for end users.',
+      'Installed, configured, and maintained computers, peripherals, applications, and user workstations to support daily operations.',
+      'Documented recurring problems, tracked incidents to resolution, and escalated to the right team when needed.'
     ]
   }
 ];
@@ -138,18 +137,38 @@ const EXPERIENCE = [
 // covers everything else: a further unsourced keyword fails the audit rather
 // than slipping through. Nothing beyond this set may be added on assertion alone.
 //
+// The automation bullet and the two-systems bullet are asserted by Patrick
+// directly rather than scraped from the site, so they have no site source for the
+// audit to check. They are named here so the guarantee still covers everything
+// else: a further unsourced keyword fails the audit rather than slipping through.
+// Nothing beyond this set may be added on assertion alone.
+//
 // The automation bullet is worded "small scripts and tools" on purpose. He
 // described it as "a little coding for system automation", and no scripting
 // language is claimed, because the site does not say which one he used.
+//
+// The queue and accounting systems both exist as public repositories, but the
+// site attributes neither to the IT Assistant role, so it is his own account of
+// the job that puts them there. The queue system is described as built and the
+// accounting one as in beta, matching how far each has actually got - the queue
+// repository is version 1.0.0, while the accounting work is unfinished. Neither
+// is described as live at the counter, because counter_compass's own README
+// still lists authentication and deployment hardening as outstanding.
+//
+// The IT Help Desk bullets name peripherals, configuration, workstations,
+// escalation and installation. None of those words appears anywhere in the site,
+// so the job as described is Patrick's own account. The site does corroborate
+// hardware, software, incidents and networking, which is why the troubleshooting
+// bullet stands on its own but the install/configure bullet is an assertion.
 const USER_CONFIRMED = new Set(['Windows', 'TCP/IP', 'MySQL']);
 
 const SKILLS = [
-  { k: 'Technical Support', v: 'Hardware and software troubleshooting, Windows workstation support, user support, incident handling' },
-  { k: 'Networking', v: 'TCP/IP fundamentals and subnetting; CCNA switching, routing and wireless; network troubleshooting' },
+  { k: 'Technical Support', v: 'Hardware/software troubleshooting, Windows workstation support, user support, incident handling' },
+  { k: 'Networking', v: 'TCP/IP fundamentals and subnetting; CCNA switching, routing, wireless; network troubleshooting' },
   { k: 'Systems & Linux', v: 'Red Hat System Administration I and II (RH124, RH134)' },
   { k: 'Programming', v: 'PHP, JavaScript, Python' },
-  { k: 'Web Development', v: 'Laravel and Blade, server-side and browser-based applications' },
-  { k: 'Databases', v: 'MySQL; relational database design and SQL' },
+  { k: 'Web Development', v: 'Laravel and Blade; server-side and browser-based applications' },
+  { k: 'Databases', v: 'MySQL; relational design and SQL' },
   { k: 'Cybersecurity', v: 'Security fundamentals and threat awareness; ISC2 CC, TryHackMe Advent of Cyber' },
   { k: 'Cloud', v: 'Google Cloud fundamentals, Docker containers' }
 ];
@@ -183,36 +202,37 @@ body {
   background: #fff;
 }
 h1, h2, h3 { margin: 0; }
-h1 { font-size: 20pt; letter-spacing: -0.2pt; line-height: 1.1; }
-.role-line { font-size: 10.5pt; color: #3f444c; margin-top: 0.5mm; }
-.contact { margin-top: 1.6mm; font-size: 9.2pt; color: #33383f; line-height: 1.4; }
+h1 { font-size: 19pt; letter-spacing: -0.2pt; line-height: 1.1; }
+.role-line { font-size: 10.5pt; color: #3f444c; margin-top: 0.4mm; }
+.contact { margin-top: 1.3mm; font-size: 9.2pt; color: #33383f; line-height: 1.35; }
 .contact span { white-space: nowrap; }
 .contact .sep { color: #a8adb5; margin: 0 3px; }
 h2 {
   font-size: 9pt; text-transform: uppercase; letter-spacing: 1pt;
   color: #166534; border-bottom: 1pt solid #166534;
-  margin: 2.1mm 0 1.5mm; padding-bottom: 0.7mm;
+  margin: 1.7mm 0 1.25mm; padding-bottom: 0.6mm;
 }
 section { break-inside: auto; }
-.entry { break-inside: avoid; margin-bottom: 1.6mm; }
+.entry { break-inside: avoid; margin-bottom: 1.15mm; }
 .entry:last-child { margin-bottom: 0; }
 .entry-head { display: flex; justify-content: space-between; align-items: baseline; gap: 5mm; }
 .entry-title { font-weight: 600; font-size: 10.5pt; }
 .entry-org { font-weight: 400; color: #3f444c; }
 .entry-when { color: #3f444c; font-size: 9.2pt; white-space: nowrap; }
 .entry-meta { color: #5f646c; font-size: 9.2pt; }
-ul.bullets { margin: 0.7mm 0 0; padding-left: 4.2mm; }
-ul.bullets li { margin-bottom: 0.25mm; }
-p.summary { margin: 0 0 1.2mm; }
+ul.bullets { margin: 0.6mm 0 0; padding-left: 4.2mm; }
+ul.bullets li { margin-bottom: 0.15mm; }
+p.summary { margin: 0 0 1.1mm; line-height: 1.22; }
 .cert-items { margin: 0; padding: 0; list-style: none; }
-.cert-items li { font-size: 9.2pt; padding: 0.25mm 0; }
+.cert-items li { font-size: 9.2pt; padding: 0.2mm 0; }
 .cert-issuer { font-weight: 600; color: #166534; }
-.skill-row { display: flex; gap: 2.5mm; font-size: 9.4pt; padding: 0.25mm 0; border-bottom: 0.4pt dotted #d7dade; break-inside: avoid; }
+.skill-row { display: flex; gap: 2.5mm; font-size: 9.4pt; padding: 0.2mm 0; border-bottom: 0.4pt dotted #d7dade; break-inside: avoid; }
 .skill-key { font-weight: 600; min-width: 34mm; }
 .proj-items { margin: 0; padding: 0; list-style: none; }
-.proj-items li { font-size: 9.2pt; padding: 0.3mm 0; }
+.proj-items li { font-size: 9.2pt; padding: 0.25mm 0; }
 .proj-name { font-weight: 600; }
 .proj-lang { color: #5f646c; }
+.proj-more { margin: 0.7mm 0 0; font-size: 8.8pt; font-style: italic; color: #4b515a; }
 .note { color: #5f646c; font-size: 8.8pt; margin: 0 0 1.6mm; }
 @media print {
   body { background: #fff; }
@@ -307,6 +327,7 @@ const out = `<!DOCTYPE html>
     <ul class="proj-items">
       ${projHtml}
     </ul>
+    <p class="proj-more">More projects on GitHub: github.com/Gl3nnnn</p>
   </section>
 </div>
 
