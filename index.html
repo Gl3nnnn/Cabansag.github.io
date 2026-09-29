@@ -485,6 +485,15 @@ top: 10px;
     color: var(--main-color);
     margin: -4px 0 10px;
 }
+/* the strand sits under the school name, so it must not repeat the school
+   styling or it reads as a second institution */
+.timeline-strand{
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted-color);
+    margin: -6px 0 10px;
+}
 .timeline-content p{
     color: white;
     font-size: 16px;
@@ -2468,8 +2477,12 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="timeline-content">
                     <h3>Senior High School</h3>
                     <span class="timeline-school">John B. Lacson Foundation Maritime University</span>
-                    <p>In senior high school I focused on more specialised subjects, preparing myself for higher education
-                        and honing the problem-solving skills that would matter for an IT career.</p>
+                    <span class="timeline-strand">Pre-Baccalaureate Maritime strand (modified STEM, seafaring specialisation)</span>
+                    <p>Senior high was where the maritime focus became part of my background: the school's
+                        pre-baccalaureate track is a STEM strand with a seafaring specialisation, so I studied
+                        mathematics, science and the technology subjects alongside the maritime coursework. The
+                        technical side of that strand is what pulled me toward IT, and the discipline of working
+                        to strict procedures carried over into technical support work.</p>
                 </div>
             </div>
 
