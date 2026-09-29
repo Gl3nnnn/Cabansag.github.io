@@ -364,8 +364,7 @@ const out = `<!DOCTYPE html>
     <ul class="proj-items">
       ${projHtml}
     </ul>
-    <p class="proj-more">More projects on GitHub: github.com/Gl3nnnn &middot; Full portfolio and
-      13 projects: gl3nnnn.github.io/Cabansag.github.io</p>
+    <p class="proj-more">More projects on GitHub: github.com/Gl3nnnn</p>
   </section>
 </div>
 
