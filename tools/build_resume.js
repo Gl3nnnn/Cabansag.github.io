@@ -55,14 +55,15 @@ const projects = [...js.matchAll(/\{\s*name:\s*'([^']+)'[^}]*?language:\s*'([^']
     tags: m[3].split(',').map(s => s.trim().replace(/^'|'$/g, '')).filter(Boolean),
     description: m[4].replace(/\\'/g, "'")
   }));
-if (projects.length !== 12) throw new Error(`expected 12 projects, parsed ${projects.length}`);
+if (projects.length !== 13) throw new Error(`expected 13 projects, parsed ${projects.length}`);
 
-// Three of the twelve, covering the three areas he asked for: asset/inventory
-// management, help-desk ticketing, and full-stack web work. `src` must match the
-// project name in script.js, so renaming a project there breaks this build
-// rather than silently dropping it. `line` is a tightened restatement of that
-// project's own script.js description, kept to one line; the source wording is
-// recorded beside it so the two can be compared.
+// Four of the thirteen, covering the areas he asked for: asset/inventory
+// management, help-desk ticketing, full-stack web work, and the queue system he
+// built for the registration area. `src` must match the project name in
+// script.js, so renaming a project there breaks this build rather than
+// silently dropping it. `line` is a tightened restatement of that project's own
+// script.js description, kept to one line; the source wording is recorded
+// beside it so the two can be compared.
 const PROJECTS = [
   {
     src: 'it_inventory', label: 'IT Asset Inventory System',
@@ -75,6 +76,10 @@ const PROJECTS = [
   {
     src: 'accounting', label: 'Accounting Web Application',
     line: 'Financial web application built with Laravel and Blade.'
+  },
+  {
+    src: 'counter_compass', label: 'Queue Management System',
+    line: 'Real-time queue for registrations, documents and inquiries, numbered per service.'
   }
 ];
 const featured = PROJECTS.map(p => {
@@ -110,7 +115,8 @@ const EXPERIENCE = [
     bullets: [
       'Provide day-to-day IT support to staff and trainees, troubleshooting and resolving hardware and software issues.',
       'Maintain systems, devices and network infrastructure that support daily operations.',
-      'Keep classroom and administrative systems available throughout each training day.'
+      'Keep classroom and administrative systems available throughout each training day.',
+      'Write small scripts and tools to automate routine tasks and cut down repetitive support work.'
     ]
   },
   {
@@ -126,11 +132,15 @@ const EXPERIENCE = [
 ];
 
 // ---------- skills: one keyword-dense line per category ----------
-// Windows, TCP/IP and MySQL are asserted by Patrick directly and are not on the
-// site yet, so they have no site source for the audit to check. They are named
-// here so the guarantee still covers everything else: a fourth unsourced
-// keyword fails the audit rather than slipping through. Nothing beyond this set
-// may be added on assertion alone.
+// Windows, TCP/IP, MySQL and the automation bullet in the IT Assistant role are
+// asserted by Patrick directly rather than scraped from the site, so they have no
+// site source for the audit to check. They are named here so the guarantee still
+// covers everything else: a further unsourced keyword fails the audit rather
+// than slipping through. Nothing beyond this set may be added on assertion alone.
+//
+// The automation bullet is worded "small scripts and tools" on purpose. He
+// described it as "a little coding for system automation", and no scripting
+// language is claimed, because the site does not say which one he used.
 const USER_CONFIRMED = new Set(['Windows', 'TCP/IP', 'MySQL']);
 
 const SKILLS = [

@@ -101,6 +101,7 @@ const PROJECTS = [
     { name: 'TechDesk', language: 'PHP', tags: ['Ticketing', 'Helpdesk'], description: 'IT tech-desk ticketing app for logging, assigning and tracking technical support requests.' },
     { name: 'helpdesk', language: 'PHP', tags: ['Helpdesk', 'Ticketing'], description: 'Helpdesk support system built to manage end-user tickets and recurring IT issues.' },
     { name: 'it_inventory', language: 'PHP', tags: ['IT Assets', 'Inventory'], description: 'IT asset inventory system for recording hardware, assignments and equipment lifecycle.' },
+    { name: 'counter_compass', language: 'JavaScript', tags: ['Queue', 'Ticketing'], description: 'Real-time queue management system for walk-in registrations, document processing and inquiries, with independent ticket numbering per service and a live waiting-area display.' },
     { name: 'InventoryTBF', language: 'JavaScript', tags: ['Inventory', 'Web App'], description: 'Browser-based inventory tracker for monitoring stock levels and item records.' },
     { name: 'Issue-Tracker', language: 'JavaScript', tags: ['Issue Tracking', 'Web App'], description: 'Issue and bug tracking web application for capturing, triaging and managing defects.' },
     { name: 'games', language: 'JavaScript', tags: ['Games', 'Browser'], description: 'Collection of small browser games built with vanilla JavaScript.' },
