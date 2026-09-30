@@ -419,19 +419,11 @@ if (copyEmailBtn) {
 }
 
 // Skill bars fill animation
-const skillBars = document.querySelectorAll('.skill-bar');
-if (skillBars.length && 'IntersectionObserver' in window) {
-    const skillObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const fill = entry.target.querySelector('.skill-fill');
-                if (fill) fill.style.width = (fill.dataset.level || 80) + '%';
-                skillObserver.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.3 });
-    skillBars.forEach(bar => skillObserver.observe(bar));
-}
+//
+// Removed along with the proficiency meters themselves. The bar JS existed only
+// to animate .skill-fill widths to a self-assigned data-level percentage; with
+// the meters gone there is no element left for it to act on, so keeping it would
+// have meant dead code querying a selector that matches nothing.
 
 // Dynamic copyright year
 const yearEl = document.getElementById('year');

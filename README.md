@@ -15,11 +15,20 @@ Welcome to my portfolio website! I'm Glenn Patrick Cabansag, an Information Tech
 
 ## Skills
 
-- **Languages**: Python, JavaScript, Java, PHP, SQL, HTML, CSS
-- **Frameworks**: React, Laravel (Blade), Node.js
-- **Tools**: Git, GitHub, Wireshark, Figma
-- **Platforms**: AWS, Docker, Google Cloud
-- **Focus areas**: Cloud fundamentals, networking, cybersecurity, full-stack development, UI/UX design, technical support
+These are the eight areas on the site's Skills section. Each one traces to a credential, a public
+repository, or a job held — the site shows the specific evidence next to each.
+
+- **IT Support** — Google Technical Support Fundamentals · TESDA Microsoft Digital Literacy · 2 roles
+- **Linux & Systems** — Red Hat System Administration I (RH124) · Red Hat System Administration II (RH134)
+- **Networking** — CCNA: Switching, Routing, and Wireless Essentials · Cisco Network Support and Security
+- **Google Cloud** — 7 credentials spanning core infrastructure, modernisation, security and operations, GenAI and responsible AI
+- **Cybersecurity** — ISC2 CC · DICT CyberPRO L1 · Cisco CyberOps · TryHackMe Advent of Cyber · LFC108 · IBM · UMD
+- **Web Development** — PHP · Laravel and Blade · MySQL · JavaScript (5 of 13 public repos are PHP or Laravel)
+- **Python & Automation** — 3 Python repos · DataCamp AI Engineer Associate
+- **Design & Graphics** — 4 design credentials (credential-based, not a current role)
+
+Currently studying AWS; listed as learning rather than experience, since no credential or project
+in it exists yet.
 
 ## Experience
 

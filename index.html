@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#121212">
     <script>(function(){try{var t=localStorage.getItem('theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';}document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name="theme-color"]');if(m){m.setAttribute('content',t==='light'?'#f6f7f9':'#121212');}}catch(e){}})();</script>
-    <meta name="description" content="Portfolio of Glenn Patrick Cabansag, IT Assistant at COMPASS Training Center and BS IT graduate from the University of San Agustin. Full-stack, networking and technical support.">
+    <meta name="description" content="Portfolio of Glenn Patrick Cabansag, IT Assistant at COMPASS Training Center and BS IT graduate from the University of San Agustin. Technical support, Linux administration, Google Cloud, networking and cybersecurity, with 38 certifications.">
     <meta name="author" content="Glenn Patrick Cabansag">
     <meta property="og:title" content="Glenn Patrick Cabansag | IT Professional">
-    <meta property="og:description" content="IT Assistant, full-stack developer, UI/UX designer, network and technical support. Explore my projects and experience.">
+    <meta property="og:description" content="IT Assistant with 38 certifications across technical support, Linux system administration, Google Cloud, networking and cybersecurity. Exploring PHP, Laravel and Python development.">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Glenn Patrick Cabansag">
     <meta property="og:locale" content="en_PH">
@@ -19,7 +19,7 @@
     <meta property="og:image:alt" content="Glenn Patrick Cabansag - IT Professional portfolio">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Glenn Patrick Cabansag | IT Professional">
-    <meta name="twitter:description" content="IT Assistant, full-stack developer, UI/UX designer, network and technical support.">
+    <meta name="twitter:description" content="IT Assistant with 38 certifications across technical support, Linux system administration, Google Cloud, networking and cybersecurity.">
     <meta name="twitter:image" content="https://gl3nnnn.github.io/Cabansag.github.io/og-cover.jpg">
     <meta name="twitter:image:alt" content="Glenn Patrick Cabansag - IT Professional portfolio">
     <title>Glenn Patrick Cabansag | IT Professional</title>
@@ -321,10 +321,13 @@ border-radius: 50%;
      *
      * So the phrases are instead kept within a narrow width band of each other,
      * to stop the box changing size much as they swap. Measured against the
-     * current five, the widest is "UI/UX Designer" at 7.63em and the narrowest
-     * is "IT Assistant" at 5.81em - a spread of 1.82em, down from 2.69em before
-     * they were rebalanced. 5em below is only a floor while `content` swaps; it
-     * is not what sizes the box, and no phrase is close to reaching it. */
+     * current five, the widest is "Cloud Support" at 7.32em and the narrowest is
+     * "IT Assistant" at 5.84em - a spread of 1.48em, down from 1.82em for the
+     * previous set. That set advertised a full-stack developer and a "Cloud
+     * Learner", both of which overstated the evidence: there are no React, AWS,
+     * Figma, Node, Java or Docker credentials behind them, and seven Google
+     * credentials are not "learning". 5em below is only a floor while `content`
+     * swaps; it is not what sizes the box, and no phrase is close to reaching it. */
     min-width: 5em;
     text-align: left;
 }
@@ -353,16 +356,16 @@ border-radius: 50%;
         content: "IT Assistant";
     }
     21%,40%{
-        content: "Full-Stack Dev";
+        content: "Linux Admin";
     }
     41%,60%{
-        content: "UI/UX Designer";
-    }
-    61%,80%{
         content: "Tech Support";
     }
+    61%,80%{
+        content: "Cyber Analyst";
+    }
     81%,100%{
-        content: "Cloud Learner";
+        content: "Cloud Support";
     }
 }
 @keyframes typing{
@@ -1571,7 +1574,8 @@ padding-left:37px;
     margin-bottom: 5rem;
     color: white;
 }
-.certifications-intro{
+.certifications-intro,
+.services-intro{
     text-align: center;
     font-size: 1.8rem;
     color: var(--text-color);
@@ -2094,7 +2098,6 @@ section{
 }
 [data-theme="light"] .cert-verify-link:hover{ box-shadow: 0 4px 12px rgba(176, 58, 78, 0.3); }
 [data-theme="light"] .project-filters .chip,
-[data-theme="light"] .skill-track{ border-color: #d6d9de; }
 [data-theme="light"] .project-filters .chip.active,
 [data-theme="light"] .retry-btn,
 [data-theme="light"] .project-link:hover,
@@ -2174,8 +2177,6 @@ html[data-theme="dark"] .services-info h4 i{ color: var(--main-color); }
 html[data-theme="dark"] .services-box:hover .services-info h4 i,
 html[data-theme="dark"] .services-box:hover .services-info h4,
 html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
-/* Light: skill bars -> lighter green fill */
-[data-theme="light"] .skill-fill{ background: linear-gradient(90deg, #22c55e, #14b8a6); }
 /* Light: testimonial avatars -> outlined circles; cards softened */
 [data-theme="light"] .testimonial-avatar{
     box-shadow: 0 0 0 2px var(--main-color);
@@ -2213,8 +2214,15 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
     cursor: not-allowed;
     transform: none;
 }
-/* Skills proficiency bars */
-.skills-proficiency{
+/* Skills evidence list.
+ *
+ * This replaced a "Proficiency Meter" of eight self-assigned percentages. A
+ * number like "Frontend Development 90%" is a claim about yourself that nobody
+ * can check and that is easy to contradict in an interview, and two of them
+ * rested on technologies with no credential, repository or job behind them. The
+ * credential behind each area is checkable, so that is what is shown instead.
+ * There is deliberately no bar and no percentage anywhere in this block. */
+.skills-evidence{
     max-width: 1200px;
     margin: 3rem auto 0;
     padding: 0 9%;
@@ -2226,39 +2234,30 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
     margin-bottom: 2rem;
     font-weight: 700;
 }
-.skill-bars{
+.skill-evidence-grid{
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 2rem 3rem;
+    gap: 1.5rem 3rem;
 }
-.skill-bar .skill-bar-top{
+.skill-evidence-item{
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.6rem;
+    flex-direction: column;
+    gap: 0.4rem;
+    border-left: 3px solid var(--main-color);
+    padding-left: 1.2rem;
+}
+.skill-evidence-item .skill-name{
     color: var(--text-color);
     font-size: 1.5rem;
     font-weight: 600;
 }
-.skill-bar .skill-pct{
-    color: var(--accent-color);
-}
-.skill-track{
-    height: 1rem;
-    background: var(--second-bg-color);
-    border: 1px solid #333;
-    border-radius: 100px;
-    overflow: hidden;
-}
-.skill-fill{
-    height: 100%;
-    width: 0;
-    background: linear-gradient(90deg, var(--main-color), var(--accent-color));
-    border-radius: 100px;
-    transition: width 1.2s ease;
+.skill-evidence-text{
+    color: #9aa0aa;
+    font-size: 1.2rem;
+    line-height: 1.5;
 }
 @media(max-width:768px){
-    .skill-bars{
+    .skill-evidence-grid{
         grid-template-columns: 1fr;
     }
     .hero-stats{
@@ -2363,7 +2362,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
     <section class="home" id="home" tabindex="-1">
         <div class="home-content">
             <h1>Hi, It's <span>Patrick</span></h1>
-            <h3 class="text-animation">I'm a <span class="ta-rotator" aria-hidden="true"></span><span class="ta-sr sr-only">Information Technology Assistant. I also work as a full-stack developer, UI/UX designer, network and technical support specialist, and AWS/cloud learner.</span></h3>
+            <h3 class="text-animation">I'm a <span class="ta-rotator" aria-hidden="true"></span><span class="ta-sr sr-only">Information Technology Assistant. I also work as a Linux systems administrator, a technical support specialist, a cybersecurity analyst and a Google Cloud engineer, and I build web applications in PHP, Laravel, JavaScript and Python.</span></h3>
             <p>I'm Glenn Patrick Cabansag, an Information Technology professional based in Iloilo, Philippines, currently working as an IT Assistant at COMPASS Training Center. I graduated from the University of San Agustin with a Bachelor of Science in Information Technology in 2024. I build responsive web applications, support and troubleshoot IT systems, and constantly explore new technologies to grow and contribute to the IT field.</p>
 
             <div class="social-icons">
@@ -3028,76 +3027,85 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
 <section class="services" id="services">
     <h2 class="heading">Skills</h2>
+    <p class="services-intro">Eight areas, each one traceable to a credential on this page, a public repository, or a job I have actually held. Nothing here is a self-assigned percentage.</p>
     <div class="services-container">
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa-solid fa-paint-brush"></i> UI Design</h4>
-                <p>I design clean and intuitive user interfaces using Figma, wireframing and prototyping, with an emphasis on usability, visual consistency and accessibility.</p>
+                <h4><i class="fa-solid fa-headset"></i> IT Support</h4>
+                <p>Day-to-day support as an IT Assistant and Help Desk associate on Windows: troubleshooting hardware and software, installing and configuring workstations, handling incidents through to resolution and escalation, and documenting recurring faults so they stop coming back.</p>
 
             </div>
         </div>
 
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa-solid fa-desktop"></i> Frontend</h4>
-                <p>I build responsive web applications with HTML, CSS, JavaScript and React, turning design mockups into interfaces that work cleanly on every screen size.</p>
-                
-            </div>
-        </div>
-        <div class="services-box">
-            <div class="services-info">
-                <h4><i class="fa-solid fa-database"></i> Backend</h4>
-                <p>I specialize in backend development with Node.js, Python, Java, and database management (SQL and NoSQL). I develop and maintain APIs for efficient data flow and frontend integration, aiming to build robust and scalable server-side solutions.</p>
-                
+                <h4><i class="fa-solid fa-server"></i> Linux &amp; Systems</h4>
+                <p>Red Hat System Administration I and II, covering installation, file systems, storage, users and groups, services, networking on the command line, and core administration of Linux servers.</p>
+
             </div>
         </div>
 
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa-solid fa-wifi"></i> Networking</h4>
-                <p>I configure and manage network devices, ensuring secure data transmission, and excel in network analysis with tools like Wireshark. My experience in wired and wireless networks helps maintain reliable infrastructures.</p>
-                
+                <h4><i class="fa-solid fa-network-wired"></i> Networking</h4>
+                <p>CCNA switching, routing and wireless, plus TCP/IP fundamentals and subnetting. In the training centre I maintain the wired and wireless network that classrooms and administrative systems depend on.</p>
+
             </div>
         </div>
 
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa-solid fa-cloud"></i> Cloud & DevOps</h4>
-                <p>I work with cloud platforms like AWS and containerization with Docker, building and deploying applications through CI/CD workflows. I hold a Digital Transformation with Google Cloud certification and enjoy automating workflows.</p>
-                
+                <h4><i class="fa-solid fa-cloud"></i> Google Cloud</h4>
+                <p>Seven Google Cloud credentials spanning core infrastructure, application modernisation, security and operations, large language models and responsible AI. This is my cloud platform, and it is the one I hold the most credentials in.</p>
+
             </div>
         </div>
 
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa-solid fa-cogs"></i> Technical Support</h4>
-                <p>I troubleshoot hardware and software issues, support end users, and maintain IT systems as an IT Assistant and Help Desk associate, keeping operations smooth and reliable.</p>
-                
+                <h4><i class="fa-solid fa-shield-halved"></i> Cybersecurity</h4>
+                <p>ISC2 Certified in Cybersecurity, DICT CyberPRO Level 1, Cisco CyberOps, TryHackMe Advent of Cyber, Linux Foundation Cybersecurity Essentials and IBM's cyber tools track, covering threat awareness, defensive practice and incident response.</p>
+
             </div>
         </div>
 
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa-solid fa-code"></i> Programming</h4>
-                <p>Proficient in Python, JavaScript, and Java. I build automation scripts, desktop utilities, and learning tools like a Simple Assistant and Student Manager to sharpen my craft.</p>
-                
+                <h4><i class="fa-solid fa-code"></i> Web Development</h4>
+                <p>PHP and Laravel with Blade templating, MySQL, and JavaScript on the browser side. Five of my public repositories are PHP or Laravel applications, including the helpdesk ticketing and IT asset systems I built for the training centre.</p>
+
             </div>
         </div>
 
+        <div class="services-box">
+            <div class="services-info">
+                <h4><i class="fa-solid fa-robot"></i> Python &amp; Automation</h4>
+                <p>Three Python repositories: a student record manager, a desktop assistant and a calculator. I also use scripting to automate routine support tasks, which is how the queue and accounting systems came about.</p>
+
+            </div>
+        </div>
+
+        <div class="services-box">
+            <div class="services-info">
+                <h4><i class="fa-solid fa-paint-brush"></i> Design &amp; Graphics</h4>
+                <p>Four design credentials covering graphic design principles, logo development and visual communication. Credential-based rather than role-based: I have studied the discipline but do not currently work in it.</p>
+
+            </div>
+        </div>
 
     </div>
 
-        <div class="skills-proficiency">
-            <h3 class="skill-heading">Proficiency <span>Meter</span></h3>
-            <div class="skill-bars">
-                <div class="skill-bar"><div class="skill-bar-top"><span class="skill-name">Frontend Development</span><span class="skill-pct">90%</span></div><div class="skill-track"><div class="skill-fill" data-level="90"></div></div></div>
-                <div class="skill-bar"><div class="skill-bar-top"><span class="skill-name">Technical Support</span><span class="skill-pct">90%</span></div><div class="skill-track"><div class="skill-fill" data-level="90"></div></div></div>
-                <div class="skill-bar"><div class="skill-bar-top"><span class="skill-name">UI/UX Design</span><span class="skill-pct">85%</span></div><div class="skill-track"><div class="skill-fill" data-level="85"></div></div></div>
-                <div class="skill-bar"><div class="skill-bar-top"><span class="skill-name">Python &amp; Programming</span><span class="skill-pct">85%</span></div><div class="skill-track"><div class="skill-fill" data-level="85"></div></div></div>
-                <div class="skill-bar"><div class="skill-bar-top"><span class="skill-name">Backend Development</span><span class="skill-pct">80%</span></div><div class="skill-track"><div class="skill-fill" data-level="80"></div></div></div>
-                <div class="skill-bar"><div class="skill-bar-top"><span class="skill-name">Networking</span><span class="skill-pct">80%</span></div><div class="skill-track"><div class="skill-fill" data-level="80"></div></div></div>
-                <div class="skill-bar"><div class="skill-bar-top"><span class="skill-name">Cloud &amp; DevOps</span><span class="skill-pct">75%</span></div><div class="skill-track"><div class="skill-fill" data-level="75"></div></div></div>
-                <div class="skill-bar"><div class="skill-bar-top"><span class="skill-name">Databases &amp; SQL</span><span class="skill-pct">75%</span></div><div class="skill-track"><div class="skill-fill" data-level="75"></div></div></div>
+        <div class="skills-evidence">
+            <h3 class="skill-heading">Backed <span>By</span></h3>
+            <div class="skill-evidence-grid">
+                <div class="skill-evidence-item"><span class="skill-name">IT Support</span><span class="skill-evidence-text">Google Technical Support Fundamentals · TESDA Microsoft Digital Literacy · 2 roles</span></div>
+                <div class="skill-evidence-item"><span class="skill-name">Linux &amp; Systems</span><span class="skill-evidence-text">Red Hat System Administration I (RH124) · Red Hat System Administration II (RH134)</span></div>
+                <div class="skill-evidence-item"><span class="skill-name">Networking</span><span class="skill-evidence-text">CCNA: Switching, Routing, and Wireless Essentials · Cisco Network Support and Security</span></div>
+                <div class="skill-evidence-item"><span class="skill-name">Google Cloud</span><span class="skill-evidence-text">7 credentials · core infrastructure, modernisation, security and operations, GenAI and responsible AI</span></div>
+                <div class="skill-evidence-item"><span class="skill-name">Cybersecurity</span><span class="skill-evidence-text">ISC2 CC · DICT CyberPRO L1 · Cisco CyberOps · TryHackMe · LFC108 · IBM · UMD</span></div>
+                <div class="skill-evidence-item"><span class="skill-name">Web Development</span><span class="skill-evidence-text">PHP · Laravel and Blade · MySQL · JavaScript · 5 PHP/Laravel repositories</span></div>
+                <div class="skill-evidence-item"><span class="skill-name">Python &amp; Automation</span><span class="skill-evidence-text">SimpleStudentManager · SimpleAssistant · simplecalculator · DataCamp AI Engineer Associate</span></div>
+                <div class="skill-evidence-item"><span class="skill-name">Design &amp; Graphics</span><span class="skill-evidence-text">UP Principles of Graphic Design · DICT Trends in Art and Design · TESDA ×2</span></div>
             </div>
         </div>
 </section>

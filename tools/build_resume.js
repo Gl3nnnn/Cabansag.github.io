@@ -167,17 +167,38 @@ const EXPERIENCE = [
 // so the job as described is Patrick's own account. The site does corroborate
 // hardware, software, incidents and networking, which is why the troubleshooting
 // bullet stands on its own but the install/configure bullet is an assertion.
-const USER_CONFIRMED = new Set(['Windows', 'TCP/IP', 'MySQL']);
+// The allowlist is now empty, and that is the point: every technology the resume
+// asserts is backed by a credential, a public repository or a job.
+//
+// MySQL was the last entry, and it is sourced rather than merely confirmed. The
+// accounting repository's own files show it: .env.example sets DB_CONNECTION=mysql
+// on port 3306, and database/acc.sql is a phpMyAdmin dump taken against MariaDB
+// 10.4.32. Both are committed to the public repo, so the claim is checkable by
+// anyone who opens it rather than resting on assertion.
+//
+// Windows and TCP/IP left earlier because the rebuilt Skills section states both
+// as plain text, corroborated by the support roles and Google Technical Support
+// Fundamentals on one side and Red Hat and CCNA on the other.
+const USER_CONFIRMED = new Set();
 
+// Eight rows, matching the eight areas of the site's Skills section and leading
+// with the work rather than the tooling, in the same order the site uses. Docker
+// was dropped from the Cloud row: it had no credential, repository or job behind
+// it, and the site no longer claimed it. Windows and TCP/IP also came off the
+// allowlist, because the rebuilt Skills section now states both as plain text and
+// the site corroborates them (Red Hat and CCNA for TCP/IP, the support roles and
+// Google Technical Support Fundamentals for Windows) - so they are sourced rather
+// than excused. MySQL is the one remaining assertion, since no credential or
+// repository names it.
 const SKILLS = [
-  { k: 'Technical Support', v: 'Hardware/software troubleshooting, Windows workstation support, user support, incident handling' },
-  { k: 'Networking', v: 'TCP/IP fundamentals and subnetting; CCNA switching, routing, wireless; network troubleshooting' },
-  { k: 'Systems & Linux', v: 'Red Hat System Administration I and II (RH124, RH134)' },
-  { k: 'Programming', v: 'PHP, JavaScript, Python' },
-  { k: 'Web Development', v: 'Laravel and Blade; server-side and browser-based applications' },
-  { k: 'Databases', v: 'MySQL; relational design and SQL' },
-  { k: 'Cybersecurity', v: 'Security fundamentals and threat awareness; ISC2 CC, TryHackMe Advent of Cyber' },
-  { k: 'Cloud', v: 'Google Cloud fundamentals, Docker containers' }
+  { k: 'IT Support', v: 'Hardware/software troubleshooting, Windows workstation support, user support, incident handling' },
+  { k: 'Linux & Systems', v: 'Red Hat System Administration I and II (RH124, RH134)' },
+  { k: 'Networking', v: 'TCP/IP fundamentals and subnetting; CCNA switching, routing, wireless' },
+  { k: 'Google Cloud', v: 'Seven credentials: core infrastructure, modernisation, security and operations, GenAI' },
+  { k: 'Cybersecurity', v: 'Threat awareness; ISC2 CC, DICT CyberPRO Level 1, TryHackMe Advent of Cyber' },
+  { k: 'Web Development', v: 'PHP, Laravel and Blade, MySQL; server-side and browser-based applications' },
+  { k: 'Python & Automation', v: 'Desktop tools, records management and support-task automation' },
+  { k: 'Design & Graphics', v: 'Four design credentials: graphic design principles, logo design, trends in art and design' }
 ];
 
 // Each contact item is { icon, text }. The icon is a small inline SVG so the
