@@ -1042,13 +1042,21 @@ top: 10px;
 .services-container{
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    align-items: center;
+    /* stretch, not center: the cards now size to their copy, so centring them
+       left the two halves of a row at different heights (366/318/371px at
+       900px wide). Stretching keeps each row's bottom edge flush. */
+    align-items: stretch;
     gap: 2.5rem;
-
 }
 .services-box{
     background-color: var(--main-color);
-    height: 300px;
+    /* min-height, not height: a fixed 300px plus the old max-height clamps on
+       .services-info and .services-info p meant the paragraph box stayed inside
+       the card while its glyphs spilled out past the bottom edge (visible
+       overflow). Measuring the text with a Range showed up to 67px of spill
+       around 900-1100px. Letting the card grow removes the failure mode and
+       keeps the 300px floor that sets the section's rhythm. */
+    min-height: 300px;
     border-radius: 3rem;
     border: 5px solid transparent;
     cursor: pointer;
@@ -1065,7 +1073,6 @@ top: 10px;
     display: flex;
     flex-direction: column;
     text-align: left;
-    max-height: 200px;
     justify-content: left;
     align-items: baseline;
     padding: 5rem 5rem;
@@ -1080,7 +1087,6 @@ top: 10px;
 .services-info p{
     font-size: 1.6rem;
     font-weight: 600;
-    max-height: 100px;
     line-height: 1.7;
     margin:auto;
 }
