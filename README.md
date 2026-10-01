@@ -42,7 +42,7 @@ development, design, systems support and data. Highlights include:
 
 - **Cloud & DevOps (7)** — Digital Transformation with Google Cloud · Google Cloud Fundamentals: Core Infrastructure · Infrastructure and Application Modernization with Google Cloud · Understanding Google Cloud Security and Operations · Introduction to Large Language Models · Introduction to Responsible AI · Introduction to Generative AI
 - **Networking (2)** — CCNA: Switching, Routing, and Wireless Essentials · Network Support and Security
-- **Cybersecurity (7)** — Certified in Cybersecurity (CC) [ISC2] · CyberOps Associate · Introduction to Cybersecurity · Advent of Cyber 2024 [TryHackMe] · Cybersecurity Essentials (LFC108) [Linux Foundation] · Introduction to Cybersecurity Tools & Cyber Attacks [IBM] · Cybersecurity for Everyone [University of Maryland]
+- **Cybersecurity (8)** — Certified in Cybersecurity (CC) [ISC2] · CyberOps Associate · Introduction to Cybersecurity · Advent of Cyber 2024 [TryHackMe] · Cybersecurity Essentials (LFC108) [Linux Foundation] · Introduction to Cybersecurity Tools & Cyber Attacks [IBM] · Cybersecurity for Everyone [University of Maryland] · Cybersecurity Professionals Portal (CyberPRO) Level 1 [DICT]
 - **Development & AI (8)** — AI Engineer for Developers Associate [DataCamp] · Introduction to Data Science · Responsive Web Design [freeCodeCamp] · CSS Essentials · Introduction to Software Engineering [IBM] · iOS Development for Beginners · Introduction to Quantum Computing [Udemy] · SMART Android Mobile Apps Development [TESDA]
 - **Design & Graphics (4)** — Principles of Graphic Design [University of the Philippines] · Trends in Art and Design [DICT] · Developing Designs for a Logo [TESDA] · Introduction to Visual Graphic Design [TESDA]
 - **Systems & Support (5)** — Red Hat System Administration I (RH124) · Red Hat System Administration II (RH134) · Technical Support Fundamentals [Google] · Microsoft Digital Literacy [TESDA] · Globe Wi-Fi 101 and Digital Thumbprint Program
@@ -68,7 +68,7 @@ The Projects section on the site loads live from GitHub and includes language fi
 - `index.html` — main portfolio page (home, about, education, experience, certifications, skills, projects, testimonials, blog, contact)
 - `faq.html` — frequently asked questions
 - `blog.html` — blog archive with search and topic filters
-- `blog-home-lab.html`, `blog-helpdesk-lessons.html`, `blog-aws-journey.html`, `blog-tryhackme-first-month.html`, `blog-docker-portfolio.html`, `blog-vlans-home-lab.html` — blog posts
+- `blog-queue-system.html, blog-accounting-laravel.html, blog-it-support-shift.html, blog-vlans-home-lab.html, blog-docker-portfolio.html, blog-tryhackme-first-month.html, blog-home-lab.html, blog-aws-journey.html, blog-helpdesk-lessons.html` — blog posts
 - `404.html` — custom 404 page
 - `script.js` — shared interactivity (nav, scroll spy, projects via GitHub API with curated fallback, language filters, reveal-on-scroll, theme toggle, hero stats, skill bars, cert links, copy-email). Loaded only by `index.html`.
 - Inline in `index.html` — the EmailJS contact form handler, honeypot, field validation and status popups
@@ -80,6 +80,24 @@ The Projects section on the site loads live from GitHub and includes language fi
 - `resume.html` — printable resume source (1 page, A4, 10pt body). Certifications and the four featured projects are generated from this site's own data by the build script, so the resume cannot drift from the site; the summary, experience, skills and education are transcribed beside it for review. Edit the data, run `node tools/build_resume.js`, then print to PDF. The other 29 certifications and the other 9 projects deliberately stay off the resume, with a pointer to GitHub for the rest and live on the site's filterable list instead. No tables, images or icons, so applicant tracking systems read it as plain text.
 - `resume-2026.pdf` — the generated resume served to visitors
 - `RESUME_Cabansag_GlennPatrick.pdf` — superseded 2024 resume, kept for reference and no longer linked
+
+## Blog Authoring
+
+- `tools/posts/_chain.js` — single source of truth for the post timeline. It owns the order, derives each post's previous/next links and the set of category filters from the posts themselves, and rejects duplicate dates. Adding a post means adding it here; a spec cannot invent its own navigation.
+- `tools/posts/<slug>.js` — one post spec per post: title, description, date, category, TOC and body HTML. The body is a JS template string rather than JSON because post bodies are full of quotes and backslashes, and hand-escaping those into JSON corrupts code samples.
+- `tools/build_post.js` — renders a spec to `blog-<slug>.html` using the VLAN post as the template, so the CSS, header and footer cannot drift. Run `node tools/build_post.js tools/posts/<slug>.js`.
+- The three newest posts (`queue-system`, `accounting-laravel`, `it-support-shift`) are generated this way. The older six are hand-maintained.
+- After changing a post body, regenerate it and re-run the suites below.
+
+### Tests
+
+```
+node tests/blog_claims.js
+node tests/post_structure.js
+```
+
+- `tests/blog_claims.js` — the evidence suite. Checks that the chain's order and navigation match every post on disk, that `blog.html`, `index.html`, `sitemap.xml` and this README all agree on the same nine posts, that the claims in the new posts are still backed by the resume or the FAQ, and that touched files have no BOM, no replacement characters and no CRLF.
+- `tests/post_structure.js` — per-post structure. Heading numbering, TOC/body agreement, unique ids, anchor resolution, tag balance, encoding, `<title>`, and agreement between each spec and its rendered canonical URL and JSON-LD.
 
 ## Contact Me
 

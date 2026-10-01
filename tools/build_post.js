@@ -1,0 +1,250 @@
+// Generates a blog post from an existing one. All six current posts share
+// byte-identical boilerplate: the <head> CSS, the body header, and the
+// footer + inline script. Verified by hashing those three regions across every
+// post in the repo before this tool existed.
+//
+// So a new post is: take a template post, replace six regions. Copying the CSS
+// by hand is how the theme tokens or the light-theme contrast fixes get lost,
+// so the boilerplate is sliced out of the template programmatically and
+// re-emitted verbatim.
+//
+// The six regions:
+//   HEAD_META   meta tags + the FOUC-prevention IIFE (from <meta name="author">
+//               to just before <meta name="description">)
+//   META_TAGS   description/og/twitter block
+//   JSONLD      the <script type="application/ld+json"> block
+//   CSS         both <style> blocks, kept verbatim
+//   ARTICLE     the <article class="article"> element
+//   BOILER_AFTER everything from </article> to </html>
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+
+// Resolved from this file's location rather than written out, so the tool works
+// in a fresh clone and from any working directory. A hardcoded absolute path
+// only ever worked on the machine that wrote it.
+const ROOT = path.join(__dirname, '..');
+const CHAIN = path.join(__dirname, 'posts', '_chain.js');
+
+// Slice a region out of an existing post. start/end are regexes; the region is
+// inclusive of the match. Returns null when the anchor is missing, which is a
+// hard error rather than something to paper over.
+const slice = (src, startRe, endRe, what) => {
+  const s = src.search(startRe);
+  if (s === -1) throw new Error(`template is missing the ${what} start anchor (${startRe})`);
+  const m = endRe.exec(src.slice(s));
+  if (!m) throw new Error(`template is missing the ${what} end anchor (${endRe})`);
+  return src.slice(s, s + m.index + m[0].length);
+};
+
+// Split a template post into the pieces a generated post needs.
+function loadTemplate(slug) {
+  const src = fs.readFileSync(path.join(ROOT, `blog-${slug}.html`), 'utf8');
+
+  // head metadata: <meta name="author"> .. the theme-color + IIFE pair
+  const headMeta = slice(src, /<meta name="author"/, /<meta name="description"/, 'head meta')
+    .replace(/<meta name="description"[\s\S]*$/, '')
+    .trimEnd();
+
+  // everything between the Font Awesome noscript and </head>, which is the
+  // JSON-LD block followed by both style blocks
+  const mid = slice(src, /<noscript><link rel="stylesheet" href="https:\/\/cdnjs\.cloudflare\.com[\s\S]*?<\/noscript>/, /<\/head>/, 'head tail');
+  const jsonld = mid.match(/<script type="application\/ld\+json">[\s\S]*?<\/script>/)[0];
+  // both style blocks, verbatim, including the leading/trailing whitespace
+  const styles = mid
+    .replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/, '')
+    .replace(/\s*<\/head>$/, '')
+    .trim();
+
+  const article = slice(src, /<article class="article"/, /<\/article>/, 'article');
+
+  const after = src.slice(src.indexOf('</article>') + '</article>'.length);
+
+  return { src, headMeta, jsonld, styles, article, after };
+}
+
+// Build a JSON-LD block. The id patterns are enforced by tools/fix_blog_jsonld.js,
+// which throws if the top-level @type is not "Article" for a post.
+function buildJsonLd({ slug, title, description, date, image = 'profile.jpg' }) {
+  const S = 'https://gl3nnnn.github.io/Cabansag.github.io';
+  // The spec's slug has no "blog-" prefix, but the file on disk does, so every
+  // absolute URL needs the prefix added. Getting this wrong silently produces a
+  // canonical link and og:url pointing at a page that does not exist.
+  const page = `blog-${slug}.html`;
+  const graph = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Person',
+        '@id': `${S}/#person`,
+        name: 'Glenn Patrick Cabansag',
+        url: `${S}/`,
+      },
+      {
+        '@type': 'Article',
+        '@id': `${S}/${page}#article`,
+        headline: title,
+        description,
+        image: `${S}/${image}`,
+        datePublished: date,
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': `${S}/${page}`,
+        },
+        author: { '@id': `${S}/#person` },
+        publisher: { '@id': `${S}/#person` },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        '@id': `${S}/${page}#breadcrumb`,
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: `${S}/` },
+          { '@type': 'ListItem', position: 2, name: 'Blog', item: `${S}/blog.html` },
+          { '@type': 'ListItem', position: 3, name: title },
+        ],
+      },
+    ],
+  };
+  return '<script type="application/ld+json">\n' + JSON.stringify(graph, null, 4) + '\n    </script>';
+}
+
+// The meta description and og:description are allowed to differ, and in three of
+// the six existing posts they do: og:description is the shorter card-friendly
+// variant. Reproduce that rather than forcing them equal.
+function buildMetaTags({ slug, title, description, ogDescription, date }) {
+  const S = 'https://gl3nnnn.github.io/Cabansag.github.io';
+  const page = `blog-${slug}.html`;
+  const og = ogDescription || description;
+  return [
+    `<meta name="description" content="${description}">`,
+    `<meta property="og:title" content="${title} | Glenn Patrick Cabansag">`,
+    `<meta property="og:description" content="${og}">`,
+    `<meta property="og:type" content="article">`,
+    `<meta property="og:url" content="${S}/${page}">`,
+    `<meta property="og:site_name" content="Glenn Patrick Cabansag">`,
+    `<meta property="og:locale" content="en_PH">`,
+    `<meta property="og:image" content="${S}/og-cover.jpg">`,
+    `<meta property="og:image:width" content="1200">`,
+    `<meta property="og:image:height" content="630">`,
+    `<meta property="og:image:alt" content="Glenn Patrick Cabansag - IT Professional portfolio">`,
+    `<meta property="article:published_time" content="${date}">`,
+    `<meta name="twitter:card" content="summary_large_image">`,
+    `<meta name="twitter:creator" content="@glenpatrick">`,
+    // Reproduced as-is: every existing post carries the site tagline here
+    // rather than the post title.
+    `<meta name="twitter:title" content="Glenn Patrick Cabansag | IT Professional">`,
+    `<meta name="twitter:image" content="${S}/og-cover.jpg">`,
+    `<meta name="twitter:image:alt" content="Glenn Patrick Cabansag - IT Professional portfolio">`,
+    `<link rel="icon" type="image/svg+xml" href="favicon.svg">`,
+    `<link rel="canonical" href="${S}/${page}">`,
+    `<link rel="manifest" href="manifest.webmanifest">`,
+    `<link rel="apple-touch-icon" href="apple-touch-icon.png">`,
+    `<link rel="preconnect" href="https://fonts.googleapis.com">`,
+    `<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>`,
+    `<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">`,
+    `<link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'">`,
+    `<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>`,
+  ].join('\n        ');
+}
+
+// Assemble the finished document.
+//
+// prev/next are not taken from the spec. They come from tools/posts/_chain.js,
+// which owns the ordering, so inserting a post in the middle of the timeline
+// cannot leave a stale link behind in a spec that someone forgot to update. A
+// spec that declares prev/next is overridden, not honoured.
+function build(spec) {
+  const { slug, title, description, ogDescription, date, category,
+          displayDate, readTime, toc, content } = spec;
+  const chain = require(CHAIN).links;
+  if (!chain[slug]) {
+    throw new Error(`${slug} is not in tools/posts/_chain.js. Add it there, or the ` +
+      'prev/next links cannot be generated.');
+  }
+  const { prev, next } = chain[slug];
+  const t = loadTemplate('vlans-home-lab');
+
+  // TOC: one entry per h2 that has an id, numbered the way the existing posts
+  // number them. The final reflection section is left unnumbered by convention.
+  const tocItems = toc.map((h, i) =>
+    `                <li><a href="#${h.id}">${h.numbered === false ? h.text : `${i + 1}. ${h.text}`}</a></li>`).join('\n');
+
+  const navLink = (side, p) => p
+    ? `            <a class="pn-${side}" href="blog-${p.slug}.html" rel="${side}">
+                <span class="pn-label">${side === 'prev' ? 'Previous post' : 'Next post'}</span>
+                <span class="pn-title">${p.title}</span>
+            </a>`
+    : `            <div class="pn-empty" aria-hidden="true"></div>`;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>${title} | Glenn Patrick Cabansag</title>
+        ${t.headMeta}
+        ${buildMetaTags({ slug, title, description, ogDescription, date })}
+    ${buildJsonLd({ slug, title, description, date })}
+    ${t.styles}
+</head>
+<body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <button class="back-top" id="back-top" aria-label="Back to top" title="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
+    <header class="bp-header">
+        <a href="index.html" class="logo">Glenn Patrick <span>Cabansag</span></a>
+        <button id="theme-toggle" aria-label="Toggle light and dark mode" title="Toggle light/dark mode"><i class="fa-solid fa-moon"></i></button>
+        <a href="index.html#blog" class="back-link">&larr; Back to Blog</a>
+    </header>
+
+    <article class="article" id="main" tabindex="-1">
+        <span class="category">${category}</span>
+        <h1 class="title">${title}</h1>
+        <div class="meta">
+            <time datetime="${date}">${displayDate}</time>
+            <span>Glenn Patrick Cabansag</span>
+            <span>${readTime} min read</span>
+        </div>
+        <nav class="toc" aria-labelledby="toc-heading">
+            <span class="toc-title" id="toc-heading">On this page</span>
+            <ol>
+${tocItems}
+            </ol>
+        </nav>
+
+
+        <div class="content">
+${content}
+        </div>
+        <nav class="post-nav" aria-label="Post navigation">
+${navLink('prev', prev)}
+${navLink('next', next)}
+        </nav>
+
+
+        <div class="post-footer">Thanks for reading! Connect on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer">LinkedIn</a> or check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">GitHub</a>.</div>
+    </article>
+${t.after}`;
+}
+
+module.exports = { loadTemplate, build, buildJsonLd, buildMetaTags, ROOT };
+
+// CLI: node tools/build_post.js tools/posts/<name>.js [--dry]
+//
+// The spec is a JS module rather than JSON on purpose: post bodies are HTML full
+// of double quotes, backslashes and newlines, and hand-escaping those into JSON
+// is how a code sample ends up corrupted in the published post.
+if (require.main === module) {
+  const specPath = process.argv[2];
+  if (!specPath) {
+    console.error('usage: node tools/build_post.js tools/posts/<name>.js [--dry]');
+    process.exit(1);
+  }
+  const spec = require(path.resolve(specPath));
+  const html = build(spec);
+  const out = path.join(ROOT, `blog-${spec.slug}.html`);
+  if (process.argv.includes('--dry')) {
+    console.log(`would write ${out} (${html.length} bytes)`);
+  } else {
+    fs.writeFileSync(out, html, 'utf8');
+    console.log(`wrote ${out} (${html.length} bytes)`);
+  }
+}

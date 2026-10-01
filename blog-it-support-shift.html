@@ -1,38 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My AWS Learning Journey: Getting Started | Glenn Patrick Cabansag</title>
-    <meta name="author" content="Glenn Patrick Cabansag">
+    <title>What I Actually Do in an IT Support Shift | Glenn Patrick Cabansag</title>
+        <meta name="author" content="Glenn Patrick Cabansag">
     <meta name="theme-color" content="#121212">
     <script>(function(){try{var t=localStorage.getItem('theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';}document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name="theme-color"]');if(m){m.setAttribute('content',t==='light'?'#f6f7f9':'#121212');}}catch(e){}})();</script>
-    <meta name="description" content="My AWS learning roadmap and nothing more yet — cloud fundamentals, EC2, S3 and Docker, written down before I start rather than after.">
-    <meta property="og:title" content="My AWS Learning Journey: Getting Started | Glenn Patrick Cabansag">
-    <meta property="og:description" content="My AWS learning roadmap and nothing more yet — cloud fundamentals, EC2, S3 and Docker, written down before I start rather than after.">
-    <meta property="og:type" content="article">
-    <meta property="og:url" content="https://gl3nnnn.github.io/Cabansag.github.io/blog-aws-journey.html">
-    <meta property="og:site_name" content="Glenn Patrick Cabansag">
-    <meta property="og:locale" content="en_PH">
-    <meta property="og:image" content="https://gl3nnnn.github.io/Cabansag.github.io/og-cover.jpg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Glenn Patrick Cabansag - IT Professional portfolio">
-    <meta property="article:published_time" content="2025-09-20">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:creator" content="@glenpatrick">
-    <meta name="twitter:title" content="Glenn Patrick Cabansag | IT Professional">
-    <meta name="twitter:image" content="https://gl3nnnn.github.io/Cabansag.github.io/og-cover.jpg">
-    <meta name="twitter:image:alt" content="Glenn Patrick Cabansag - IT Professional portfolio">
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="canonical" href="https://gl3nnnn.github.io/Cabansag.github.io/blog-aws-journey.html">
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>
+        <meta name="description" content="A plain account of IT support work at a training centre — what a day looks like, why documenting recurring faults matters more than fixing them fast, and how I decide what to escalate.">
+        <meta property="og:title" content="What I Actually Do in an IT Support Shift | Glenn Patrick Cabansag">
+        <meta property="og:description" content="What a support day actually looks like: triage order, why documenting recurring faults pays, and when to escalate instead of sinking more time in.">
+        <meta property="og:type" content="article">
+        <meta property="og:url" content="https://gl3nnnn.github.io/Cabansag.github.io/blog-it-support-shift.html">
+        <meta property="og:site_name" content="Glenn Patrick Cabansag">
+        <meta property="og:locale" content="en_PH">
+        <meta property="og:image" content="https://gl3nnnn.github.io/Cabansag.github.io/og-cover.jpg">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        <meta property="og:image:alt" content="Glenn Patrick Cabansag - IT Professional portfolio">
+        <meta property="article:published_time" content="2026-07-08">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:creator" content="@glenpatrick">
+        <meta name="twitter:title" content="Glenn Patrick Cabansag | IT Professional">
+        <meta name="twitter:image" content="https://gl3nnnn.github.io/Cabansag.github.io/og-cover.jpg">
+        <meta name="twitter:image:alt" content="Glenn Patrick Cabansag - IT Professional portfolio">
+        <link rel="icon" type="image/svg+xml" href="favicon.svg">
+        <link rel="canonical" href="https://gl3nnnn.github.io/Cabansag.github.io/blog-it-support-shift.html">
+        <link rel="manifest" href="manifest.webmanifest">
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>
     <script type="application/ld+json">
 {
     "@context": "https://schema.org",
@@ -45,14 +43,14 @@
         },
         {
             "@type": "Article",
-            "@id": "https://gl3nnnn.github.io/Cabansag.github.io/blog-aws-journey.html#article",
-            "headline": "My AWS Learning Journey: Getting Started",
-            "description": "My AWS learning roadmap and nothing more yet — cloud fundamentals, EC2, S3 and Docker, written down before I start rather than after.",
+            "@id": "https://gl3nnnn.github.io/Cabansag.github.io/blog-it-support-shift.html#article",
+            "headline": "What I Actually Do in an IT Support Shift",
+            "description": "A plain account of IT support work at a training centre — what a day looks like, why documenting recurring faults matters more than fixing them fast, and how I decide what to escalate.",
             "image": "https://gl3nnnn.github.io/Cabansag.github.io/profile.jpg",
-            "datePublished": "2025-09-20",
+            "datePublished": "2026-07-08",
             "mainEntityOfPage": {
                 "@type": "WebPage",
-                "@id": "https://gl3nnnn.github.io/Cabansag.github.io/blog-aws-journey.html"
+                "@id": "https://gl3nnnn.github.io/Cabansag.github.io/blog-it-support-shift.html"
             },
             "author": {
                 "@id": "https://gl3nnnn.github.io/Cabansag.github.io/#person"
@@ -63,7 +61,7 @@
         },
         {
             "@type": "BreadcrumbList",
-            "@id": "https://gl3nnnn.github.io/Cabansag.github.io/blog-aws-journey.html#breadcrumb",
+            "@id": "https://gl3nnnn.github.io/Cabansag.github.io/blog-it-support-shift.html#breadcrumb",
             "itemListElement": [
                 {
                     "@type": "ListItem",
@@ -80,13 +78,15 @@
                 {
                     "@type": "ListItem",
                     "position": 3,
-                    "name": "My AWS Learning Journey: Getting Started"
+                    "name": "What I Actually Do in an IT Support Shift"
                 }
             ]
         }
     ]
 }
     </script>
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>
+    
     <style>
         :root{--bg:#121212;--panel:#1e1e1e;--main:#1bb30e;--accent:#03dac6;--text:#e0e0e0;--muted:#9aa0a6;}
         *{margin:0;padding:0;box-sizing:border-box;}
@@ -190,77 +190,76 @@
     </header>
 
     <article class="article" id="main" tabindex="-1">
-        <span class="category">Cloud</span>
-        <h1 class="title">My AWS Learning Journey: Getting Started</h1>
+        <span class="category">Experience</span>
+        <h1 class="title">What I Actually Do in an IT Support Shift</h1>
         <div class="meta">
-            <time datetime="2025-09-20">September 20, 2025</time>
+            <time datetime="2026-07-08">July 8, 2026</time>
             <span>Glenn Patrick Cabansag</span>
-            <span>7 min read</span>
+            <span>5 min read</span>
         </div>
         <nav class="toc" aria-labelledby="toc-heading">
             <span class="toc-title" id="toc-heading">On this page</span>
             <ol>
-                <li><a href="#start-with-the-big-three-services">1. Start With the Big Three Services</a></li>
-                <li><a href="#spin-up-a-free-tier-ec2-instance">2. Spin Up a Free-Tier EC2 Instance</a></li>
-                <li><a href="#manage-firewalls-with-security-groups">3. Manage Firewalls With Security Groups</a></li>
-                <li><a href="#docker-changed-how-i-think-about-deployment">4. Docker Changed How I Think About Deployment</a></li>
-                <li><a href="#keep-the-bill-at-zero">5. Keep the Bill at Zero</a></li>
-                <li><a href="#what-s-next">What's Next</a></li>
+                <li><a href="#the-day">1. The Day Does Not Look Like People Expect</a></li>
+                <li><a href="#triage">2. The Order I Work In</a></li>
+                <li><a href="#documenting">3. Why Documenting Repetitive Faults Pays</a></li>
+                <li><a href="#escalating">4. Knowing When to Escalate</a></li>
+                <li><a href="#what-it-taught-me">What This Job Taught Me</a></li>
             </ol>
         </nav>
 
 
         <div class="content">
-            <p>Cloud computing felt overwhelming at first, but after certifying in Digital Transformation with Google Cloud, I decided to go deeper with AWS. This is the roadmap I am working from and the concepts that are starting to make sense.</p>
+            <h2 id="the-day">1. The Day Does Not Look Like People Expect</h2>
 
-            <p><strong>To be clear about where this stands: I have not launched anything in AWS yet.</strong> There is no instance, no bucket and no credential behind this post. It is the plan, not a report, and I am writing it down now so that when I do have results they are written against something.</p>
+<p>I have written technical posts about networks and containers, but the job I actually do is support, and it does not look like either of those things. No console, no commit. Mostly a person, a problem, and a decision about how much time to spend.</p>
 
-            <h2 id="start-with-the-big-three-services">1. Start With the Big Three Services</h2>
-            <p>Don't try to learn all 200+ AWS services. The foundation tier is really three things:</p>
-            <ul>
-                <li><strong>EC2</strong> — virtual servers. Learn to launch, connect via SSH, and run a simple web server.</li>
-                <li><strong>S3</strong> — object storage. Upload files, set bucket policies, and understand availability.</li>
-                <li><strong>IAM</strong> — identity and access. Learn users, roles, and the principle of least privilege.</li>
-            </ul>
+<p>I have been IT Assistant at the Competent Maritime Professionals and Sea Staff (COMPASS) Training Center in Iloilo City since October 2024. I support staff and trainees, which sounds like a job title and is really two different jobs with different expectations. Underneath both is keeping classroom and administrative systems available throughout each training day: a classroom that is not working at 8am affects a whole group, not one person.</p>
 
-            <h2 id="spin-up-a-free-tier-ec2-instance">2. Spin Up a Free-Tier EC2 Instance</h2>
-            <p>Launching something and deleting it is the part of this I most want to do, and the part I have not done yet. The steps, as I understand them, are short enough to be the first thing that goes from reading to doing:</p>
-            <pre><code># the sequence I plan to run on a free-tier instance
-sudo apt update
-sudo apt install -y nginx
-echo "&lt;h1&gt;Hello from EC2&lt;/h1&gt;" | sudo tee /var/www/html/index.html</code></pre>
-            <p>The value is not the page. It is finding out what the console actually feels like, which is exactly the part documentation is worst at.</p>
+            <h2 id="triage">2. The Order I Work In</h2>
 
-            <h2 id="manage-firewalls-with-security-groups">3. Manage Firewalls With Security Groups</h2>
-            <p>The default security group blocks most traffic, so an instance that boots with nothing open is unreachable by design. Opening port 22 for SSH and port 80 for HTTP is the minimum needed to use it at all, and it is also where the security lesson lives: a misconfigured group can expose an instance to the whole internet, and default rules are about convenience rather than safety.</p>
-            <p>Least privilege is not optional, and understanding why is a better reason to learn IAM than memorising the policy grammar.</p>
+<p>I do not start at the probable cause. I start at the cheapest thing that could explain everything and work outward. Not sophisticated, not original, but fast, and it means I am not taking anything apart on a guess.</p>
 
-            <h2 id="docker-changed-how-i-think-about-deployment">4. Docker Changed How I Think About Deployment</h2>
-            <p>This is the one place I can speak from experience, because I containerized this portfolio and can confirm it runs the same way on my machine every time. A simple <code>Dockerfile</code> plus an image pull is what would let the same app run on EC2 without setup drama, though I have not done that second part yet:</p>
-            <pre><code>docker build -t my-app .
-docker run -d -p 8080:80 my-app</code></pre>
+<ul>
+<li><strong>Is it one person or everyone?</strong> One person is their machine. Everyone is the network, the power, or something I changed.</li>
+<li><strong>Power and cables.</strong> Boring, and it catches people more often than anything clever.</li>
+<li><strong>Did something change recently?</strong> An update, a moved desk, a new cable. Recent changes explain most new faults.</li>
+<li><strong>Is it hardware or software?</strong> Only now is guessing allowed, because the cheap causes are already ruled out.</li>
+</ul>
 
-            <h2 id="keep-the-bill-at-zero">5. Keep the Bill at Zero</h2>
-            <p>The thing that puts people off cloud is the bill. The rule I am setting for myself now, before I start: use the free tier, tag everything, and <strong>terminate</strong> what I am not using. The habit to check billing after every session is the one I am most likely to skip on the first attempt, so it is the one I am writing down.</p>
-            <blockquote>Cloud skills are about making systems scalable and reliable — but wisdom is knowing when to shut things down.</blockquote>
+            <h2 id="documenting">3. Why Documenting Repetitive Faults Pays</h2>
 
-            <h2 id="what-s-next">What's Next</h2>
-            <p>CI/CD is what I am aiming at after that — a small project on GitHub with an automated workflow testing and deploying it to EC2. The path from developer to cloud-ready is a series of small, repeated experiments, and I am on experiment zero.</p>
+<p>The bullet I would emphasise is the one about documenting recurring problems, because it is the only one that compounds. A fault that comes back every week is one fault, not twelve. Fix it without writing it down, and the next person to see it &mdash; or me next month &mdash; starts the whole diagnosis again.</p>
+
+<blockquote>The goal is not to fix things fast. It is to fix fewer things twice.</blockquote>
+
+            <h2 id="escalating">4. Knowing When to Escalate</h2>
+
+<p>Escalation gets treated as admitting defeat, and that is backwards. I escalate when the fault is outside what I maintain, and when the honest answer is that I do not know yet. That second one took longer to get used to.</p>
+
+<p>What my previous help desk role taught me is to escalate <em>with</em> something, not empty-handed. &ldquo;The trainee&rsquo;s laptop will not connect&rdquo; gives the next team nothing. &ldquo;Laptop will not connect, adapter disabled after an update, driver and network stack checked, ethernet works&rdquo; gives them somewhere to start.</p>
+
+            <h2 id="what-it-taught-me">What This Job Taught Me</h2>
+
+<p>It made the rest of this site make sense. The networking posts exist because I maintain real networks. The Linux work exists because that infrastructure runs Linux.</p>
+
+<p>It also taught me the thing I still get wrong: estimating. I assume a fault is small because it sounds small, then I am forty minutes into something that needed ten. So I ask now. It costs one question and it is the difference between helpful and late.</p>
         </div>
         <nav class="post-nav" aria-label="Post navigation">
-            <a class="pn-prev" href="blog-helpdesk-lessons.html" rel="prev">
+            <a class="pn-prev" href="blog-vlans-home-lab.html" rel="prev">
                 <span class="pn-label">Previous post</span>
-                <span class="pn-title">From Help Desk to IT Assistant: What I Learned</span>
+                <span class="pn-title">Segmenting My Home Lab with VLANs</span>
             </a>
-            <a class="pn-next" href="blog-home-lab.html" rel="next">
+            <a class="pn-next" href="blog-accounting-laravel.html" rel="next">
                 <span class="pn-label">Next post</span>
-                <span class="pn-title">Setting Up My Home Lab: Networking Basics</span>
+                <span class="pn-title">What Building an Accounting App in Laravel Taught Me</span>
             </a>
         </nav>
 
 
         <div class="post-footer">Thanks for reading! Connect on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer">LinkedIn</a> or check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">GitHub</a>.</div>
     </article>
+
 
     <footer class="bp-footer">
         <div class="social">

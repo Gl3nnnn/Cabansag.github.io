@@ -2,22 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://gl3nnnn.github.io/Cabansag.github.io/</loc>
-    <lastmod>2026-09-26</lastmod>
+    <lastmod>2026-09-30</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
-      <loc>https://gl3nnnn.github.io/Cabansag.github.io/faq.html</loc>
-      <lastmod>2026-09-26</lastmod>
-      <changefreq>monthly</changefreq>
-      <priority>0.8</priority>
-    </url>
-    <url>
-      <loc>https://gl3nnnn.github.io/Cabansag.github.io/blog.html</loc>
-      <lastmod>2026-09-26</lastmod>
-      <changefreq>weekly</changefreq>
-      <priority>0.8</priority>
-    </url>
+    <loc>https://gl3nnnn.github.io/Cabansag.github.io/faq.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://gl3nnnn.github.io/Cabansag.github.io/blog.html</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
   <url>
     <loc>https://gl3nnnn.github.io/Cabansag.github.io/blog-home-lab.html</loc>
     <lastmod>2026-01-15</lastmod>
@@ -32,7 +32,7 @@
   </url>
   <url>
     <loc>https://gl3nnnn.github.io/Cabansag.github.io/blog-aws-journey.html</loc>
-    <lastmod>2025-09-20</lastmod>
+    <lastmod>2026-09-30</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -51,6 +51,24 @@
   <url>
     <loc>https://gl3nnnn.github.io/Cabansag.github.io/blog-vlans-home-lab.html</loc>
     <lastmod>2026-04-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://gl3nnnn.github.io/Cabansag.github.io/blog-queue-system.html</loc>
+    <lastmod>2026-09-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://gl3nnnn.github.io/Cabansag.github.io/blog-accounting-laravel.html</loc>
+    <lastmod>2026-08-12</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://gl3nnnn.github.io/Cabansag.github.io/blog-it-support-shift.html</loc>
+    <lastmod>2026-07-08</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>

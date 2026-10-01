@@ -1,38 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My AWS Learning Journey: Getting Started | Glenn Patrick Cabansag</title>
-    <meta name="author" content="Glenn Patrick Cabansag">
+    <title>What Building an Accounting App in Laravel Taught Me | Glenn Patrick Cabansag</title>
+        <meta name="author" content="Glenn Patrick Cabansag">
     <meta name="theme-color" content="#121212">
     <script>(function(){try{var t=localStorage.getItem('theme');if(!t){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches)?'light':'dark';}document.documentElement.setAttribute('data-theme',t);var m=document.querySelector('meta[name="theme-color"]');if(m){m.setAttribute('content',t==='light'?'#f6f7f9':'#121212');}}catch(e){}})();</script>
-    <meta name="description" content="My AWS learning roadmap and nothing more yet — cloud fundamentals, EC2, S3 and Docker, written down before I start rather than after.">
-    <meta property="og:title" content="My AWS Learning Journey: Getting Started | Glenn Patrick Cabansag">
-    <meta property="og:description" content="My AWS learning roadmap and nothing more yet — cloud fundamentals, EC2, S3 and Docker, written down before I start rather than after.">
-    <meta property="og:type" content="article">
-    <meta property="og:url" content="https://gl3nnnn.github.io/Cabansag.github.io/blog-aws-journey.html">
-    <meta property="og:site_name" content="Glenn Patrick Cabansag">
-    <meta property="og:locale" content="en_PH">
-    <meta property="og:image" content="https://gl3nnnn.github.io/Cabansag.github.io/og-cover.jpg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Glenn Patrick Cabansag - IT Professional portfolio">
-    <meta property="article:published_time" content="2025-09-20">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:creator" content="@glenpatrick">
-    <meta name="twitter:title" content="Glenn Patrick Cabansag | IT Professional">
-    <meta name="twitter:image" content="https://gl3nnnn.github.io/Cabansag.github.io/og-cover.jpg">
-    <meta name="twitter:image:alt" content="Glenn Patrick Cabansag - IT Professional portfolio">
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
-    <link rel="canonical" href="https://gl3nnnn.github.io/Cabansag.github.io/blog-aws-journey.html">
-    <link rel="manifest" href="manifest.webmanifest">
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>
+        <meta name="description" content="Lessons from building a Laravel 12 accounting system on MySQL — why double-entry bookkeeping is harder than it looks, what PhpSpreadsheet taught me about exports, and why the test suite was the only part I did not want to cut.">
+        <meta property="og:title" content="What Building an Accounting App in Laravel Taught Me | Glenn Patrick Cabansag">
+        <meta property="og:description" content="Double-entry bookkeeping, a balance invariant checked before every write, and a test suite aimed at the ledger instead of the UI.">
+        <meta property="og:type" content="article">
+        <meta property="og:url" content="https://gl3nnnn.github.io/Cabansag.github.io/blog-accounting-laravel.html">
+        <meta property="og:site_name" content="Glenn Patrick Cabansag">
+        <meta property="og:locale" content="en_PH">
+        <meta property="og:image" content="https://gl3nnnn.github.io/Cabansag.github.io/og-cover.jpg">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        <meta property="og:image:alt" content="Glenn Patrick Cabansag - IT Professional portfolio">
+        <meta property="article:published_time" content="2026-08-12">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:creator" content="@glenpatrick">
+        <meta name="twitter:title" content="Glenn Patrick Cabansag | IT Professional">
+        <meta name="twitter:image" content="https://gl3nnnn.github.io/Cabansag.github.io/og-cover.jpg">
+        <meta name="twitter:image:alt" content="Glenn Patrick Cabansag - IT Professional portfolio">
+        <link rel="icon" type="image/svg+xml" href="favicon.svg">
+        <link rel="canonical" href="https://gl3nnnn.github.io/Cabansag.github.io/blog-accounting-laravel.html">
+        <link rel="manifest" href="manifest.webmanifest">
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'">
+        <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>
     <script type="application/ld+json">
 {
     "@context": "https://schema.org",
@@ -45,14 +43,14 @@
         },
         {
             "@type": "Article",
-            "@id": "https://gl3nnnn.github.io/Cabansag.github.io/blog-aws-journey.html#article",
-            "headline": "My AWS Learning Journey: Getting Started",
-            "description": "My AWS learning roadmap and nothing more yet — cloud fundamentals, EC2, S3 and Docker, written down before I start rather than after.",
+            "@id": "https://gl3nnnn.github.io/Cabansag.github.io/blog-accounting-laravel.html#article",
+            "headline": "What Building an Accounting App in Laravel Taught Me",
+            "description": "Lessons from building a Laravel 12 accounting system on MySQL — why double-entry bookkeeping is harder than it looks, what PhpSpreadsheet taught me about exports, and why the test suite was the only part I did not want to cut.",
             "image": "https://gl3nnnn.github.io/Cabansag.github.io/profile.jpg",
-            "datePublished": "2025-09-20",
+            "datePublished": "2026-08-12",
             "mainEntityOfPage": {
                 "@type": "WebPage",
-                "@id": "https://gl3nnnn.github.io/Cabansag.github.io/blog-aws-journey.html"
+                "@id": "https://gl3nnnn.github.io/Cabansag.github.io/blog-accounting-laravel.html"
             },
             "author": {
                 "@id": "https://gl3nnnn.github.io/Cabansag.github.io/#person"
@@ -63,7 +61,7 @@
         },
         {
             "@type": "BreadcrumbList",
-            "@id": "https://gl3nnnn.github.io/Cabansag.github.io/blog-aws-journey.html#breadcrumb",
+            "@id": "https://gl3nnnn.github.io/Cabansag.github.io/blog-accounting-laravel.html#breadcrumb",
             "itemListElement": [
                 {
                     "@type": "ListItem",
@@ -80,13 +78,15 @@
                 {
                     "@type": "ListItem",
                     "position": 3,
-                    "name": "My AWS Learning Journey: Getting Started"
+                    "name": "What Building an Accounting App in Laravel Taught Me"
                 }
             ]
         }
     ]
 }
     </script>
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>
+    
     <style>
         :root{--bg:#121212;--panel:#1e1e1e;--main:#1bb30e;--accent:#03dac6;--text:#e0e0e0;--muted:#9aa0a6;}
         *{margin:0;padding:0;box-sizing:border-box;}
@@ -190,77 +190,93 @@
     </header>
 
     <article class="article" id="main" tabindex="-1">
-        <span class="category">Cloud</span>
-        <h1 class="title">My AWS Learning Journey: Getting Started</h1>
+        <span class="category">Development</span>
+        <h1 class="title">What Building an Accounting App in Laravel Taught Me</h1>
         <div class="meta">
-            <time datetime="2025-09-20">September 20, 2025</time>
+            <time datetime="2026-08-12">August 12, 2026</time>
             <span>Glenn Patrick Cabansag</span>
-            <span>7 min read</span>
+            <span>6 min read</span>
         </div>
         <nav class="toc" aria-labelledby="toc-heading">
             <span class="toc-title" id="toc-heading">On this page</span>
             <ol>
-                <li><a href="#start-with-the-big-three-services">1. Start With the Big Three Services</a></li>
-                <li><a href="#spin-up-a-free-tier-ec2-instance">2. Spin Up a Free-Tier EC2 Instance</a></li>
-                <li><a href="#manage-firewalls-with-security-groups">3. Manage Firewalls With Security Groups</a></li>
-                <li><a href="#docker-changed-how-i-think-about-deployment">4. Docker Changed How I Think About Deployment</a></li>
-                <li><a href="#keep-the-bill-at-zero">5. Keep the Bill at Zero</a></li>
-                <li><a href="#what-s-next">What's Next</a></li>
+                <li><a href="#why-accounting">1. Why Accounting Is Harder Than It Looks</a></li>
+                <li><a href="#double-entry">2. Getting Double-Entry Right</a></li>
+                <li><a href="#exports">3. Spreadsheet Exports Changed the Design</a></li>
+                <li><a href="#testing">4. The Part I Wanted to Cut</a></li>
+                <li><a href="#beta">5. Why This Is Still in Beta</a></li>
+                <li><a href="#whats-next">What's Next</a></li>
             </ol>
         </nav>
 
 
         <div class="content">
-            <p>Cloud computing felt overwhelming at first, but after certifying in Digital Transformation with Google Cloud, I decided to go deeper with AWS. This is the roadmap I am working from and the concepts that are starting to make sense.</p>
+            <h2 id="why-accounting">1. Why Accounting Is Harder Than It Looks</h2>
 
-            <p><strong>To be clear about where this stands: I have not launched anything in AWS yet.</strong> There is no instance, no bucket and no credential behind this post. It is the plan, not a report, and I am writing it down now so that when I do have results they are written against something.</p>
+<p>My second system for the training centre is an accounting application, and it is the opposite problem to the queue system. That one had a single job and did it visibly. Accounting has no visible surface at all &mdash; books, journals, receivables, payables, inventory, reporting &mdash; and the only way to know it works is whether the numbers are right.</p>
 
-            <h2 id="start-with-the-big-three-services">1. Start With the Big Three Services</h2>
-            <p>Don't try to learn all 200+ AWS services. The foundation tier is really three things:</p>
-            <ul>
-                <li><strong>EC2</strong> — virtual servers. Learn to launch, connect via SSH, and run a simple web server.</li>
-                <li><strong>S3</strong> — object storage. Upload files, set bucket policies, and understand availability.</li>
-                <li><strong>IAM</strong> — identity and access. Learn users, roles, and the principle of least privilege.</li>
-            </ul>
+<blockquote>An app that displays numbers is easy. An app where the numbers agree with each other is the actual project.</blockquote>
 
-            <h2 id="spin-up-a-free-tier-ec2-instance">2. Spin Up a Free-Tier EC2 Instance</h2>
-            <p>Launching something and deleting it is the part of this I most want to do, and the part I have not done yet. The steps, as I understand them, are short enough to be the first thing that goes from reading to doing:</p>
-            <pre><code># the sequence I plan to run on a free-tier instance
-sudo apt update
-sudo apt install -y nginx
-echo "&lt;h1&gt;Hello from EC2&lt;/h1&gt;" | sudo tee /var/www/html/index.html</code></pre>
-            <p>The value is not the page. It is finding out what the console actually feels like, which is exactly the part documentation is worst at.</p>
+<p>The instinct is to treat it like a CRUD app with extra steps: a form for invoices, a list for payments, a table for customers. You can build all of that in a weekend and every screen will work. What you cannot do in a weekend is make the totals mean something. Money has to go somewhere, and if a customer pays 5,000 against an invoice, the balance drops but no account goes up, so the books stop balancing.</p>
 
-            <h2 id="manage-firewalls-with-security-groups">3. Manage Firewalls With Security Groups</h2>
-            <p>The default security group blocks most traffic, so an instance that boots with nothing open is unreachable by design. Opening port 22 for SSH and port 80 for HTTP is the minimum needed to use it at all, and it is also where the security lesson lives: a misconfigured group can expose an instance to the whole internet, and default rules are about convenience rather than safety.</p>
-            <p>Least privilege is not optional, and understanding why is a better reason to learn IAM than memorising the policy grammar.</p>
+<p>The stack is Laravel 12 on PHP 8.2 with MySQL, Tailwind, and PhpSpreadsheet for exports.</p>
 
-            <h2 id="docker-changed-how-i-think-about-deployment">4. Docker Changed How I Think About Deployment</h2>
-            <p>This is the one place I can speak from experience, because I containerized this portfolio and can confirm it runs the same way on my machine every time. A simple <code>Dockerfile</code> plus an image pull is what would let the same app run on EC2 without setup drama, though I have not done that second part yet:</p>
-            <pre><code>docker build -t my-app .
-docker run -d -p 8080:80 my-app</code></pre>
+            <h2 id="double-entry">2. Getting Double-Entry Right</h2>
 
-            <h2 id="keep-the-bill-at-zero">5. Keep the Bill at Zero</h2>
-            <p>The thing that puts people off cloud is the bill. The rule I am setting for myself now, before I start: use the free tier, tag everything, and <strong>terminate</strong> what I am not using. The habit to check billing after every session is the one I am most likely to skip on the first attempt, so it is the one I am writing down.</p>
-            <blockquote>Cloud skills are about making systems scalable and reliable — but wisdom is knowing when to shut things down.</blockquote>
+<p>The core idea is that every transaction has at least two sides. A sales invoice debits a receivable and credits revenue; a payment debits cash and credits that same receivable. For any journal entry the debits must equal the credits. Not approximately. Exactly.</p>
 
-            <h2 id="what-s-next">What's Next</h2>
-            <p>CI/CD is what I am aiming at after that — a small project on GitHub with an automated workflow testing and deploying it to EC2. The path from developer to cloud-ready is a series of small, repeated experiments, and I am on experiment zero.</p>
+<p>Two things made that holdable: one place is responsible for writing an entry, and the check runs inside the write rather than in a nightly job, so if the sides do not balance, the entry never reaches the database.</p>
+
+<pre><code>$debits  = $lines-&gt;where('direction', 'debit')-&gt;sum('amount');
+$credits = $lines-&gt;where('direction', 'credit')-&gt;sum('amount');
+
+if ($debits-&gt;neq($credits)) {
+    throw new UnbalancedJournalException('Debits must equal credits');
+}</code></pre>
+
+<p>Decimals matter here. Floating point is wrong for money and wrong in unpredictable ways, so amounts are decimal columns rather than floats.</p>
+
+            <h2 id="exports">3. Spreadsheet Exports Changed the Design</h2>
+
+<p>The requirement that reshaped the app was not a screen. Users wanted a report they could open in a spreadsheet, in the layout the accountant already knew. PhpSpreadsheet handles that, and it forced a decision about where formatting lives: formatting inside the export means the on-screen report and the file drift apart. So the export became the source of truth for column order and headings.</p>
+
+            <h2 id="testing">4. The Part I Wanted to Cut</h2>
+
+<p>Every test targets the ledger: a balanced journal saves, an unbalanced one is rejected, a payment updates the receivable, period totals match the sum of their entries. The UI has almost nothing. That is backwards from how I started. On the queue system my instinct was to get something visible working quickly; here, an untested balance check is not a missing feature, it is a wrong number that somebody trusts.</p>
+
+<pre><code>it('rejects a journal whose sides do not balance', function () {
+    // 1000 debit against 999.99 credit
+    expect(fn () =&gt; $this-&gt;postJournal($entry))
+        -&gt;toThrow(UnbalancedJournalException::class);
+});</code></pre>
+
+<p>There is a MySQL-specific PHPUnit config in the repo, because these queries behave differently against SQLite than against the database the app actually runs on.</p>
+
+            <h2 id="beta">5. Why This Is Still in Beta</h2>
+
+<p>It covers books, journals, receivables, payables, inventory and reporting. That is enough to be useful without being something I would call finished, so my resume says in beta and I am keeping that word. Neither it nor the queue system is running in production.</p>
+
+            <h2 id="whats-next">What's Next</h2>
+
+<p>Closing the gap between the on-screen report and the export. Then an audit trail: who posted which journal, and when. If I rebuilt it, I would write the balance assertion first instead of fifth.</p>
+
+<pre><code>github.com/Gl3nnnn/accounting</code></pre>
         </div>
         <nav class="post-nav" aria-label="Post navigation">
-            <a class="pn-prev" href="blog-helpdesk-lessons.html" rel="prev">
+            <a class="pn-prev" href="blog-it-support-shift.html" rel="prev">
                 <span class="pn-label">Previous post</span>
-                <span class="pn-title">From Help Desk to IT Assistant: What I Learned</span>
+                <span class="pn-title">What I Actually Do in an IT Support Shift</span>
             </a>
-            <a class="pn-next" href="blog-home-lab.html" rel="next">
+            <a class="pn-next" href="blog-queue-system.html" rel="next">
                 <span class="pn-label">Next post</span>
-                <span class="pn-title">Setting Up My Home Lab: Networking Basics</span>
+                <span class="pn-title">Building a Queue System for a Training Centre Counter</span>
             </a>
         </nav>
 
 
         <div class="post-footer">Thanks for reading! Connect on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer">LinkedIn</a> or check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">GitHub</a>.</div>
     </article>
+
 
     <footer class="bp-footer">
         <div class="social">
