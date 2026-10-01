@@ -26,9 +26,9 @@ if (certs.length !== 38) throw new Error(`expected 38 certifications, parsed ${c
 // support / systems / cloud career: Cisco CCNA for networking, the ISC2 CC for
 // security, both Red Hat RHCSA levels for Linux, Google Cloud Fundamentals and
 // Technical Support Fundamentals, TryHackMe Advent of Cyber, the DataCamp
-// AI Engineer for Developers Associate, and the DICT CyberPRO entry-level
-// cybersecurity portal, which is a Philippine government credential and the
-// only one a local recruiter is likely to recognise on sight.
+// AI Engineer for Developers Associate, and the DICT CyberPRO cybersecurity
+// portal, which is a Philippine government credential and the only one a local
+// recruiter is likely to recognise on sight.
 // Everything else - the TESDA and design courses, the intro and gen-AI
 // Google tracks, Udemy, Alteryx and the rest - stays on the site's filterable
 // list, which the Certifications note points to.
@@ -45,7 +45,7 @@ const SHORTLIST = [
   'Certified in Cybersecurity (CC)',
   'Advent of Cyber 2024',
   'AI Engineer for Developers Associate',
-  'Cybersecurity Professionals Portal (CyberPRO) – Level 1 (Entry-Level)'
+  'Cybersecurity Professionals Portal (CyberPRO) – Level 2 (Intermediate)'
 ];
 const short = SHORTLIST.map(t => {
   const hit = certs.find(c => c.title === t);
@@ -195,7 +195,7 @@ const SKILLS = [
   { k: 'Linux & Systems', v: 'Red Hat System Administration I and II (RH124, RH134)' },
   { k: 'Networking', v: 'TCP/IP fundamentals and subnetting; CCNA switching, routing, wireless' },
   { k: 'Google Cloud', v: 'Seven credentials: core infrastructure, modernisation, security and operations, GenAI' },
-  { k: 'Cybersecurity', v: 'Threat awareness; ISC2 CC, DICT CyberPRO Level 1, TryHackMe Advent of Cyber' },
+  { k: 'Cybersecurity', v: 'Threat awareness; ISC2 CC, DICT CyberPRO Level 2, TryHackMe Advent of Cyber' },
   { k: 'Web Development', v: 'PHP, Laravel and Blade, MySQL; server-side and browser-based applications' },
   { k: 'Python & Automation', v: 'Desktop tools, records management and support-task automation' },
   { k: 'Design & Graphics', v: 'Four design credentials: graphic design principles, logo design, trends in art and design' }

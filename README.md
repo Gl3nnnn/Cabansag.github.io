@@ -22,7 +22,7 @@ repository, or a job held — the site shows the specific evidence next to each.
 - **Linux & Systems** — Red Hat System Administration I (RH124) · Red Hat System Administration II (RH134)
 - **Networking** — CCNA: Switching, Routing, and Wireless Essentials · Cisco Network Support and Security
 - **Google Cloud** — 7 credentials spanning core infrastructure, modernisation, security and operations, GenAI and responsible AI
-- **Cybersecurity** — ISC2 CC · DICT CyberPRO L1 · Cisco CyberOps · TryHackMe Advent of Cyber · LFC108 · IBM · UMD
+- **Cybersecurity** — ISC2 CC · DICT CyberPRO L2 · Cisco CyberOps · TryHackMe Advent of Cyber · LFC108 · IBM · UMD
 - **Web Development** — PHP · Laravel and Blade · MySQL · JavaScript (5 of 13 public repos are PHP or Laravel)
 - **Python & Automation** — 3 Python repos · DataCamp AI Engineer Associate
 - **Design & Graphics** — 4 design credentials (credential-based, not a current role)
@@ -42,7 +42,7 @@ development, design, systems support and data. Highlights include:
 
 - **Cloud & DevOps (7)** — Digital Transformation with Google Cloud · Google Cloud Fundamentals: Core Infrastructure · Infrastructure and Application Modernization with Google Cloud · Understanding Google Cloud Security and Operations · Introduction to Large Language Models · Introduction to Responsible AI · Introduction to Generative AI
 - **Networking (2)** — CCNA: Switching, Routing, and Wireless Essentials · Network Support and Security
-- **Cybersecurity (8)** — Certified in Cybersecurity (CC) [ISC2] · CyberOps Associate · Introduction to Cybersecurity · Advent of Cyber 2024 [TryHackMe] · Cybersecurity Essentials (LFC108) [Linux Foundation] · Introduction to Cybersecurity Tools & Cyber Attacks [IBM] · Cybersecurity for Everyone [University of Maryland] · Cybersecurity Professionals Portal (CyberPRO) Level 1 [DICT]
+- **Cybersecurity (8)** — Certified in Cybersecurity (CC) [ISC2] · CyberOps Associate · Introduction to Cybersecurity · Advent of Cyber 2024 [TryHackMe] · Cybersecurity Essentials (LFC108) [Linux Foundation] · Introduction to Cybersecurity Tools & Cyber Attacks [IBM] · Cybersecurity for Everyone [University of Maryland] · Cybersecurity Professionals Portal (CyberPRO) Level 2 [DICT]
 - **Development & AI (8)** — AI Engineer for Developers Associate [DataCamp] · Introduction to Data Science · Responsive Web Design [freeCodeCamp] · CSS Essentials · Introduction to Software Engineering [IBM] · iOS Development for Beginners · Introduction to Quantum Computing [Udemy] · SMART Android Mobile Apps Development [TESDA]
 - **Design & Graphics (4)** — Principles of Graphic Design [University of the Philippines] · Trends in Art and Design [DICT] · Developing Designs for a Logo [TESDA] · Introduction to Visual Graphic Design [TESDA]
 - **Systems & Support (5)** — Red Hat System Administration I (RH124) · Red Hat System Administration II (RH134) · Technical Support Fundamentals [Google] · Microsoft Digital Literacy [TESDA] · Globe Wi-Fi 101 and Digital Thumbprint Program
