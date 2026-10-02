@@ -584,6 +584,19 @@ top: 10px;
     line-height: 1.6;
     flex-grow: 1;
 }
+/* The outcome row. Kept visually subordinate to the description above it: it is
+   a sentence of context, not a second headline. A muted colour plus a left rule
+   separates the two without needing another wrapper element.
+   Unlike .project-updated and .project-meta, which hardcode a dark value and
+   then patch it in a [data-theme="light"] override, this uses the muted token
+   directly so it is correct in both themes without a second rule. */
+.project-card .project-outcome{
+    color: var(--muted-color);
+    border-left: 2px solid var(--main-color);
+    padding-left: 1.2rem;
+    margin-top: -0.4rem;
+    flex-grow: 0;
+}
 .project-card .project-tags{
     display: flex;
     flex-wrap: wrap;
@@ -2427,11 +2440,11 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <span class="hero-stat-label">Certifications</span>
         </div>
         <div class="hero-stat">
-            <span class="hero-stat-count" id="hero-stat-projects" data-target="12" data-suffix="+">0</span>
+            <span class="hero-stat-count" id="hero-stat-projects" data-target="13" data-suffix="+">0</span>
             <span class="hero-stat-label">Projects Built</span>
         </div>
         <div class="hero-stat">
-            <span class="hero-stat-count" data-target="7">0</span>
+            <span class="hero-stat-count" data-target="8">0</span>
             <span class="hero-stat-label">Skill Areas</span>
         </div>
     </div>

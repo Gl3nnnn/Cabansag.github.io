@@ -97,28 +97,41 @@ const GITHUB_API_URL = `https://api.github.com/users/${GITHUB_USER}/repos?sort=u
 // Curating here means the section can never show an undescribed or junk repo.
 // The API is still queried, but only to enrich these entries with live star
 // counts, last-pushed dates and demo URLs.
+// `outcome` is the line that says what came out of the project rather than what
+// it contains, because `description` already covers the "what". It is optional:
+// a card with no outcome simply omits the row.
+//
+// TREAT EVERY `outcome` BELOW AS A DRAFT. The two longest ones
+// (counter_compass, accounting) are grounded in their own blog posts. The rest
+// are written to be defensible from the repo's stated scope, not invented
+// metrics - no uptime, no user counts, no "reduced tickets by 40%". If a line
+// overstates what the repo actually does, delete it; the card still renders.
 const PROJECTS = [
-    { name: 'INVENTORY-NEW', language: 'PHP', tags: ['Inventory', 'Web App'], description: 'Inventory management web system for tracking stock, suppliers and item movement in a small business.' },
-    { name: 'accounting', language: 'Blade', tags: ['Accounting', 'Laravel'], description: 'Accounting and financial web application built with Laravel and Blade templating.' },
-    { name: 'TechDesk', language: 'PHP', tags: ['Ticketing', 'Helpdesk'], description: 'IT tech-desk ticketing app for logging, assigning and tracking technical support requests.' },
-    { name: 'helpdesk', language: 'PHP', tags: ['Helpdesk', 'Ticketing'], description: 'Helpdesk support system built to manage end-user tickets and recurring IT issues.' },
-    { name: 'it_inventory', language: 'PHP', tags: ['IT Assets', 'Inventory'], description: 'IT asset inventory system for recording hardware, assignments and equipment lifecycle.' },
-    { name: 'counter_compass', language: 'JavaScript', tags: ['Queue', 'Ticketing'], description: 'Real-time queue management system for walk-in registrations, document processing and inquiries, with independent ticket numbering per service and a live waiting-area display.' },
-    { name: 'InventoryTBF', language: 'JavaScript', tags: ['Inventory', 'Web App'], description: 'Browser-based inventory tracker for monitoring stock levels and item records.' },
-    { name: 'Issue-Tracker', language: 'JavaScript', tags: ['Issue Tracking', 'Web App'], description: 'Issue and bug tracking web application for capturing, triaging and managing defects.' },
-    { name: 'games', language: 'JavaScript', tags: ['Games', 'Browser'], description: 'Collection of small browser games built with vanilla JavaScript.' },
-    { name: 'radios', language: 'JavaScript', tags: ['Audio', 'Web App'], description: 'Streaming-style radio player web app built with JavaScript.' },
-    { name: 'SimpleStudentManager', language: 'Python', tags: ['Student Records', 'CLI'], description: 'Command-line student management app for storing, searching and updating student records.' },
-    { name: 'SimpleAssistant', language: 'Python', tags: ['Automation', 'Desktop'], description: 'Desktop assistant application with task helpers and lightweight automation.' },
-    { name: 'simplecalculator', language: 'Python', tags: ['Calculator', 'Desktop'], description: 'Desktop calculator application with a clean graphical interface.' }
+    { name: 'INVENTORY-NEW', language: 'PHP', tags: ['Inventory', 'Web App'], description: 'Inventory management web system for tracking stock, suppliers and item movement in a small business.', outcome: 'One system for stock, suppliers and item movement, so a purchase and its effect on inventory are the same record rather than two.' },
+    { name: 'accounting', language: 'Blade', tags: ['Accounting', 'Laravel'], description: 'Accounting and financial web application built with Laravel and Blade templating.', outcome: 'Double-entry is enforced at write time, so an unbalanced journal never reaches the database. Still in beta; the tests cover the ledger, not the UI.' },
+    { name: 'TechDesk', language: 'PHP', tags: ['Ticketing', 'Helpdesk'], description: 'IT tech-desk ticketing app for logging, assigning and tracking technical support requests.', outcome: 'A ticket has to survive being logged, reassigned and reopened weeks later, which is where the schema earns its keep.' },
+    { name: 'helpdesk', language: 'PHP', tags: ['Helpdesk', 'Ticketing'], description: 'Helpdesk support system built to manage end-user tickets and recurring IT issues.', outcome: 'Aimed at recurring faults rather than one-off tickets, so the same issue collects one record instead of five.' },
+    { name: 'it_inventory', language: 'PHP', tags: ['IT Assets', 'Inventory'], description: 'IT asset inventory system for recording hardware, assignments and equipment lifecycle.', outcome: 'Answers the three questions an asset list actually gets asked: what we have, who holds it, and what state it is in.' },
+    { name: 'counter_compass', language: 'JavaScript', tags: ['Queue', 'Ticketing'], description: 'Real-time queue management system for walk-in registrations, document processing and inquiries, with independent ticket numbering per service and a live waiting-area display.', outcome: 'Replaces the counter paper list, and the waiting-area display updates by push rather than polling. Not deployed yet: authentication and HTTPS are still open.' },
+    { name: 'InventoryTBF', language: 'JavaScript', tags: ['Inventory', 'Web App'], description: 'Browser-based inventory tracker for monitoring stock levels and item records.', outcome: 'The same stock problem solved with nothing to install, so it could be exercised end to end without a server.' },
+    { name: 'Issue-Tracker', language: 'JavaScript', tags: ['Issue Tracking', 'Web App'], description: 'Issue and bug tracking web application for capturing, triaging and managing defects.', outcome: 'Forces every defect to carry a status and an owner, which turns triage into a query instead of an argument.' },
+    { name: 'games', language: 'JavaScript', tags: ['Games', 'Browser'], description: 'Collection of small browser games built with vanilla JavaScript.', outcome: 'Small games written to get comfortable with the DOM, canvas and input handling without leaning on a framework.' },
+    { name: 'radios', language: 'JavaScript', tags: ['Audio', 'Web App'], description: 'Streaming-style radio player web app built with JavaScript.', outcome: 'Mostly an exercise in buffering state, and in keeping the interface honest about what the audio is doing.' },
+    { name: 'SimpleStudentManager', language: 'Python', tags: ['Student Records', 'CLI'], description: 'Command-line student management app for storing, searching and updating student records.', outcome: 'A first command-line project: add, search and update records, and reject bad input without a traceback.' },
+    { name: 'SimpleAssistant', language: 'Python', tags: ['Automation', 'Desktop'], description: 'Desktop assistant application with task helpers and lightweight automation.', outcome: 'Task helpers built to see what actually happens between a click and the operating system.' },
+    { name: 'simplecalculator', language: 'Python', tags: ['Calculator', 'Desktop'], description: 'Desktop calculator application with a clean graphical interface.', outcome: 'The smallest useful desktop app: a GUI, a working keyboard path, and not dividing by zero.' }
 ];
 
 // Rendered when nothing has loaded yet and before enrichment completes.
+// `outcome` is carried through here and in enrichProjects() on purpose: both
+// rebuild each object field by field, so a new PROJECTS field that is not added
+// to both of these silently disappears from the cards.
 function projectsFromCurated() {
     return PROJECTS.map(p => ({
         name: p.name,
         language: p.language,
         description: p.description,
+        outcome: p.outcome,
         tags: p.tags || [],
         stargazers_count: 0,
         html_url: `https://github.com/${GITHUB_USER}/${p.name}`,
@@ -138,6 +151,7 @@ function enrichProjects(apiRepos) {
                 name: p.name,
                 language: p.language,
                 description: p.description,
+                outcome: p.outcome,
                 tags: p.tags || [],
                 stargazers_count: 0,
                 html_url: `https://github.com/${GITHUB_USER}/${p.name}`,
@@ -149,6 +163,7 @@ function enrichProjects(apiRepos) {
             name: p.name,
             language: live.language || p.language,
             description: p.description,
+            outcome: p.outcome,
             tags: p.tags || [],
             stargazers_count: live.stargazers_count || 0,
             html_url: live.html_url || `https://github.com/${GITHUB_USER}/${p.name}`,
@@ -184,6 +199,10 @@ function formatPushed(iso) {
 function buildProjectCard(repo) {
     const name = repo.name;
     const description = (repo.description || '').slice(0, 160);
+    // Optional, and deliberately not truncated: the outcome is a single
+    // hand-written sentence, so clipping it would cut the point off. A card
+    // without one just omits the row.
+    const outcome = (repo.outcome || '').trim();
     const language = repo.language || 'N/A';
     const stars = repo.stargazers_count || 0;
     const url = repo.html_url || `https://github.com/${GITHUB_USER}/${name}`;
@@ -202,6 +221,7 @@ function buildProjectCard(repo) {
                 <span class="project-star"><i class="fa-solid fa-star"></i> ${stars}</span>
             </div>
             <p>${description}</p>
+            ${outcome ? `<p class="project-outcome">${outcome}</p>` : ''}
             ${tags ? `<div class="project-tags">${tags}</div>` : ''}
             <div class="project-meta">
                 <span class="project-lang"><i class="${langIcon(language)}"></i> ${language}</span>
@@ -270,8 +290,15 @@ function renderProjects(projects) {
     // depend on API response order.
     activeProjects = projects;
 
+    // Sets data-target, not textContent. This element is also driven by the hero
+    // count-up observer further down, which animates from data-target and then
+    // unobserves. Writing textContent here used to set the correct "13+" and then
+    // lose it: the observer fired afterwards and animated the stale data-target
+    // from the markup back over the top, so the stat read 12+ directly above 13
+    // project cards. Writing the target instead means both agree, whichever
+    // happens to run first. The "+" comes from data-suffix on the element.
     const statProj = document.getElementById('hero-stat-projects');
-    if (statProj) statProj.textContent = activeProjects.length + '+';
+    if (statProj) statProj.dataset.target = String(activeProjects.length);
 
     if (activeProjects.length === 0) {
         projectsGrid.innerHTML = `<p class="project-error">No projects to show at the moment.</p>`;
@@ -294,10 +321,13 @@ function setProjectsLive(isLive) {
 }
 
 async function loadProjects() {
-    // v3: cached v2 payloads predate the per-project tags, so they'd render
-    // cards with an empty tag row until the TTL expired. Bumped to force one
-    // refetch instead.
-    const CACHE_KEY = 'portfolio_projects_v3';
+    // v4: v3 payloads predate the per-project `outcome` line. The cache hit path
+    // renders from the cached objects directly, so a v3 entry would draw every
+    // card with the outcome row missing until the TTL expired. Bumped to force
+    // one refetch instead. Note the cached path is also why `outcome` has to be
+    // carried through projectsFromCurated/enrichProjects rather than read off
+    // PROJECTS at render time.
+    const CACHE_KEY = 'portfolio_projects_v4';
     const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
     // renderProjects renders whatever array it is handed, so a truncated or
