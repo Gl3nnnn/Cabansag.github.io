@@ -1,11 +1,353 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Glenn Patrick Cabansag - Technical Blog</title>
     <link>https://gl3nnnn.github.io/Cabansag.github.io/</link>
     <description>Technical notes on IT, networking, cybersecurity, and cloud.</description>
     <atom:link href="https://gl3nnnn.github.io/Cabansag.github.io/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-PH</language>
-    <lastBuildDate>Mon, 01 Oct 2026 00:00:00 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 14 Sep 2026 16:00:00 +0000</lastBuildDate>
+    <item>
+      <title>Building a Queue System for a Training Centre Counter | Glenn Patrick Cabansag</title>
+      <link>https://gl3nnnn.github.io/Cabansag.github.io/blog-queue-system.html</link>
+      <guid isPermaLink="true">https://gl3nnnn.github.io/Cabansag.github.io/blog-queue-system.html</guid>
+      <pubDate>Mon, 14 Sep 2026 16:00:00 +0000</pubDate>
+      <description><![CDATA[How the COMPASS training centre front counter went from a paper list to a real-time queue system — three services, independent ticket numbering, and the eight security items still outstanding before it can go live.]]></description>
+      <content:encoded xmlns:content="http://purl.org/rss/1.0/modules/content/"><![CDATA[
+            <h2 id="the-problem">1. The Problem With a Paper List</h2>
+<p>The front counter at COMPASS Training Centre has three services: registration, document processing, and inquiries. Names went on a paper sheet, by hand, every day. I wanted to build the thing that replaces the sheet.</p>
+<p>A visitor picks a service, gets a number, and is called. Staff work six counters, and the three queues share one waiting area. A number means nothing on its own: someone asking about fees should not take the next registration number.</p>
+            <h2 id="three-services">2. Three Services, Three Separate Queues</h2>
+<p>Which makes the service table the root of the schema:</p>
+<pre><code>id        INT PRIMARY KEY
+name      VARCHAR(100)
+code      VARCHAR(10) UNIQUE</code></pre>
+<p>Three rows: Registration, Documents, Inquiry. Each points at its own counters, and the short codes end up inside the ticket number, so &ldquo;CMP-REG-001&rdquo; says which queue it belongs to in a noisy room.</p>
+            <h2 id="ticket-numbers">3. Ticket Numbers That Reset Themselves</h2>
+<p>Numbering is per service, per day, starting at 001, with no scheduled job doing it. A ticket from yesterday simply does not match today&rsquo;s filter, so it is invisible and the next insert starts at 001 again:</p>
+<pre><code>-- the "is it from today" test, used everywhere a ticket is read
+WHERE DATE(created_at) = CURDATE()</code></pre>
+<p>Daily totals fall out of the same query, with no separate counter table that can drift.</p>
+<p>The ticket table carries four things worth naming. <code>counter_id</code> is nullable, because a waiting ticket is not assigned to anyone yet. <code>status</code> is an enum, because &ldquo;skipped&rdquo; is a real state and not a cancel &mdash; a skipped person goes back in the queue. And separate <code>called_at</code> and <code>completed_at</code> let the display separate waiting time from service time.</p>
+            <h2 id="pushing-updates">4. Getting the Display Screen to Update Itself</h2>
+<p>Refreshing every few seconds works, and it is what I started with. It is wrong for a screen on a wall: visible flicker, and a request every two seconds forever. Socket.io holds the connection open and pushes an event when something changes:</p>
+<pre><code>io.emit('ticket-called', { ticketNumber, serviceCode, counterName });
+socket.on('ticket-called', (data) =&gt; setNowServing(data));</code></pre>
+<p>The counter panel calls <code>/api/tickets/call-next</code>, which finds the lowest waiting ticket for that counter&rsquo;s service, flips it to <code>serving</code>, stamps <code>called_at</code>, and emits. The screen updates because it was told to, not because it asked.</p>
+<p>One thing I would do differently: I built the display screen last, and it should have been first. It is what everyone actually sees.</p>
+<blockquote>The moment the display stopped being the staff member&rsquo;s responsibility was the moment this was worth building.</blockquote>
+            <h2 id="not-finished">5. What Is Not Finished Yet</h2>
+<p>This is the part I would rather write down than leave out. The system is not production-ready, and my own README says so in a list of eight items I have not done.</p>
+<p>The staff panel logs in with a shared default password. Beyond that: no real authentication, no role-based access control, no HTTPS, no rate limiting, no input validation on the API, secrets in <code>.env</code> rather than a secret store, and no backup plan.</p>
+<p>That shared password is the item I would fix first, because it is the one where the current state is worse than having no login at all. My resume describes this as built, not deployed, which is deliberate.</p>
+            <h2 id="whats-next">What's Next</h2>
+<p>Then real authentication and HTTPS, then backups.</p>
+<pre><code>github.com/Gl3nnnn/counter_compass</code></pre>
+        ]]></content:encoded>
+    </item>
+    <item>
+      <title>What Building an Accounting App in Laravel Taught Me | Glenn Patrick Cabansag</title>
+      <link>https://gl3nnnn.github.io/Cabansag.github.io/blog-accounting-laravel.html</link>
+      <guid isPermaLink="true">https://gl3nnnn.github.io/Cabansag.github.io/blog-accounting-laravel.html</guid>
+      <pubDate>Tue, 11 Aug 2026 16:00:00 +0000</pubDate>
+      <description><![CDATA[Lessons from building a Laravel 12 accounting system on MySQL — why double-entry bookkeeping is harder than it looks, what PhpSpreadsheet taught me about exports, and why the test suite was the only part I did not want to cut.]]></description>
+      <content:encoded xmlns:content="http://purl.org/rss/1.0/modules/content/"><![CDATA[
+            <h2 id="why-accounting">1. Why Accounting Is Harder Than It Looks</h2>
+<p>My second system for the training centre is an accounting application, and it is the opposite problem to the queue system. That one had a single job and did it visibly. Accounting has no visible surface at all &mdash; books, journals, receivables, payables, inventory, reporting &mdash; and the only way to know it works is whether the numbers are right.</p>
+<blockquote>An app that displays numbers is easy. An app where the numbers agree with each other is the actual project.</blockquote>
+<p>The instinct is to treat it like a CRUD app with extra steps: a form for invoices, a list for payments, a table for customers. You can build all of that in a weekend and every screen will work. What you cannot do in a weekend is make the totals mean something. Money has to go somewhere, and if a customer pays 5,000 against an invoice, the balance drops but no account goes up, so the books stop balancing.</p>
+<p>The stack is Laravel 12 on PHP 8.2 with MySQL, Tailwind, and PhpSpreadsheet for exports.</p>
+            <h2 id="double-entry">2. Getting Double-Entry Right</h2>
+<p>The core idea is that every transaction has at least two sides. A sales invoice debits a receivable and credits revenue; a payment debits cash and credits that same receivable. For any journal entry the debits must equal the credits. Not approximately. Exactly.</p>
+<p>Two things made that holdable: one place is responsible for writing an entry, and the check runs inside the write rather than in a nightly job, so if the sides do not balance, the entry never reaches the database.</p>
+<pre><code>$debits  = $lines-&gt;where('direction', 'debit')-&gt;sum('amount');
+$credits = $lines-&gt;where('direction', 'credit')-&gt;sum('amount');
+if ($debits-&gt;neq($credits)) {
+    throw new UnbalancedJournalException('Debits must equal credits');
+}</code></pre>
+<p>Decimals matter here. Floating point is wrong for money and wrong in unpredictable ways, so amounts are decimal columns rather than floats.</p>
+            <h2 id="exports">3. Spreadsheet Exports Changed the Design</h2>
+<p>The requirement that reshaped the app was not a screen. Users wanted a report they could open in a spreadsheet, in the layout the accountant already knew. PhpSpreadsheet handles that, and it forced a decision about where formatting lives: formatting inside the export means the on-screen report and the file drift apart. So the export became the source of truth for column order and headings.</p>
+            <h2 id="testing">4. The Part I Wanted to Cut</h2>
+<p>Every test targets the ledger: a balanced journal saves, an unbalanced one is rejected, a payment updates the receivable, period totals match the sum of their entries. The UI has almost nothing. That is backwards from how I started. On the queue system my instinct was to get something visible working quickly; here, an untested balance check is not a missing feature, it is a wrong number that somebody trusts.</p>
+<pre><code>it('rejects a journal whose sides do not balance', function () {
+    // 1000 debit against 999.99 credit
+    expect(fn () =&gt; $this-&gt;postJournal($entry))
+        -&gt;toThrow(UnbalancedJournalException::class);
+});</code></pre>
+<p>There is a MySQL-specific PHPUnit config in the repo, because these queries behave differently against SQLite than against the database the app actually runs on.</p>
+            <h2 id="beta">5. Why This Is Still in Beta</h2>
+<p>It covers books, journals, receivables, payables, inventory and reporting. That is enough to be useful without being something I would call finished, so my resume says in beta and I am keeping that word. Neither it nor the queue system is running in production.</p>
+            <h2 id="whats-next">What's Next</h2>
+<p>Closing the gap between the on-screen report and the export. Then an audit trail: who posted which journal, and when. If I rebuilt it, I would write the balance assertion first instead of fifth.</p>
+<pre><code>github.com/Gl3nnnn/accounting</code></pre>
+        ]]></content:encoded>
+    </item>
+    <item>
+      <title>What I Actually Do in an IT Support Shift | Glenn Patrick Cabansag</title>
+      <link>https://gl3nnnn.github.io/Cabansag.github.io/blog-it-support-shift.html</link>
+      <guid isPermaLink="true">https://gl3nnnn.github.io/Cabansag.github.io/blog-it-support-shift.html</guid>
+      <pubDate>Tue, 07 Jul 2026 16:00:00 +0000</pubDate>
+      <description><![CDATA[A plain account of IT support work at a training centre — what a day looks like, why documenting recurring faults matters more than fixing them fast, and how I decide what to escalate.]]></description>
+      <content:encoded xmlns:content="http://purl.org/rss/1.0/modules/content/"><![CDATA[
+            <h2 id="the-day">1. The Day Does Not Look Like People Expect</h2>
+<p>I have written technical posts about networks and containers, but the job I actually do is support, and it does not look like either of those things. No console, no commit. Mostly a person, a problem, and a decision about how much time to spend.</p>
+<p>I have been IT Assistant at the Competent Maritime Professionals and Sea Staff (COMPASS) Training Center in Iloilo City since October 2024. I support staff and trainees, which sounds like a job title and is really two different jobs with different expectations. Underneath both is keeping classroom and administrative systems available throughout each training day: a classroom that is not working at 8am affects a whole group, not one person.</p>
+            <h2 id="triage">2. The Order I Work In</h2>
+<p>I do not start at the probable cause. I start at the cheapest thing that could explain everything and work outward. Not sophisticated, not original, but fast, and it means I am not taking anything apart on a guess.</p>
+<ul>
+<li><strong>Is it one person or everyone?</strong> One person is their machine. Everyone is the network, the power, or something I changed.</li>
+<li><strong>Power and cables.</strong> Boring, and it catches people more often than anything clever.</li>
+<li><strong>Did something change recently?</strong> An update, a moved desk, a new cable. Recent changes explain most new faults.</li>
+<li><strong>Is it hardware or software?</strong> Only now is guessing allowed, because the cheap causes are already ruled out.</li>
+</ul>
+            <h2 id="documenting">3. Why Documenting Repetitive Faults Pays</h2>
+<p>The bullet I would emphasise is the one about documenting recurring problems, because it is the only one that compounds. A fault that comes back every week is one fault, not twelve. Fix it without writing it down, and the next person to see it &mdash; or me next month &mdash; starts the whole diagnosis again.</p>
+<blockquote>The goal is not to fix things fast. It is to fix fewer things twice.</blockquote>
+            <h2 id="escalating">4. Knowing When to Escalate</h2>
+<p>Escalation gets treated as admitting defeat, and that is backwards. I escalate when the fault is outside what I maintain, and when the honest answer is that I do not know yet. That second one took longer to get used to.</p>
+<p>What my previous help desk role taught me is to escalate <em>with</em> something, not empty-handed. &ldquo;The trainee&rsquo;s laptop will not connect&rdquo; gives the next team nothing. &ldquo;Laptop will not connect, adapter disabled after an update, driver and network stack checked, ethernet works&rdquo; gives them somewhere to start.</p>
+            <h2 id="what-it-taught-me">What This Job Taught Me</h2>
+<p>It made the rest of this site make sense. The networking posts exist because I maintain real networks. The Linux work exists because that infrastructure runs Linux.</p>
+<p>It also taught me the thing I still get wrong: estimating. I assume a fault is small because it sounds small, then I am forty minutes into something that needed ten. So I ask now. It costs one question and it is the difference between helpful and late.</p>
+        ]]></content:encoded>
+    </item>
+    <item>
+      <title>Segmenting My Home Lab with VLANs | Glenn Patrick Cabansag</title>
+      <link>https://gl3nnnn.github.io/Cabansag.github.io/blog-vlans-home-lab.html</link>
+      <guid isPermaLink="true">https://gl3nnnn.github.io/Cabansag.github.io/blog-vlans-home-lab.html</guid>
+      <pubDate>Tue, 14 Apr 2026 16:00:00 +0000</pubDate>
+      <description><![CDATA[How I moved from a flat network to VLANs in my home lab - VLAN IDs, 802.1Q tagging, trunk vs access ports, and why segmentation matters even at home.]]></description>
+      <content:encoded xmlns:content="http://purl.org/rss/1.0/modules/content/"><![CDATA[
+            <p>After my flat home lab got comfortable, I wanted the network to match how companies actually run things. That meant VLANs — splitting one physical switch into several logical networks. It sounded intimidating until I realized it's mostly about <strong>deciding which ports belong to which group</strong>.</p>
+            <h2 id="why-bother-segmenting">1. Why Bother Segmenting?</h2>
+            <p>A flat network means every device can talk to every other device directly. That's fine with a laptop and a phone, but it gets risky once you mix devices you don't fully trust — cheap IoT gadgets, cameras, or lab machines running intentionally vulnerable services.</p>
+            <ul>
+                <li><strong>Smaller broadcast domains</strong> — less unnecessary chatter and cleaner traffic captures</li>
+                <li><strong>Isolation</strong> — a compromised IoT camera can't reach your main PC on VLAN 10</li>
+                <li><strong>Real-world practice</strong> — trunking and tagging are core enterprise networking skills</li>
+            </ul>
+            <h2 id="vlan-basics">2. VLAN Basics</h2>
+            <p>Each VLAN is a virtual LAN with a number (1–4094). Devices in the same VLAN behave as if they're on the same switch segment; devices in different VLANs don't see each other unless traffic is routed between them.</p>
+            <ul>
+                <li><strong>Access port</strong> — belongs to one VLAN, carries untagged traffic for devices like PCs and printers</li>
+                <li><strong>Trunk port</strong> — carries many VLANs between switches/routers using 802.1Q <strong>tagging</strong>, where each frame gets a small header saying which VLAN it belongs to</li>
+            </ul>
+            <h2 id="my-segmentation-plan">3. My Segmentation Plan</h2>
+            <pre><code>VLAN 10  TRUSTED  - desktop, laptops, Raspberry Pi
+VLAN 20  IOT      - smart plugs, cameras, streaming sticks
+VLAN 30  LAB      - intentionally vulnerable / practice machines</code></pre>
+            <p>The lab VLAN is the whole point: now my vulnerable practice boxes are cut off from everything I actually care about, and any traffic between the zones has to go through control I can inspect.</p>
+            <h2 id="configuring-a-managed-switch">4. Configuring a Managed Switch</h2>
+            <p>On a small Cisco-style switch the config is short. First create the VLANs, then assign access ports, then define a trunk:</p>
+            <pre><code>vlan 10
+ name TRUSTED
+vlan 20
+ name IOT
+vlan 30
+ name LAB
+interface FastEthernet0/1
+ switchport mode access
+ switchport access vlan 10
+interface FastEthernet0/2
+ switchport mode access
+ switchport access vlan 20
+interface GigabitEthernet0/1
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30</code></pre>
+            <p><code>show vlan brief</code> confirms which ports sit in which VLAN — the single most useful verification command you'll run while learning this.</p>
+            <h2 id="what-i-d-do-differently">5. What I'd Do Differently</h2>
+            <p>Two lessons after breaking (and fixing) this setup a few times:</p>
+            <ol>
+                <li><strong>Give each VLAN its own DHCP scope.</strong> Without it, devices on VLAN 20 and 30 get no address until you route or relay appropriately.</li>
+                <li><strong>Plan inter-VLAN routing before you need it.</strong> A router-on-a-stick (one trunk port into a router with tagged subinterfaces) works, but knowing the routing story up front saves a lot of head-scratching.</li>
+            </ol>
+            <blockquote>VLANs turned one switch into three isolated networks, and taught me more in an afternoon than any lecture on segmentation ever did.</blockquote>
+        ]]></content:encoded>
+    </item>
+    <item>
+      <title>Dockerizing My Portfolio: Containers Made Simple | Glenn Patrick Cabansag</title>
+      <link>https://gl3nnnn.github.io/Cabansag.github.io/blog-docker-portfolio.html</link>
+      <guid isPermaLink="true">https://gl3nnnn.github.io/Cabansag.github.io/blog-docker-portfolio.html</guid>
+      <pubDate>Sat, 14 Mar 2026 16:00:00 +0000</pubDate>
+      <description><![CDATA[A beginner's guide to running a static site with Docker - Dockerfiles, volume mounts, docker-compose, and why containers make deployment predictable.]]></description>
+      <content:encoded xmlns:content="http://purl.org/rss/1.0/modules/content/"><![CDATA[
+            <p>My portfolio is a plain static site — HTML, CSS, and a bit of JavaScript. It's simple enough to open with a double-click, so why bother with Docker at all? Because learning to ship even a tiny project in a container teaches you how deployment behaves on a real server. Here's how I containerized this very site.</p>
+            <h2 id="images-vs-containers">1. Images vs. Containers</h2>
+            <p>The mental model that finally made Docker click: an <strong>image</strong> is a frozen recipe — a snapshot of the OS, runtime, and files. A <strong>container</strong> is a running instance of that recipe. You can run five containers from one image, like running five copies of the same app in isolated boxes.</p>
+            <h2 id="writing-the-dockerfile">2. Writing the Dockerfile</h2>
+            <p>For a static site, the classic approach is a small web server. I used <code>nginx:alpine</code> because it's tiny and purpose-built for serving files. The Dockerfile is just three lines:</p>
+            <pre><code>FROM nginx:alpine
+COPY . /usr/share/nginx/html
+EXPOSE 80</code></pre>
+            <ul>
+                <li><code>FROM</code> picks the base image — here, a minimal nginx with Alpine Linux</li>
+                <li><code>COPY</code> drops my site files into the folder nginx serves by default</li>
+                <li><code>EXPOSE</code> documents that the container listens on port 80</li>
+            </ul>
+            <h2 id="build-and-run">3. Build and Run</h2>
+            <p>Two commands turn the Dockerfile into a working site:</p>
+            <pre><code>docker build -t portfolio .
+docker run -d -p 8080:80 --name portfolio portfolio</code></pre>
+            <p>Now <code>http://localhost:8080</code> serves the exact same files that GitHub Pages serves. The <code>-p 8080:80</code> maps my host port to the container's port 80, so <strong>any port on the host can point at the container's port</strong>.</p>
+            <h2 id="live-reload-with-volume-mounts">4. Live Reload with Volume Mounts</h2>
+            <p>Rebuilding the image after every edit gets old fast. A <strong>bind mount</strong> overrides a folder in the container with a folder on my machine, so changes appear instantly:</p>
+            <pre><code>docker run -d -p 8080:80 -v "%cd%":/usr/share/nginx/html --name portfolio portfolio</code></pre>
+            <p>Now I edit <code>index.html</code> locally, refresh the browser, and the container already serves the new file. No restart needed.</p>
+            <h2 id="one-command-with-docker-compose">5. One Command with Docker Compose</h2>
+            <p>As soon as an app grows past one container, typing <code>docker run</code> for each one becomes error-prone. <code>docker-compose.yml</code> turns everything into a single command:</p>
+            <pre><code>services:
+  portfolio:
+    build: .
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/usr/share/nginx/html</code></pre>
+            <pre><code>docker compose up -d</code></pre>
+            <h2 id="why-this-matters">6. Why This Matters</h2>
+            <blockquote>If it runs the same way on my laptop as it does on a server, half of the mysteries of deployment disappear.</blockquote>
+            <p>Containerizing this site gave me the vocabulary and confidence to approach bigger things — the Laravel and PHP apps I work with at my job, and eventually pushing images for real cloud deployments. The skill transfers; the static site is just the cheapest possible scaffold to practice on.</p>
+        ]]></content:encoded>
+    </item>
+    <item>
+      <title>My First Month on TryHackMe: Learning Cybersecurity One Room at a Time | Glenn Patrick Cabansag</title>
+      <link>https://gl3nnnn.github.io/Cabansag.github.io/blog-tryhackme-first-month.html</link>
+      <guid isPermaLink="true">https://gl3nnnn.github.io/Cabansag.github.io/blog-tryhackme-first-month.html</guid>
+      <pubDate>Sat, 14 Feb 2026 16:00:00 +0000</pubDate>
+      <description><![CDATA[What I learned during my first month on TryHackMe - the rooms, the tools, and how hands-on cybersecurity labs build real Linux and networking skills.]]></description>
+      <content:encoded xmlns:content="http://purl.org/rss/1.0/modules/content/"><![CDATA[
+            <p>After my home lab taught me how networks move packets, I wanted to learn the other side: how those networks get attacked and defended. My IT work is mostly support-focused, so cybersecurity felt like a natural next layer. I started with TryHackMe and honestly, the first month was one of the most productive stretches of self-study I've had.</p>
+            <h2 id="why-tryhackme">1. Why TryHackMe</h2>
+            <p>TryHackMe builds everything around <strong>rooms</strong> — guided, browser-based labs with a real Linux machine you can interact with. No expensive VM rig, no scary install script. You follow the task, type commands, answer questions, and learn by doing. That "do it yourself" loop is what kept me coming back.</p>
+            <ul>
+                <li>Beginner friendly — a path (<code>Pre Security</code>, <code>Cyber Security 101</code>) holds your hand at first</li>
+                <li>Hands-on — every room gives you a machine and evidence to find</li>
+                <li>Gamified — streak counters and badges turned learning into a habit</li>
+            </ul>
+            <h2 id="the-rooms-i-started-with">2. The Rooms I Started With</h2>
+            <p>I deliberately started broad before going deep. Three rooms carried most of my first month:</p>
+            <ol>
+                <li><strong>Pre Security</strong> — the foundation: how the web works, OSI model, and basic security principles</li>
+                <li><strong>Networking Fundamentals</strong> — reviewing DNS, DHCP, and ports from a security-focused angle</li>
+                <li><strong>Linux Fundamentals</strong> — command-line basics I now use daily in my actual job</li>
+            </ol>
+            <h2 id="tools-i-got-hands-on-with">3. Tools I Got Hands-On With</h2>
+            <p>Reading about tools is boring; using them is not. In my first month I opened each of these for real:</p>
+            <pre><code>nmap -sV 10.10.x.x     # Enumerate open ports and service versions
+hydra -l admin -P list.txt ssh://10.10.x.x   # Password spraying demo
+gobuster dir -u http://10.10.x.x -w wordlist.txt</code></pre>
+            <p>None of this is about attacking real systems — every target here was an intentionally vulnerable lab machine. The point was understanding <em>how</em> these tools behave so I can both defend against them and explain them to teammates.</p>
+            <h2 id="the-biggest-lessons">4. The Biggest Lessons</h2>
+            <blockquote>Cybersecurity isn't about memorizing tools — it's about learning to think like an attacker and being methodical about evidence.</blockquote>
+            <ul>
+                <li><strong>Technique matters more than tools.</strong> Enumeration first, exploit later. Check every port, look at every service banner.</li>
+                <li><strong>Take notes.</strong> I started a markdown folder of commands, flags, and "aha" moments — it's now my personal reference manual.</li>
+                <li><strong>Review Linux basics constantly.</strong> Every single room assumed solid terminal skills.</li>
+            </ul>
+            <h2 id="what-s-next">5. What's Next</h2>
+            <p>Next on my list is finishing <strong>Cyber Security Awareness</strong> and aiming toward CompTIA <strong>Security+</strong> prep material. I also want to connect the dots between the home lab and these rooms — segmenting networks and watching the traffic from both sides ties everything together.</p>
+        ]]></content:encoded>
+    </item>
+    <item>
+      <title>Setting Up My Home Lab: Networking Basics | Glenn Patrick Cabansag</title>
+      <link>https://gl3nnnn.github.io/Cabansag.github.io/blog-home-lab.html</link>
+      <guid isPermaLink="true">https://gl3nnnn.github.io/Cabansag.github.io/blog-home-lab.html</guid>
+      <pubDate>Wed, 14 Jan 2026 16:00:00 +0000</pubDate>
+      <description><![CDATA[A beginner's walkthrough of configuring routers, switches, and using Wireshark to sniff traffic in a home lab setup.]]></description>
+      <content:encoded xmlns:content="http://purl.org/rss/1.0/modules/content/"><![CDATA[
+            <p>Building a home lab is one of the best ways to learn networking hands-on. You don't need expensive gear — an old router, a switch, and a laptop running Wireshark are more than enough to start. Here's how I approached it and the basics I picked up along the way.</p>
+            <h2 id="the-gear">1. The Gear</h2>
+            <p>Start simple. My beginner lab consisted of:</p>
+            <ul>
+                <li>A home broadband router acting as the gateway and DHCP server</li>
+                <li>An 8-port unmanaged switch so I could plug multiple devices into the same network</li>
+                <li>A desktop and a laptop, one on Ethernet and one on Wi-Fi</li>
+                <li>A Raspberry Pi later on to run a small server and learn Linux</li>
+            </ul>
+            <h2 id="understanding-the-topology">2. Understanding the Topology</h2>
+            <p>Draw it out. The router connects to the internet, the switch hangs off the router's LAN port, and every wired device plugs into the switch. Wireless devices reach the router directly. This flat topology is perfect for learning because traffic is easy to trace.</p>
+            <pre><code>Internet
+   |
+[ Router ] ---- [ Desktop ]
+   |     \---- [ Switch ] ---- [ Laptop ]
+ [Pi/Wi-Fi]</code></pre>
+            <h2 id="ip-addressing-and-dhcp">3. IP Addressing and DHCP</h2>
+            <p>By default the router hands out IP addresses via DHCP. I checked which addresses were assigned and learned to spot the difference between the gateway (e.g. <code>192.168.1.1</code>) and the devices it leases addresses to. From there I practiced setting <strong>static IPs</strong> so my Pi always had the same address.</p>
+            <p>Useful commands I kept on hand:</p>
+            <pre><code>ipconfig /all          # Windows - see your IP, gateway, DNS
+ping 192.168.1.1       # Test connectivity to the gateway
+tracert 8.8.8.8        # Trace the path to a public host
+arp -a                 # View the local ARP table</code></pre>
+            <h2 id="sniffing-traffic-with-wireshark">4. Sniffing Traffic with Wireshark</h2>
+            <p>Wireshark is where it gets fun. I opened it in <strong>promiscuous mode</strong> on the laptop and watched the traffic flow across my lab. I saw DHCP requests during lease renewal, ARP lookups, and DNS queries when I loaded a webpage. Being able to see the packets makes the theory finally click.</p>
+            <blockquote>Capturing your own traffic in your own lab is a completely safe way to learn packet analysis — try it before touching production networks.</blockquote>
+            <h2 id="next-steps">5. Next Steps</h2>
+            <p>From here I'm planning to segment the lab with VLANs, add a firewall, and eventually learn Cisco CLI with a router simulator or an old managed switch. A home lab turned out to be the best "teacher" — it breaks, and breaking things is exactly how you learn to fix them.</p>
+        ]]></content:encoded>
+    </item>
+    <item>
+      <title>My AWS Learning Journey: Getting Started | Glenn Patrick Cabansag</title>
+      <link>https://gl3nnnn.github.io/Cabansag.github.io/blog-aws-journey.html</link>
+      <guid isPermaLink="true">https://gl3nnnn.github.io/Cabansag.github.io/blog-aws-journey.html</guid>
+      <pubDate>Fri, 19 Sep 2025 16:00:00 +0000</pubDate>
+      <description><![CDATA[My AWS learning roadmap and nothing more yet — cloud fundamentals, EC2, S3 and Docker, written down before I start rather than after.]]></description>
+      <content:encoded xmlns:content="http://purl.org/rss/1.0/modules/content/"><![CDATA[
+            <p>Cloud computing felt overwhelming at first, but after certifying in Digital Transformation with Google Cloud, I decided to go deeper with AWS. This is the roadmap I am working from and the concepts that are starting to make sense.</p>
+            <p><strong>To be clear about where this stands: I have not launched anything in AWS yet.</strong> There is no instance, no bucket and no credential behind this post. It is the plan, not a report, and I am writing it down now so that when I do have results they are written against something.</p>
+            <h2 id="start-with-the-big-three-services">1. Start With the Big Three Services</h2>
+            <p>Don't try to learn all 200+ AWS services. The foundation tier is really three things:</p>
+            <ul>
+                <li><strong>EC2</strong> — virtual servers. Learn to launch, connect via SSH, and run a simple web server.</li>
+                <li><strong>S3</strong> — object storage. Upload files, set bucket policies, and understand availability.</li>
+                <li><strong>IAM</strong> — identity and access. Learn users, roles, and the principle of least privilege.</li>
+            </ul>
+            <h2 id="spin-up-a-free-tier-ec2-instance">2. Spin Up a Free-Tier EC2 Instance</h2>
+            <p>Launching something and deleting it is the part of this I most want to do, and the part I have not done yet. The steps, as I understand them, are short enough to be the first thing that goes from reading to doing:</p>
+            <pre><code># the sequence I plan to run on a free-tier instance
+sudo apt update
+sudo apt install -y nginx
+echo "&lt;h1&gt;Hello from EC2&lt;/h1&gt;" | sudo tee /var/www/html/index.html</code></pre>
+            <p>The value is not the page. It is finding out what the console actually feels like, which is exactly the part documentation is worst at.</p>
+            <h2 id="manage-firewalls-with-security-groups">3. Manage Firewalls With Security Groups</h2>
+            <p>The default security group blocks most traffic, so an instance that boots with nothing open is unreachable by design. Opening port 22 for SSH and port 80 for HTTP is the minimum needed to use it at all, and it is also where the security lesson lives: a misconfigured group can expose an instance to the whole internet, and default rules are about convenience rather than safety.</p>
+            <p>Least privilege is not optional, and understanding why is a better reason to learn IAM than memorising the policy grammar.</p>
+            <h2 id="docker-changed-how-i-think-about-deployment">4. Docker Changed How I Think About Deployment</h2>
+            <p>This is the one place I can speak from experience, because I containerized this portfolio and can confirm it runs the same way on my machine every time. A simple <code>Dockerfile</code> plus an image pull is what would let the same app run on EC2 without setup drama, though I have not done that second part yet:</p>
+            <pre><code>docker build -t my-app .
+docker run -d -p 8080:80 my-app</code></pre>
+            <h2 id="keep-the-bill-at-zero">5. Keep the Bill at Zero</h2>
+            <p>The thing that puts people off cloud is the bill. The rule I am setting for myself now, before I start: use the free tier, tag everything, and <strong>terminate</strong> what I am not using. The habit to check billing after every session is the one I am most likely to skip on the first attempt, so it is the one I am writing down.</p>
+            <blockquote>Cloud skills are about making systems scalable and reliable — but wisdom is knowing when to shut things down.</blockquote>
+            <h2 id="what-s-next">What's Next</h2>
+            <p>CI/CD is what I am aiming at after that — a small project on GitHub with an automated workflow testing and deploying it to EC2. The path from developer to cloud-ready is a series of small, repeated experiments, and I am on experiment zero.</p>
+        ]]></content:encoded>
+    </item>
+    <item>
+      <title>From Help Desk to IT Assistant: What I Learned | Glenn Patrick Cabansag</title>
+      <link>https://gl3nnnn.github.io/Cabansag.github.io/blog-helpdesk-lessons.html</link>
+      <guid isPermaLink="true">https://gl3nnnn.github.io/Cabansag.github.io/blog-helpdesk-lessons.html</guid>
+      <pubDate>Mon, 09 Jun 2025 16:00:00 +0000</pubDate>
+      <description><![CDATA[Lessons from supporting end users every day — troubleshooting, patience, and the joy of solving problems.]]></description>
+      <content:encoded xmlns:content="http://purl.org/rss/1.0/modules/content/"><![CDATA[
+            <p>My first real role in IT was as a Help Desk associate, and now I work as an IT Assistant at COMPASS Training Center. Both jobs taught me that support is about so much more than fixing computers. Here are the biggest lessons.</p>
+            <h2 id="troubleshooting-is-a-process-not-magic">1. Troubleshooting Is a Process, Not Magic</h2>
+            <p>The first question is always the same: <strong>healthy or broken?</strong> I learned to work top-down — check cables and power, check the obvious settings, then dig deeper. Write everything you try down; it keeps you from repeating steps and helps you spot patterns across tickets.</p>
+            <ol>
+                <li>Gather information from the user first</li>
+                <li>Test the most likely cause first</li>
+                <li>Document every step and the outcome</li>
+                <li>Communicate the fix back in plain language</li>
+            </ol>
+            <h2 id="patience-and-communication-are-half-the-job">2. Patience and Communication Are Half the Job</h2>
+            <p>Users describe issues in their own words, not network terms. A "my internet is slow" report can hide dozens of root causes. I learned to ask clear questions, explain what I'm doing, and always close the loop with the end user so they know the issue is resolved.</p>
+            <h2 id="documentation-is-a-superpower">3. Documentation Is a Superpower</h2>
+            <p>Repeating tickets are the best signal that something needs documentation. Over time I built quick reference notes for common fixes — printer issues, login problems, connectivity checks. Ten minutes of writing saves an hour of re-diagnosing later.</p>
+            <h2 id="every-day-teaches-you-something-new">4. Every Day Teaches You Something New</h2>
+            <p>From setup and deployment to backups, network configs, and user management, support roles touch everything. That breadth is exactly what helped me grow from Help Desk into an IT Assistant — and what keeps pushing me toward cloud, networking, and development.</p>
+            <blockquote>Support roles are the best foundation for a career in IT. You touch every layer of the stack and learn how real systems actually behave.</blockquote>
+            <h2 id="tips-for-fresh-grads">Tips for Fresh Grads</h2>
+            <p>Say yes to the messy tickets, keep a learning log, and be honest when you're unsure — then go find the answer. Curiosity compounds. Two years in, I can trace problems that used to leave me stuck, and I'm still just getting started.</p>
+        ]]></content:encoded>
+    </item>
   </channel>
 </rss>
