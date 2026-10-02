@@ -130,7 +130,6 @@
         .bp-footer .social a:hover{background:var(--main);color:#000;transform:translateY(-5px);box-shadow:0 0 18px rgba(27,179,14,.5);text-decoration:none;}
         .bp-footer p{color:var(--muted);font-size:.9rem;}
         .bp-footer a{color:var(--accent);}
-
         #theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:2.8rem;height:2.8rem;border-radius:50%;border:1.5px solid var(--main);background:transparent;color:var(--main);font-size:1rem;cursor:pointer;transition:.25s;flex-shrink:0;}
         #theme-toggle:hover{background:var(--main);color:#000;box-shadow:0 0 14px rgba(27,179,14,.5);}
         [data-theme="light"]{--bg:#f6f7f9;--panel:#ffffff;--main:#166534;--accent:#115e59;--text:#17181c;--muted:#5f6368;}
@@ -152,7 +151,6 @@
         [data-theme="light"] .bp-footer .social a:hover,
         [data-theme="light"] #theme-toggle:hover,
         [data-theme="light"] .skip-link{color:#ffffff;}
-    
 /* On-this-page contents */
 .toc{margin:0 0 2.6rem;padding:1.4rem 1.7rem;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:14px;}
 .toc-title{display:block;font-size:.74rem;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin:0 0 .7rem;font-weight:700;}
@@ -172,7 +170,6 @@
   .post-nav{grid-template-columns:1fr;}
   .post-nav .pn-next{text-align:left;}
 }
-
 </style>
     <style>
 [data-theme="light"] .toc,
@@ -188,7 +185,6 @@
         <button id="theme-toggle" aria-label="Toggle light and dark mode" title="Toggle light/dark mode"><i class="fa-solid fa-moon"></i></button>
         <a href="index.html#blog" class="back-link">&larr; Back to Blog</a>
     </header>
-
     <article class="article" id="main" tabindex="-1">
         <span class="category">Cybersecurity</span>
         <h1 class="title">My First Month on TryHackMe: Learning Cybersecurity One Room at a Time</h1>
@@ -207,11 +203,8 @@
                 <li><a href="#what-s-next">5. What's Next</a></li>
             </ol>
         </nav>
-
-
         <div class="content">
             <p>After my home lab taught me how networks move packets, I wanted to learn the other side: how those networks get attacked and defended. My IT work is mostly support-focused, so cybersecurity felt like a natural next layer. I started with TryHackMe and honestly, the first month was one of the most productive stretches of self-study I've had.</p>
-
             <h2 id="why-tryhackme">1. Why TryHackMe</h2>
             <p>TryHackMe builds everything around <strong>rooms</strong> — guided, browser-based labs with a real Linux machine you can interact with. No expensive VM rig, no scary install script. You follow the task, type commands, answer questions, and learn by doing. That "do it yourself" loop is what kept me coming back.</p>
             <ul>
@@ -219,7 +212,6 @@
                 <li>Hands-on — every room gives you a machine and evidence to find</li>
                 <li>Gamified — streak counters and badges turned learning into a habit</li>
             </ul>
-
             <h2 id="the-rooms-i-started-with">2. The Rooms I Started With</h2>
             <p>I deliberately started broad before going deep. Three rooms carried most of my first month:</p>
             <ol>
@@ -227,14 +219,12 @@
                 <li><strong>Networking Fundamentals</strong> — reviewing DNS, DHCP, and ports from a security-focused angle</li>
                 <li><strong>Linux Fundamentals</strong> — command-line basics I now use daily in my actual job</li>
             </ol>
-
             <h2 id="tools-i-got-hands-on-with">3. Tools I Got Hands-On With</h2>
             <p>Reading about tools is boring; using them is not. In my first month I opened each of these for real:</p>
             <pre><code>nmap -sV 10.10.x.x     # Enumerate open ports and service versions
 hydra -l admin -P list.txt ssh://10.10.x.x   # Password spraying demo
 gobuster dir -u http://10.10.x.x -w wordlist.txt</code></pre>
             <p>None of this is about attacking real systems — every target here was an intentionally vulnerable lab machine. The point was understanding <em>how</em> these tools behave so I can both defend against them and explain them to teammates.</p>
-
             <h2 id="the-biggest-lessons">4. The Biggest Lessons</h2>
             <blockquote>Cybersecurity isn't about memorizing tools — it's about learning to think like an attacker and being methodical about evidence.</blockquote>
             <ul>
@@ -242,7 +232,6 @@ gobuster dir -u http://10.10.x.x -w wordlist.txt</code></pre>
                 <li><strong>Take notes.</strong> I started a markdown folder of commands, flags, and "aha" moments — it's now my personal reference manual.</li>
                 <li><strong>Review Linux basics constantly.</strong> Every single room assumed solid terminal skills.</li>
             </ul>
-
             <h2 id="what-s-next">5. What's Next</h2>
             <p>Next on my list is finishing <strong>Cyber Security Awareness</strong> and aiming toward CompTIA <strong>Security+</strong> prep material. I also want to connect the dots between the home lab and these rooms — segmenting networks and watching the traffic from both sides ties everything together.</p>
         </div>
@@ -256,11 +245,8 @@ gobuster dir -u http://10.10.x.x -w wordlist.txt</code></pre>
                 <span class="pn-title">Dockerizing My Portfolio: Containers Made Simple</span>
             </a>
         </nav>
-
-
         <div class="post-footer">Thanks for reading! Connect on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer">LinkedIn</a> or check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">GitHub</a>.</div>
     </article>
-
     <footer class="bp-footer">
         <div class="social">
             <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
@@ -270,7 +256,6 @@ gobuster dir -u http://10.10.x.x -w wordlist.txt</code></pre>
         </div>
         <p>&copy; <span id="year">2026</span> Glenn Patrick Cabansag | All rights reserved</p>
     </footer>
-
     <script>
         const backTop = document.getElementById('back-top');
         window.addEventListener('scroll', () => {
@@ -278,7 +263,6 @@ gobuster dir -u http://10.10.x.x -w wordlist.txt</code></pre>
         }, { passive: true });
         backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
         document.getElementById('year').textContent = new Date().getFullYear();
-
         // Theme toggle (persisted; defaults to system preference)
         (function initTheme() {
             const root = document.documentElement;

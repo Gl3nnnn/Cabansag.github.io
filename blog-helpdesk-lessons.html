@@ -130,7 +130,6 @@
         .bp-footer .social a:hover{background:var(--main);color:#000;transform:translateY(-5px);box-shadow:0 0 18px rgba(27,179,14,.5);text-decoration:none;}
         .bp-footer p{color:var(--muted);font-size:.9rem;}
         .bp-footer a{color:var(--accent);}
-
         #theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:2.8rem;height:2.8rem;border-radius:50%;border:1.5px solid var(--main);background:transparent;color:var(--main);font-size:1rem;cursor:pointer;transition:.25s;flex-shrink:0;}
         #theme-toggle:hover{background:var(--main);color:#000;box-shadow:0 0 14px rgba(27,179,14,.5);}
         [data-theme="light"]{--bg:#f6f7f9;--panel:#ffffff;--main:#166534;--accent:#115e59;--text:#17181c;--muted:#5f6368;}
@@ -152,7 +151,6 @@
         [data-theme="light"] .bp-footer .social a:hover,
         [data-theme="light"] #theme-toggle:hover,
         [data-theme="light"] .skip-link{color:#ffffff;}
-    
 /* On-this-page contents */
 .toc{margin:0 0 2.6rem;padding:1.4rem 1.7rem;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:14px;}
 .toc-title{display:block;font-size:.74rem;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin:0 0 .7rem;font-weight:700;}
@@ -172,7 +170,6 @@
   .post-nav{grid-template-columns:1fr;}
   .post-nav .pn-next{text-align:left;}
 }
-
 </style>
     <style>
 [data-theme="light"] .toc,
@@ -188,7 +185,6 @@
         <button id="theme-toggle" aria-label="Toggle light and dark mode" title="Toggle light/dark mode"><i class="fa-solid fa-moon"></i></button>
         <a href="index.html#blog" class="back-link">&larr; Back to Blog</a>
     </header>
-
     <article class="article" id="main" tabindex="-1">
         <span class="category">Experience</span>
         <h1 class="title">From Help Desk to IT Assistant: What I Learned</h1>
@@ -207,11 +203,8 @@
                 <li><a href="#tips-for-fresh-grads">Tips for Fresh Grads</a></li>
             </ol>
         </nav>
-
-
         <div class="content">
             <p>My first real role in IT was as a Help Desk associate, and now I work as an IT Assistant at COMPASS Training Center. Both jobs taught me that support is about so much more than fixing computers. Here are the biggest lessons.</p>
-
             <h2 id="troubleshooting-is-a-process-not-magic">1. Troubleshooting Is a Process, Not Magic</h2>
             <p>The first question is always the same: <strong>healthy or broken?</strong> I learned to work top-down — check cables and power, check the obvious settings, then dig deeper. Write everything you try down; it keeps you from repeating steps and helps you spot patterns across tickets.</p>
             <ol>
@@ -220,17 +213,13 @@
                 <li>Document every step and the outcome</li>
                 <li>Communicate the fix back in plain language</li>
             </ol>
-
             <h2 id="patience-and-communication-are-half-the-job">2. Patience and Communication Are Half the Job</h2>
             <p>Users describe issues in their own words, not network terms. A "my internet is slow" report can hide dozens of root causes. I learned to ask clear questions, explain what I'm doing, and always close the loop with the end user so they know the issue is resolved.</p>
-
             <h2 id="documentation-is-a-superpower">3. Documentation Is a Superpower</h2>
             <p>Repeating tickets are the best signal that something needs documentation. Over time I built quick reference notes for common fixes — printer issues, login problems, connectivity checks. Ten minutes of writing saves an hour of re-diagnosing later.</p>
-
             <h2 id="every-day-teaches-you-something-new">4. Every Day Teaches You Something New</h2>
             <p>From setup and deployment to backups, network configs, and user management, support roles touch everything. That breadth is exactly what helped me grow from Help Desk into an IT Assistant — and what keeps pushing me toward cloud, networking, and development.</p>
             <blockquote>Support roles are the best foundation for a career in IT. You touch every layer of the stack and learn how real systems actually behave.</blockquote>
-
             <h2 id="tips-for-fresh-grads">Tips for Fresh Grads</h2>
             <p>Say yes to the messy tickets, keep a learning log, and be honest when you're unsure — then go find the answer. Curiosity compounds. Two years in, I can trace problems that used to leave me stuck, and I'm still just getting started.</p>
         </div>
@@ -241,11 +230,8 @@
                 <span class="pn-title">My AWS Learning Journey: Getting Started</span>
             </a>
         </nav>
-
-
         <div class="post-footer">Thanks for reading! Connect on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer">LinkedIn</a> or check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">GitHub</a>.</div>
     </article>
-
     <footer class="bp-footer">
         <div class="social">
             <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
@@ -255,7 +241,6 @@
         </div>
         <p>&copy; <span id="year">2026</span> Glenn Patrick Cabansag | All rights reserved</p>
     </footer>
-
     <script>
         const backTop = document.getElementById('back-top');
         window.addEventListener('scroll', () => {
@@ -263,7 +248,6 @@
         }, { passive: true });
         backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
         document.getElementById('year').textContent = new Date().getFullYear();
-
         // Theme toggle (persisted; defaults to system preference)
         (function initTheme() {
             const root = document.documentElement;

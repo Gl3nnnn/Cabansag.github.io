@@ -130,7 +130,6 @@
         .bp-footer .social a:hover{background:var(--main);color:#000;transform:translateY(-5px);box-shadow:0 0 18px rgba(27,179,14,.5);text-decoration:none;}
         .bp-footer p{color:var(--muted);font-size:.9rem;}
         .bp-footer a{color:var(--accent);}
-
         #theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:2.8rem;height:2.8rem;border-radius:50%;border:1.5px solid var(--main);background:transparent;color:var(--main);font-size:1rem;cursor:pointer;transition:.25s;flex-shrink:0;}
         #theme-toggle:hover{background:var(--main);color:#000;box-shadow:0 0 14px rgba(27,179,14,.5);}
         [data-theme="light"]{--bg:#f6f7f9;--panel:#ffffff;--main:#166534;--accent:#115e59;--text:#17181c;--muted:#5f6368;}
@@ -152,7 +151,6 @@
         [data-theme="light"] .bp-footer .social a:hover,
         [data-theme="light"] #theme-toggle:hover,
         [data-theme="light"] .skip-link{color:#ffffff;}
-    
 /* On-this-page contents */
 .toc{margin:0 0 2.6rem;padding:1.4rem 1.7rem;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:14px;}
 .toc-title{display:block;font-size:.74rem;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin:0 0 .7rem;font-weight:700;}
@@ -172,7 +170,6 @@
   .post-nav{grid-template-columns:1fr;}
   .post-nav .pn-next{text-align:left;}
 }
-
 </style>
     <style>
 [data-theme="light"] .toc,
@@ -188,7 +185,6 @@
         <button id="theme-toggle" aria-label="Toggle light and dark mode" title="Toggle light/dark mode"><i class="fa-solid fa-moon"></i></button>
         <a href="index.html#blog" class="back-link">&larr; Back to Blog</a>
     </header>
-
     <article class="article" id="main" tabindex="-1">
         <span class="category">Networking</span>
         <h1 class="title">Setting Up My Home Lab: Networking Basics</h1>
@@ -207,11 +203,8 @@
                 <li><a href="#next-steps">5. Next Steps</a></li>
             </ol>
         </nav>
-
-
         <div class="content">
             <p>Building a home lab is one of the best ways to learn networking hands-on. You don't need expensive gear — an old router, a switch, and a laptop running Wireshark are more than enough to start. Here's how I approached it and the basics I picked up along the way.</p>
-
             <h2 id="the-gear">1. The Gear</h2>
             <p>Start simple. My beginner lab consisted of:</p>
             <ul>
@@ -220,7 +213,6 @@
                 <li>A desktop and a laptop, one on Ethernet and one on Wi-Fi</li>
                 <li>A Raspberry Pi later on to run a small server and learn Linux</li>
             </ul>
-
             <h2 id="understanding-the-topology">2. Understanding the Topology</h2>
             <p>Draw it out. The router connects to the internet, the switch hangs off the router's LAN port, and every wired device plugs into the switch. Wireless devices reach the router directly. This flat topology is perfect for learning because traffic is easy to trace.</p>
             <pre><code>Internet
@@ -228,7 +220,6 @@
 [ Router ] ---- [ Desktop ]
    |     \---- [ Switch ] ---- [ Laptop ]
  [Pi/Wi-Fi]</code></pre>
-
             <h2 id="ip-addressing-and-dhcp">3. IP Addressing and DHCP</h2>
             <p>By default the router hands out IP addresses via DHCP. I checked which addresses were assigned and learned to spot the difference between the gateway (e.g. <code>192.168.1.1</code>) and the devices it leases addresses to. From there I practiced setting <strong>static IPs</strong> so my Pi always had the same address.</p>
             <p>Useful commands I kept on hand:</p>
@@ -236,11 +227,9 @@
 ping 192.168.1.1       # Test connectivity to the gateway
 tracert 8.8.8.8        # Trace the path to a public host
 arp -a                 # View the local ARP table</code></pre>
-
             <h2 id="sniffing-traffic-with-wireshark">4. Sniffing Traffic with Wireshark</h2>
             <p>Wireshark is where it gets fun. I opened it in <strong>promiscuous mode</strong> on the laptop and watched the traffic flow across my lab. I saw DHCP requests during lease renewal, ARP lookups, and DNS queries when I loaded a webpage. Being able to see the packets makes the theory finally click.</p>
             <blockquote>Capturing your own traffic in your own lab is a completely safe way to learn packet analysis — try it before touching production networks.</blockquote>
-
             <h2 id="next-steps">5. Next Steps</h2>
             <p>From here I'm planning to segment the lab with VLANs, add a firewall, and eventually learn Cisco CLI with a router simulator or an old managed switch. A home lab turned out to be the best "teacher" — it breaks, and breaking things is exactly how you learn to fix them.</p>
         </div>
@@ -254,11 +243,8 @@ arp -a                 # View the local ARP table</code></pre>
                 <span class="pn-title">My First Month on TryHackMe: Learning Cybersecurity One Room at a Time</span>
             </a>
         </nav>
-
-
         <div class="post-footer">Thanks for reading! Connect on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer">LinkedIn</a> or check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">GitHub</a>.</div>
     </article>
-
     <footer class="bp-footer">
         <div class="social">
             <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
@@ -268,7 +254,6 @@ arp -a                 # View the local ARP table</code></pre>
         </div>
         <p>&copy; <span id="year">2026</span> Glenn Patrick Cabansag | All rights reserved</p>
     </footer>
-
     <script>
         const backTop = document.getElementById('back-top');
         window.addEventListener('scroll', () => {
@@ -276,7 +261,6 @@ arp -a                 # View the local ARP table</code></pre>
         }, { passive: true });
         backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
         document.getElementById('year').textContent = new Date().getFullYear();
-
         // Theme toggle (persisted; defaults to system preference)
         (function initTheme() {
             const root = document.documentElement;

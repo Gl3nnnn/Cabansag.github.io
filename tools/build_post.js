@@ -81,20 +81,34 @@ function buildJsonLd({ slug, title, description, date, image = 'profile.jpg' }) 
         name: 'Glenn Patrick Cabansag',
         url: `${S}/`,
       },
-      {
-        '@type': 'Article',
-        '@id': `${S}/${page}#article`,
-        headline: title,
-        description,
-        image: `${S}/${image}`,
-        datePublished: date,
-        mainEntityOfPage: {
-          '@type': 'WebPage',
-          '@id': `${S}/${page}`,
+        {
+          '@type': 'Article',
+          '@id': `${S}/${page}#article`,
+          headline: title,
+          description,
+          image: `${S}/${image}`,
+          datePublished: date,
+          mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': `${S}/${page}`,
+          },
+          author: { '@id': `${S}/#person` },
+          publisher: { '@id': `${S}/#person` },
         },
-        author: { '@id': `${S}/#person` },
-        publisher: { '@id': `${S}/#person` },
-      },
+        {
+          '@type': 'BlogPosting',
+          '@id': `${S}/${page}#blogposting`,
+          headline: title,
+          description,
+          image: `${S}/${image}`,
+          datePublished: date,
+          dateModified: date,
+          mainEntityOfPage: { '@type': 'WebPage', '@id': `${S}/${page}` },
+          author: { '@id': `${S}/#person` },
+          publisher: { '@id': `${S}/#person` },
+          inLanguage: 'en-PH',
+          url: `${S}/${page}`,
+        },
       {
         '@type': 'BreadcrumbList',
         '@id': `${S}/${page}#breadcrumb`,
@@ -192,7 +206,8 @@ function build(spec) {
     <header class="bp-header">
         <a href="index.html" class="logo">Glenn Patrick <span>Cabansag</span></a>
         <button id="theme-toggle" aria-label="Toggle light and dark mode" title="Toggle light/dark mode"><i class="fa-solid fa-moon"></i></button>
-        <a href="index.html#blog" class="back-link">&larr; Back to Blog</a>
+        <a href="blog.html" class="back-link">&larr; Back to Blog</a>
+        <a href="index.html" class="back-link">Home</a>
     </header>
 
     <article class="article" id="main" tabindex="-1">

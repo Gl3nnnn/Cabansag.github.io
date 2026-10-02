@@ -60,6 +60,27 @@
             }
         },
         {
+            "@type": "BlogPosting",
+            "@id": "https://gl3nnnn.github.io/Cabansag.github.io/blog-queue-system.html#blogposting",
+            "headline": "Building a Queue System for a Training Centre Counter",
+            "description": "How the COMPASS training centre front counter went from a paper list to a real-time queue system — three services, independent ticket numbering, and the eight security items still outstanding before it can go live.",
+            "image": "https://gl3nnnn.github.io/Cabansag.github.io/profile.jpg",
+            "datePublished": "2026-09-15",
+            "dateModified": "2026-09-15",
+            "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": "https://gl3nnnn.github.io/Cabansag.github.io/blog-queue-system.html"
+            },
+            "author": {
+                "@id": "https://gl3nnnn.github.io/Cabansag.github.io/#person"
+            },
+            "publisher": {
+                "@id": "https://gl3nnnn.github.io/Cabansag.github.io/#person"
+            },
+            "inLanguage": "en-PH",
+            "url": "https://gl3nnnn.github.io/Cabansag.github.io/blog-queue-system.html"
+        },
+        {
             "@type": "BreadcrumbList",
             "@id": "https://gl3nnnn.github.io/Cabansag.github.io/blog-queue-system.html#breadcrumb",
             "itemListElement": [
@@ -86,7 +107,6 @@
 }
     </script>
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>
-    
     <style>
         :root{--bg:#121212;--panel:#1e1e1e;--main:#1bb30e;--accent:#03dac6;--text:#e0e0e0;--muted:#9aa0a6;}
         *{margin:0;padding:0;box-sizing:border-box;}
@@ -130,7 +150,6 @@
         .bp-footer .social a:hover{background:var(--main);color:#000;transform:translateY(-5px);box-shadow:0 0 18px rgba(27,179,14,.5);text-decoration:none;}
         .bp-footer p{color:var(--muted);font-size:.9rem;}
         .bp-footer a{color:var(--accent);}
-
         #theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:2.8rem;height:2.8rem;border-radius:50%;border:1.5px solid var(--main);background:transparent;color:var(--main);font-size:1rem;cursor:pointer;transition:.25s;flex-shrink:0;}
         #theme-toggle:hover{background:var(--main);color:#000;box-shadow:0 0 14px rgba(27,179,14,.5);}
         [data-theme="light"]{--bg:#f6f7f9;--panel:#ffffff;--main:#166534;--accent:#115e59;--text:#17181c;--muted:#5f6368;}
@@ -152,7 +171,6 @@
         [data-theme="light"] .bp-footer .social a:hover,
         [data-theme="light"] #theme-toggle:hover,
         [data-theme="light"] .skip-link{color:#ffffff;}
-    
 /* On-this-page contents */
 .toc{margin:0 0 2.6rem;padding:1.4rem 1.7rem;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:14px;}
 .toc-title{display:block;font-size:.74rem;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin:0 0 .7rem;font-weight:700;}
@@ -172,7 +190,6 @@
   .post-nav{grid-template-columns:1fr;}
   .post-nav .pn-next{text-align:left;}
 }
-
 </style>
     <style>
 [data-theme="light"] .toc,
@@ -186,9 +203,8 @@
     <header class="bp-header">
         <a href="index.html" class="logo">Glenn Patrick <span>Cabansag</span></a>
         <button id="theme-toggle" aria-label="Toggle light and dark mode" title="Toggle light/dark mode"><i class="fa-solid fa-moon"></i></button>
-        <a href="index.html#blog" class="back-link">&larr; Back to Blog</a>
+        <a href="blog.html" class="back-link">&larr; Back to Blog</a>
     </header>
-
     <article class="article" id="main" tabindex="-1">
         <span class="category">Development</span>
         <h1 class="title">Building a Queue System for a Training Centre Counter</h1>
@@ -208,62 +224,35 @@
                 <li><a href="#whats-next">What's Next</a></li>
             </ol>
         </nav>
-
-
         <div class="content">
             <h2 id="the-problem">1. The Problem With a Paper List</h2>
-
 <p>The front counter at COMPASS Training Centre has three services: registration, document processing, and inquiries. Names went on a paper sheet, by hand, every day. I wanted to build the thing that replaces the sheet.</p>
-
 <p>A visitor picks a service, gets a number, and is called. Staff work six counters, and the three queues share one waiting area. A number means nothing on its own: someone asking about fees should not take the next registration number.</p>
-
             <h2 id="three-services">2. Three Services, Three Separate Queues</h2>
-
 <p>Which makes the service table the root of the schema:</p>
-
 <pre><code>id        INT PRIMARY KEY
 name      VARCHAR(100)
 code      VARCHAR(10) UNIQUE</code></pre>
-
 <p>Three rows: Registration, Documents, Inquiry. Each points at its own counters, and the short codes end up inside the ticket number, so &ldquo;CMP-REG-001&rdquo; says which queue it belongs to in a noisy room.</p>
-
             <h2 id="ticket-numbers">3. Ticket Numbers That Reset Themselves</h2>
-
 <p>Numbering is per service, per day, starting at 001, with no scheduled job doing it. A ticket from yesterday simply does not match today&rsquo;s filter, so it is invisible and the next insert starts at 001 again:</p>
-
 <pre><code>-- the "is it from today" test, used everywhere a ticket is read
 WHERE DATE(created_at) = CURDATE()</code></pre>
-
 <p>Daily totals fall out of the same query, with no separate counter table that can drift.</p>
-
 <p>The ticket table carries four things worth naming. <code>counter_id</code> is nullable, because a waiting ticket is not assigned to anyone yet. <code>status</code> is an enum, because &ldquo;skipped&rdquo; is a real state and not a cancel &mdash; a skipped person goes back in the queue. And separate <code>called_at</code> and <code>completed_at</code> let the display separate waiting time from service time.</p>
-
             <h2 id="pushing-updates">4. Getting the Display Screen to Update Itself</h2>
-
 <p>Refreshing every few seconds works, and it is what I started with. It is wrong for a screen on a wall: visible flicker, and a request every two seconds forever. Socket.io holds the connection open and pushes an event when something changes:</p>
-
 <pre><code>io.emit('ticket-called', { ticketNumber, serviceCode, counterName });
-
 socket.on('ticket-called', (data) =&gt; setNowServing(data));</code></pre>
-
 <p>The counter panel calls <code>/api/tickets/call-next</code>, which finds the lowest waiting ticket for that counter&rsquo;s service, flips it to <code>serving</code>, stamps <code>called_at</code>, and emits. The screen updates because it was told to, not because it asked.</p>
-
 <p>One thing I would do differently: I built the display screen last, and it should have been first. It is what everyone actually sees.</p>
-
 <blockquote>The moment the display stopped being the staff member&rsquo;s responsibility was the moment this was worth building.</blockquote>
-
             <h2 id="not-finished">5. What Is Not Finished Yet</h2>
-
 <p>This is the part I would rather write down than leave out. The system is not production-ready, and my own README says so in a list of eight items I have not done.</p>
-
 <p>The staff panel logs in with a shared default password. Beyond that: no real authentication, no role-based access control, no HTTPS, no rate limiting, no input validation on the API, secrets in <code>.env</code> rather than a secret store, and no backup plan.</p>
-
 <p>That shared password is the item I would fix first, because it is the one where the current state is worse than having no login at all. My resume describes this as built, not deployed, which is deliberate.</p>
-
             <h2 id="whats-next">What's Next</h2>
-
 <p>Then real authentication and HTTPS, then backups.</p>
-
 <pre><code>github.com/Gl3nnnn/counter_compass</code></pre>
         </div>
         <nav class="post-nav" aria-label="Post navigation">
@@ -273,12 +262,8 @@ socket.on('ticket-called', (data) =&gt; setNowServing(data));</code></pre>
             </a>
             <div class="pn-empty" aria-hidden="true"></div>
         </nav>
-
-
         <div class="post-footer">Thanks for reading! Connect on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer">LinkedIn</a> or check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">GitHub</a>.</div>
     </article>
-
-
     <footer class="bp-footer">
         <div class="social">
             <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
@@ -288,7 +273,6 @@ socket.on('ticket-called', (data) =&gt; setNowServing(data));</code></pre>
         </div>
         <p>&copy; <span id="year">2026</span> Glenn Patrick Cabansag | All rights reserved</p>
     </footer>
-
     <script>
         const backTop = document.getElementById('back-top');
         window.addEventListener('scroll', () => {
@@ -296,7 +280,6 @@ socket.on('ticket-called', (data) =&gt; setNowServing(data));</code></pre>
         }, { passive: true });
         backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
         document.getElementById('year').textContent = new Date().getFullYear();
-
         // Theme toggle (persisted; defaults to system preference)
         (function initTheme() {
             const root = document.documentElement;

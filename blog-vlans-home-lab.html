@@ -130,7 +130,6 @@
         .bp-footer .social a:hover{background:var(--main);color:#000;transform:translateY(-5px);box-shadow:0 0 18px rgba(27,179,14,.5);text-decoration:none;}
         .bp-footer p{color:var(--muted);font-size:.9rem;}
         .bp-footer a{color:var(--accent);}
-
         #theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:2.8rem;height:2.8rem;border-radius:50%;border:1.5px solid var(--main);background:transparent;color:var(--main);font-size:1rem;cursor:pointer;transition:.25s;flex-shrink:0;}
         #theme-toggle:hover{background:var(--main);color:#000;box-shadow:0 0 14px rgba(27,179,14,.5);}
         [data-theme="light"]{--bg:#f6f7f9;--panel:#ffffff;--main:#166534;--accent:#115e59;--text:#17181c;--muted:#5f6368;}
@@ -152,7 +151,6 @@
         [data-theme="light"] .bp-footer .social a:hover,
         [data-theme="light"] #theme-toggle:hover,
         [data-theme="light"] .skip-link{color:#ffffff;}
-    
 /* On-this-page contents */
 .toc{margin:0 0 2.6rem;padding:1.4rem 1.7rem;background:var(--panel);border:1px solid rgba(255,255,255,.1);border-radius:14px;}
 .toc-title{display:block;font-size:.74rem;text-transform:uppercase;letter-spacing:.11em;color:var(--muted);margin:0 0 .7rem;font-weight:700;}
@@ -172,7 +170,6 @@
   .post-nav{grid-template-columns:1fr;}
   .post-nav .pn-next{text-align:left;}
 }
-
 </style>
     <style>
 [data-theme="light"] .toc,
@@ -188,7 +185,6 @@
         <button id="theme-toggle" aria-label="Toggle light and dark mode" title="Toggle light/dark mode"><i class="fa-solid fa-moon"></i></button>
         <a href="index.html#blog" class="back-link">&larr; Back to Blog</a>
     </header>
-
     <article class="article" id="main" tabindex="-1">
         <span class="category">Networking</span>
         <h1 class="title">Segmenting My Home Lab with VLANs</h1>
@@ -207,11 +203,8 @@
                 <li><a href="#what-i-d-do-differently">5. What I'd Do Differently</a></li>
             </ol>
         </nav>
-
-
         <div class="content">
             <p>After my flat home lab got comfortable, I wanted the network to match how companies actually run things. That meant VLANs — splitting one physical switch into several logical networks. It sounded intimidating until I realized it's mostly about <strong>deciding which ports belong to which group</strong>.</p>
-
             <h2 id="why-bother-segmenting">1. Why Bother Segmenting?</h2>
             <p>A flat network means every device can talk to every other device directly. That's fine with a laptop and a phone, but it gets risky once you mix devices you don't fully trust — cheap IoT gadgets, cameras, or lab machines running intentionally vulnerable services.</p>
             <ul>
@@ -219,20 +212,17 @@
                 <li><strong>Isolation</strong> — a compromised IoT camera can't reach your main PC on VLAN 10</li>
                 <li><strong>Real-world practice</strong> — trunking and tagging are core enterprise networking skills</li>
             </ul>
-
             <h2 id="vlan-basics">2. VLAN Basics</h2>
             <p>Each VLAN is a virtual LAN with a number (1–4094). Devices in the same VLAN behave as if they're on the same switch segment; devices in different VLANs don't see each other unless traffic is routed between them.</p>
             <ul>
                 <li><strong>Access port</strong> — belongs to one VLAN, carries untagged traffic for devices like PCs and printers</li>
                 <li><strong>Trunk port</strong> — carries many VLANs between switches/routers using 802.1Q <strong>tagging</strong>, where each frame gets a small header saying which VLAN it belongs to</li>
             </ul>
-
             <h2 id="my-segmentation-plan">3. My Segmentation Plan</h2>
             <pre><code>VLAN 10  TRUSTED  - desktop, laptops, Raspberry Pi
 VLAN 20  IOT      - smart plugs, cameras, streaming sticks
 VLAN 30  LAB      - intentionally vulnerable / practice machines</code></pre>
             <p>The lab VLAN is the whole point: now my vulnerable practice boxes are cut off from everything I actually care about, and any traffic between the zones has to go through control I can inspect.</p>
-
             <h2 id="configuring-a-managed-switch">4. Configuring a Managed Switch</h2>
             <p>On a small Cisco-style switch the config is short. First create the VLANs, then assign access ports, then define a trunk:</p>
             <pre><code>vlan 10
@@ -241,20 +231,16 @@ vlan 20
  name IOT
 vlan 30
  name LAB
-
 interface FastEthernet0/1
  switchport mode access
  switchport access vlan 10
-
 interface FastEthernet0/2
  switchport mode access
  switchport access vlan 20
-
 interface GigabitEthernet0/1
  switchport mode trunk
  switchport trunk allowed vlan 10,20,30</code></pre>
             <p><code>show vlan brief</code> confirms which ports sit in which VLAN — the single most useful verification command you'll run while learning this.</p>
-
             <h2 id="what-i-d-do-differently">5. What I'd Do Differently</h2>
             <p>Two lessons after breaking (and fixing) this setup a few times:</p>
             <ol>
@@ -273,11 +259,8 @@ interface GigabitEthernet0/1
                 <span class="pn-title">What I Actually Do in an IT Support Shift</span>
             </a>
         </nav>
-
-
         <div class="post-footer">Thanks for reading! Connect on <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer">LinkedIn</a> or check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">GitHub</a>.</div>
     </article>
-
     <footer class="bp-footer">
         <div class="social">
             <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
@@ -287,7 +270,6 @@ interface GigabitEthernet0/1
         </div>
         <p>&copy; <span id="year">2026</span> Glenn Patrick Cabansag | All rights reserved</p>
     </footer>
-
     <script>
         const backTop = document.getElementById('back-top');
         window.addEventListener('scroll', () => {
@@ -295,7 +277,6 @@ interface GigabitEthernet0/1
         }, { passive: true });
         backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
         document.getElementById('year').textContent = new Date().getFullYear();
-
         // Theme toggle (persisted; defaults to system preference)
         (function initTheme() {
             const root = document.documentElement;

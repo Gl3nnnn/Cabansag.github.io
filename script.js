@@ -1,7 +1,9 @@
-let menuIcon = document.querySelector('#menu-icon');
+const EMAILJS = { publicKey: 'qJNRbjDf_u2JtF1Hf', serviceID: 'service_bkjbqcm', templateID: 'template_kkar83i' };
+if (typeof emailjs !== "undefined") { try { emailjs.init(EMAILJS.publicKey); } catch (e) {} }
 let navbar = document.querySelector('.navbar');
 let sections = document.querySelectorAll('section');
 let navLinks = document.querySelectorAll('header nav a');
+let menuIcon = document.querySelector('#menu-icon');
 
 // Active navigation link on scroll (scroll-spy)
 function updateActiveLink() {
