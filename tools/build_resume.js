@@ -16,8 +16,16 @@ const js = fs.readFileSync(path.join(ROOT, 'script.js'), 'utf8');
 const dec = s => s.replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').trim();
 
 // ---------- certifications (source of truth: index.html) ----------
-const certSection = html.match(/<section class="certifications" id="certifications">[\s\S]*?<\/section>/)[0];
-const certs = [...certSection.matchAll(/<div class="cert-card">[\s\S]*?<h4>([\s\S]*?)<\/h4>\s*<span class="cert-issuer">([\s\S]*?)<\/span>[\s\S]*?<span class="cert-date">([\s\S]*?)<\/span>/g)]
+// Both patterns below are deliberately loose about things that are presentational
+// rather than meaningful. The section match tolerates trailing attributes, and
+// the card match accepts any heading level: the certification titles were h4 and
+// were retagged h3 when index.html's skipped heading levels were fixed, which
+// silently broke this parser and was caught only by the count guard below.
+// Re-pin these to a literal tag or a literal attribute list and the next
+// cosmetic retag does the same thing again.
+const certSection = html.match(/<section class="certifications" id="certifications"[^>]*>[\s\S]*?<\/section>/);
+if (!certSection) throw new Error('cannot find the certifications section in index.html');
+const certs = [...certSection[0].matchAll(/<div class="cert-card">[\s\S]*?<h[1-6]>([\s\S]*?)<\/h[1-6]>\s*<span class="cert-issuer">([\s\S]*?)<\/span>[\s\S]*?<span class="cert-date">([\s\S]*?)<\/span>/g)]
   .map(m => ({ title: dec(m[1]), issuer: dec(m[2]), date: dec(m[3]) }));
 if (certs.length !== 38) throw new Error(`expected 38 certifications, parsed ${certs.length}`);
 
@@ -33,9 +41,9 @@ if (certs.length !== 38) throw new Error(`expected 38 certifications, parsed ${c
 // Google tracks, Udemy, Alteryx and the rest - stays on the site's filterable
 // list, which the Certifications note points to.
 //
-// Titles here must match the index.html <h4> byte for byte, including the en
-// dash in CyberPRO: `short` throws on a miss, so a typo fails the build rather
-// than silently dropping the credential from the resume.
+// Titles here must match the index.html certification heading byte for byte,
+// including the en dash in CyberPRO: `short` throws on a miss, so a typo fails the
+// build rather than silently dropping the credential from the resume.
 const SHORTLIST = [
   'CCNA: Switching, Routing, and Wireless Essentials',
   'Red Hat System Administration I (RH124)',
