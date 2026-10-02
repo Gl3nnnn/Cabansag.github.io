@@ -453,19 +453,42 @@
                 else note.textContent = 'Showing ' + visible + ' of ' + total + ' posts' + (active === 'all' ? '' : ' in ' + active);
             }
 
+            // ?q= support, so the WebSite/SearchAction structured data points at
+            // a URL that actually applies the term instead of dropping it and
+            // showing every post. The query is mirrored back into the address bar
+            // on every edit so a filtered page can be copied and shared.
+            // replaceState rather than pushState on purpose: typing should not
+            // fill the back stack with a dozen near-identical entries.
+            function syncUrl() {
+                var value = search.value.trim();
+                // replaceState throws SecurityError under file:// in some
+                // browsers, and search still has to work when it does.
+                try {
+                    var url = new URL(window.location.href);
+                    if (value) url.searchParams.set('q', value);
+                    else url.searchParams.delete('q');
+                    history.replaceState(null, '', url.pathname + url.search + url.hash);
+                } catch (e) { /* search still works, the URL just stops following */ }
+            }
+
+            function update() { apply(); syncUrl(); }
+
+            var initialQuery = new URLSearchParams(window.location.search).get('q');
+            if (initialQuery) search.value = initialQuery;
+
             buttons.forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     buttons.forEach(function (b) { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
                     btn.classList.add('active');
                     btn.setAttribute('aria-pressed', 'true');
                     active = btn.getAttribute('data-filter');
-                    apply();
+                    update();
                 });
             });
-            search.addEventListener('input', apply);
-            search.addEventListener('search', apply);
+            search.addEventListener('input', update);
+            search.addEventListener('search', update);
             search.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape' && search.value) { search.value = ''; apply(); }
+                if (e.key === 'Escape' && search.value) { search.value = ''; update(); }
             });
             apply();
         })();

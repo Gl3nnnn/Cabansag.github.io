@@ -53,15 +53,34 @@ and can also be viewed on my [LinkedIn certifications page](https://www.linkedin
 
 ## Projects
 
-Some featured public repositories:
+Thirteen repositories, all public. The same list drives the site's Projects section.
 
-- **INVENTORY-NEW** — Inventory management web system (PHP)
-- **accounting** — Accounting web app built with Laravel (Blade)
-- **TechDesk** / **helpdesk** / **it_inventory** — IT support and asset systems (PHP)
-- **InventoryTBF** / **Issue-Tracker** / **radios** / **games** — JavaScript apps
-- **SimpleStudentManager** / **SimpleAssistant** / **simplecalculator** — Python utilities
+**PHP**
 
-The Projects section on the site loads live from GitHub and includes language filters with per-language counts, a "Showing X of Y" result counter, and two topic tags per project. The list itself is a curated set of repositories in `script.js`, so the section never shrinks or reorders when the API is rate limited or a repo is renamed. View the full list on my [GitHub](https://github.com/Gl3nnnn).
+- **INVENTORY-NEW** — inventory management web system for stock, suppliers and item movement.
+- **TechDesk** — tech-desk ticketing for logging, assigning and tracking support requests.
+- **helpdesk** — helpdesk support system for end-user tickets and recurring IT issues.
+- **it_inventory** — IT asset inventory for hardware, assignments and equipment lifecycle.
+
+**Laravel**
+
+- **accounting** — accounting and financial application on Laravel 12 with Blade templating.
+
+**JavaScript**
+
+- **counter_compass** — real-time training-centre queue system with independent ticket numbering per service and a live waiting-area display.
+- **InventoryTBF** — browser-based inventory tracker for stock levels and item records.
+- **Issue-Tracker** — issue and bug tracking for capturing, triaging and managing defects.
+- **games** — collection of small browser games in vanilla JavaScript.
+- **radios** — streaming-style radio player web app.
+
+**Python**
+
+- **SimpleStudentManager** — command-line app for storing, searching and updating student records.
+- **SimpleAssistant** — desktop assistant with task helpers and lightweight automation.
+- **simplecalculator** — desktop calculator with a clean graphical interface.
+
+Each entry in `script.js` carries an optional `outcome` line rendered under the card description, saying what came out of the project rather than repeating the description. The Projects section loads live from GitHub and includes language filters with per-language counts, a "Showing X of Y" result counter, and two topic tags per project. The list itself is a curated set of repositories in `script.js`, so the section never shrinks or reorders when the API is rate limited or a repo is renamed. View the full list on my [GitHub](https://github.com/Gl3nnnn).
 
 ## Site Structure
 
