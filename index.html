@@ -769,7 +769,7 @@ top: 10px;
     color: var(--text-color);
     flex-grow: 1;
 }
-.testimonial-person h4{
+.testimonial-person h3{
     font-size: 1.8rem;
     color: white;
     font-weight: 600;
@@ -1091,7 +1091,7 @@ top: 10px;
     padding: 5rem 5rem;
 }
 
-.services-info h4{
+.services-info h3{
    font-size: 3rem;
    font-weight: 800;
    line-height: 2; 
@@ -1464,7 +1464,7 @@ padding-left:37px;
     .services-container {
         gap: 1rem;
     }
-    .services-box .services-info h4 {
+    .services-box .services-info h3 {
         font-size: 2.5rem;
     }
     .services-box .services-info p {
@@ -1506,7 +1506,7 @@ padding-left:37px;
     .services-container {
         gap: 0.5rem;
     }
-    .services-box .services-info h4 {
+    .services-box .services-info h3 {
         font-size: 2rem;
     }
     .services-box .services-info p {
@@ -1773,7 +1773,7 @@ padding-left:37px;
     justify-content: space-between;
     gap: 1rem;
 }
-.cert-card h4{
+.cert-card h3{
     font-size: 1.8rem;
     color: white;
     font-weight: 600;
@@ -2065,7 +2065,7 @@ section{
 [data-theme="light"] .projects h2,
 [data-theme="light"] .project-card h3,
 [data-theme="light"] .testimonials h2,
-[data-theme="light"] .testimonial-person h4,
+[data-theme="light"] .testimonial-person h3,
 [data-theme="light"] .blog h2,
 [data-theme="light"] .blog-card h3,
 [data-theme="light"] .blog-post-title,
@@ -2075,7 +2075,7 @@ section{
 [data-theme="light"] .certifications h2,
 [data-theme="light"] .about h2,
 [data-theme="light"] .cert-category-heading h3,
-[data-theme="light"] .cert-card h4,
+[data-theme="light"] .cert-card h3,
 [data-theme="light"] .skill-heading,
 [data-theme="light"] .footer ul li a,
 [data-theme="light"] .navbar a{ color: #14161a; }
@@ -2177,12 +2177,12 @@ section{
     background: var(--main-color);
     color: #ffffff;
 }
-[data-theme="light"] .services-info h4,
+[data-theme="light"] .services-info h3,
 [data-theme="light"] .services-info p{ color: #14161a; }
-[data-theme="light"] .services-info h4:hover{ color: #ffffff; }
-[data-theme="light"] .services-info h4 i{ color: var(--main-color); }
-[data-theme="light"] .services-box:hover .services-info h4 i,
-[data-theme="light"] .services-box:hover .services-info h4,
+[data-theme="light"] .services-info h3:hover{ color: #ffffff; }
+[data-theme="light"] .services-info h3 i{ color: var(--main-color); }
+[data-theme="light"] .services-box:hover .services-info h3 i,
+[data-theme="light"] .services-box:hover .services-info h3,
 [data-theme="light"] .services-box:hover .services-info p{ color: #ffffff; }
 /* Dark/Night: "What I Do" cards -> DARK outlined cards (no solid green slab, NOT white) */
 :root[data-theme="dark"] .services-box,
@@ -2196,17 +2196,17 @@ html[data-theme="dark"] .services-box:hover{
     background: var(--main-color);
     color: #ffffff;
 }
-:root[data-theme="dark"] .services-info h4,
+:root[data-theme="dark"] .services-info h3,
 :root[data-theme="dark"] .services-info p,
-html[data-theme="dark"] .services-info h4,
+html[data-theme="dark"] .services-info h3,
 html[data-theme="dark"] .services-info p{ color: #e6e8ea; }
-:root[data-theme="dark"] .services-info h4 i,
-html[data-theme="dark"] .services-info h4 i{ color: var(--main-color); }
-:root[data-theme="dark"] .services-box:hover .services-info h4 i,
-:root[data-theme="dark"] .services-box:hover .services-info h4,
+:root[data-theme="dark"] .services-info h3 i,
+html[data-theme="dark"] .services-info h3 i{ color: var(--main-color); }
+:root[data-theme="dark"] .services-box:hover .services-info h3 i,
+:root[data-theme="dark"] .services-box:hover .services-info h3,
 :root[data-theme="dark"] .services-box:hover .services-info p,
-html[data-theme="dark"] .services-box:hover .services-info h4 i,
-html[data-theme="dark"] .services-box:hover .services-info h4,
+html[data-theme="dark"] .services-box:hover .services-info h3 i,
+html[data-theme="dark"] .services-box:hover .services-info h3,
 html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 /* Light: testimonial avatars -> outlined circles; cards softened */
 [data-theme="light"] .testimonial-avatar{
@@ -2402,9 +2402,10 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <a href="#blog">Blog</a>
             <a href="#contact">Contact</a>
         </nav>
-    </header>
-    
-    <section class="home" id="home" tabindex="-1">
+</header>
+
+<main id="main">
+<section class="home" id="home" tabindex="-1">
         <div class="home-content">
             <h1>Hi, it's <span>Patrick</span></h1>
             <h3 class="text-animation">I'm a <span class="ta-rotator" aria-hidden="true"></span><span class="ta-sr sr-only">Information Technology Assistant. I also work as a Linux systems administrator, a technical support specialist, a cybersecurity analyst and a Google Cloud engineer, and I build web applications in PHP, Laravel, JavaScript and Python.</span></h3>
@@ -2502,7 +2503,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
         </div>
     </section>
 
-    <section class="education" id="education">
+    <section class="education" id="education" tabindex="-1">
         <h2 class="heading">Education</h2>
 
         <div class="timeline-items">
@@ -2559,7 +2560,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
         </div>
     </section>
 
-<section class="experience" id="experience">
+<section class="experience" id="experience" tabindex="-1">
     <h2 class="heading">Work <span>Experience</span></h2>
 
     <div class="timeline-items">
@@ -2586,7 +2587,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
     </div>
 </section>
 
-<section class="certifications" id="certifications">
+<section class="certifications" id="certifications" tabindex="-1">
     <h2 class="heading">Licenses & <span>Certifications</span></h2>
     <p class="certifications-intro">38 licenses and certifications covering Google Cloud, Cisco, Red Hat, Linux Foundation, ISC2, IBM, TESDA and more — from cloud architecture and networking to cybersecurity, development, design and systems support.
         <span class="cert-verify">All credentials can be viewed and verified on my <a href="https://www.linkedin.com/in/glenpatrick/details/certifications/" target="_blank" rel="noopener noreferrer">LinkedIn certifications page</a>.</span>
@@ -2628,7 +2629,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Digital Transformation with Google Cloud</h4>
+                            <h3>Digital Transformation with Google Cloud</h3>
                             <span class="cert-issuer">Google</span>
                         </div>
                         <span class="cert-date">Nov 2023</span>
@@ -2638,7 +2639,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Google Cloud Fundamentals: Core Infrastructure</h4>
+                            <h3>Google Cloud Fundamentals: Core Infrastructure</h3>
                             <span class="cert-issuer">Google</span>
                         </div>
                         <span class="cert-date">Mar 2024</span>
@@ -2648,7 +2649,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Infrastructure and Application Modernization with Google Cloud</h4>
+                            <h3>Infrastructure and Application Modernization with Google Cloud</h3>
                             <span class="cert-issuer">Google</span>
                         </div>
                         <span class="cert-date">Nov 2023</span>
@@ -2658,7 +2659,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Understanding Google Cloud Security and Operations</h4>
+                            <h3>Understanding Google Cloud Security and Operations</h3>
                             <span class="cert-issuer">Google</span>
                         </div>
                         <span class="cert-date">Nov 2023</span>
@@ -2668,7 +2669,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Introduction to Large Language Models</h4>
+                            <h3>Introduction to Large Language Models</h3>
                             <span class="cert-issuer">Google</span>
                         </div>
                         <span class="cert-date">Nov 2023</span>
@@ -2678,7 +2679,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Introduction to Responsible AI</h4>
+                            <h3>Introduction to Responsible AI</h3>
                             <span class="cert-issuer">Google</span>
                         </div>
                         <span class="cert-date">Nov 2023</span>
@@ -2688,7 +2689,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Introduction to Generative AI</h4>
+                            <h3>Introduction to Generative AI</h3>
                             <span class="cert-issuer">Google</span>
                         </div>
                         <span class="cert-date">Nov 2023</span>
@@ -2708,7 +2709,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>CCNA: Switching, Routing, and Wireless Essentials</h4>
+                            <h3>CCNA: Switching, Routing, and Wireless Essentials</h3>
                             <span class="cert-issuer">Cisco</span>
                         </div>
                         <span class="cert-date">Dec 2022</span>
@@ -2718,7 +2719,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Network Support and Security</h4>
+                            <h3>Network Support and Security</h3>
                             <span class="cert-issuer">Cisco</span>
                         </div>
                         <span class="cert-date">Jan 2025</span>
@@ -2738,7 +2739,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Certified in Cybersecurity (CC)</h4>
+                            <h3>Certified in Cybersecurity (CC)</h3>
                             <span class="cert-issuer">ISC2</span>
                         </div>
                         <span class="cert-date">Jul 2024</span>
@@ -2748,7 +2749,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>CyberOps Associate</h4>
+                            <h3>CyberOps Associate</h3>
                             <span class="cert-issuer">Cisco</span>
                         </div>
                         <span class="cert-date">Jun 2023</span>
@@ -2758,7 +2759,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Introduction to Cybersecurity</h4>
+                            <h3>Introduction to Cybersecurity</h3>
                             <span class="cert-issuer">Cisco</span>
                         </div>
                         <span class="cert-date">Dec 2023</span>
@@ -2768,7 +2769,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Advent of Cyber 2024</h4>
+                            <h3>Advent of Cyber 2024</h3>
                             <span class="cert-issuer">TryHackMe</span>
                         </div>
                         <span class="cert-date">Dec 2024</span>
@@ -2778,7 +2779,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Cybersecurity Essentials (LFC108)</h4>
+                            <h3>Cybersecurity Essentials (LFC108)</h3>
                             <span class="cert-issuer">The Linux Foundation</span>
                         </div>
                         <span class="cert-date">Apr 2024</span>
@@ -2788,7 +2789,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Introduction to Cybersecurity Tools & Cyber Attacks</h4>
+                            <h3>Introduction to Cybersecurity Tools & Cyber Attacks</h3>
                             <span class="cert-issuer">IBM</span>
                         </div>
                         <span class="cert-date">Apr 2024</span>
@@ -2798,7 +2799,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                <h4>Cybersecurity for Everyone</h4>
+                <h3>Cybersecurity for Everyone</h3>
                         <span class="cert-issuer">University of Maryland</span>
                         </div>
                         <span class="cert-date">Jun 2024</span>
@@ -2808,7 +2809,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Cybersecurity Professionals Portal (CyberPRO) – Level 2 (Intermediate)</h4>
+                            <h3>Cybersecurity Professionals Portal (CyberPRO) – Level 2 (Intermediate)</h3>
                             <span class="cert-issuer">DICT</span>
                         </div>
                         <span class="cert-date">Sep 2026</span>
@@ -2827,7 +2828,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>AI Engineer for Developers Associate</h4>
+                            <h3>AI Engineer for Developers Associate</h3>
                             <span class="cert-issuer">DataCamp</span>
                         </div>
                         <span class="cert-date">Aug 2026</span>
@@ -2837,7 +2838,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Introduction to Data Science</h4>
+                            <h3>Introduction to Data Science</h3>
                             <span class="cert-issuer">Cisco</span>
                         </div>
                         <span class="cert-date">Sep 2024</span>
@@ -2847,7 +2848,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Responsive Web Design</h4>
+                            <h3>Responsive Web Design</h3>
                             <span class="cert-issuer">freeCodeCamp</span>
                         </div>
                         <span class="cert-date">Jun 2023</span>
@@ -2857,7 +2858,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>CSS Essentials</h4>
+                            <h3>CSS Essentials</h3>
                             <span class="cert-issuer">Cisco</span>
                         </div>
                         <span class="cert-date">Jun 2025</span>
@@ -2867,7 +2868,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Introduction to Software Engineering</h4>
+                            <h3>Introduction to Software Engineering</h3>
                             <span class="cert-issuer">IBM</span>
                         </div>
                         <span class="cert-date">Feb 2024</span>
@@ -2877,7 +2878,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>iOS Development for Beginners: Master Swift & App Building</h4>
+                            <h3>iOS Development for Beginners: Master Swift & App Building</h3>
                             <span class="cert-issuer">GeeksforGeeks</span>
                         </div>
                         <span class="cert-date">Jan 2024</span>
@@ -2887,7 +2888,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Introduction to Quantum Computing</h4>
+                            <h3>Introduction to Quantum Computing</h3>
                             <span class="cert-issuer">Udemy</span>
                         </div>
                         <span class="cert-date">Sep 2022</span>
@@ -2897,7 +2898,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>SMART Android Mobile Apps Development for Beginners</h4>
+                            <h3>SMART Android Mobile Apps Development for Beginners</h3>
                             <span class="cert-issuer">TESDA</span>
                         </div>
                         <span class="cert-date">Jan 2022</span>
@@ -2917,7 +2918,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Principles of Graphic Design</h4>
+                            <h3>Principles of Graphic Design</h3>
                             <span class="cert-issuer">University of the Philippines</span>
                         </div>
                         <span class="cert-date">Mar 2025</span>
@@ -2927,7 +2928,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Trends in Art and Design</h4>
+                            <h3>Trends in Art and Design</h3>
                             <span class="cert-issuer">DICT</span>
                         </div>
                         <span class="cert-date">May 2024</span>
@@ -2937,7 +2938,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Developing Designs for a Logo</h4>
+                            <h3>Developing Designs for a Logo</h3>
                             <span class="cert-issuer">TESDA</span>
                         </div>
                         <span class="cert-date">Apr 2024</span>
@@ -2947,7 +2948,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Introduction to Visual Graphic Design</h4>
+                            <h3>Introduction to Visual Graphic Design</h3>
                             <span class="cert-issuer">TESDA</span>
                         </div>
                         <span class="cert-date">Apr 2024</span>
@@ -2967,7 +2968,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Red Hat System Administration I (RH124)</h4>
+                            <h3>Red Hat System Administration I (RH124)</h3>
                             <span class="cert-issuer">Red Hat</span>
                         </div>
                         <span class="cert-date">Apr 2023</span>
@@ -2977,7 +2978,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Red Hat System Administration II (RH134)</h4>
+                            <h3>Red Hat System Administration II (RH134)</h3>
                             <span class="cert-issuer">Red Hat</span>
                         </div>
                         <span class="cert-date">Jun 2023</span>
@@ -2987,7 +2988,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Technical Support Fundamentals</h4>
+                            <h3>Technical Support Fundamentals</h3>
                             <span class="cert-issuer">Google</span>
                         </div>
                         <span class="cert-date">Oct 2021</span>
@@ -2997,7 +2998,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Microsoft Digital Literacy</h4>
+                            <h3>Microsoft Digital Literacy</h3>
                             <span class="cert-issuer">TESDA</span>
                         </div>
                         <span class="cert-date">Jan 2022</span>
@@ -3007,7 +3008,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Globe Wi-Fi 101 and Digital Thumbprint Program</h4>
+                            <h3>Globe Wi-Fi 101 and Digital Thumbprint Program</h3>
                             <span class="cert-issuer">Globe</span>
                         </div>
                         <span class="cert-date">Jan 2022</span>
@@ -3027,7 +3028,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Alteryx Foundational Micro-Credential</h4>
+                            <h3>Alteryx Foundational Micro-Credential</h3>
                             <span class="cert-issuer">Alteryx</span>
                         </div>
                         <span class="cert-date">Aug 2025</span>
@@ -3037,7 +3038,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Six Sigma White Belt</h4>
+                            <h3>Six Sigma White Belt</h3>
                             <span class="cert-issuer">CSSC</span>
                         </div>
                         <span class="cert-date">Jul 2024</span>
@@ -3047,7 +3048,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>Information Systems Auditing, Controls and Assurance</h4>
+                            <h3>Information Systems Auditing, Controls and Assurance</h3>
                             <span class="cert-issuer">HKUST</span>
                         </div>
                         <span class="cert-date">Dec 2023</span>
@@ -3057,7 +3058,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <div class="cert-card">
                     <div class="cert-card-top">
                         <div class="cert-info">
-                            <h4>SMART Technopreneurship 101</h4>
+                            <h3>SMART Technopreneurship 101</h3>
                             <span class="cert-issuer">TESDA</span>
                         </div>
                         <span class="cert-date">Jan 2022</span>
@@ -3070,13 +3071,13 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
     </div>
 </section>
 
-<section class="services" id="services">
+<section class="services" id="services" tabindex="-1">
     <h2 class="heading">Skills</h2>
     <p class="services-intro">Eight areas, each one traceable to a credential on this page, a public repository, or a job I have actually held. Nothing here is a self-assigned percentage.</p>
     <div class="services-container">
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa-solid fa-headset"></i> IT Support</h4>
+                <h3><i class="fa-solid fa-headset"></i> IT Support</h3>
                 <p>Day-to-day support as an IT Assistant and Help Desk associate on Windows: troubleshooting hardware and software, installing and configuring workstations, handling incidents through to resolution and escalation, and documenting recurring faults so they stop coming back.</p>
 
             </div>
@@ -3084,7 +3085,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa-solid fa-server"></i> Linux &amp; Systems</h4>
+                <h3><i class="fa-solid fa-server"></i> Linux &amp; Systems</h3>
                 <p>Red Hat System Administration I and II, covering installation, file systems, storage, users and groups, services, networking on the command line, and core administration of Linux servers.</p>
 
             </div>
@@ -3092,7 +3093,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa-solid fa-network-wired"></i> Networking</h4>
+                <h3><i class="fa-solid fa-network-wired"></i> Networking</h3>
                 <p>CCNA switching, routing and wireless, plus TCP/IP fundamentals and subnetting. In the training centre I maintain the wired and wireless network that classrooms and administrative systems depend on.</p>
 
             </div>
@@ -3100,7 +3101,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa-solid fa-cloud"></i> Google Cloud</h4>
+                <h3><i class="fa-solid fa-cloud"></i> Google Cloud</h3>
                 <p>Seven Google Cloud credentials spanning core infrastructure, application modernisation, security and operations, large language models and responsible AI. This is my cloud platform, and it is the one I hold the most credentials in.</p>
 
             </div>
@@ -3108,7 +3109,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa-solid fa-shield-halved"></i> Cybersecurity</h4>
+                <h3><i class="fa-solid fa-shield-halved"></i> Cybersecurity</h3>
                 <p>ISC2 Certified in Cybersecurity, DICT CyberPRO Level 2, Cisco CyberOps, TryHackMe Advent of Cyber, Linux Foundation Cybersecurity Essentials and IBM's cyber tools track, covering threat awareness, defensive practice and incident response.</p>
 
             </div>
@@ -3116,7 +3117,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa-solid fa-code"></i> Web Development</h4>
+                <h3><i class="fa-solid fa-code"></i> Web Development</h3>
                 <p>PHP and Laravel with Blade templating, MySQL, and JavaScript on the browser side. Five of my public repositories are PHP or Laravel applications, including the helpdesk ticketing and IT asset systems I built for the training centre.</p>
 
             </div>
@@ -3124,7 +3125,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa-solid fa-robot"></i> Python &amp; Automation</h4>
+                <h3><i class="fa-solid fa-robot"></i> Python &amp; Automation</h3>
                 <p>Three Python repositories: a student record manager, a desktop assistant and a calculator. I also use scripting to automate routine support tasks, which is how the queue and accounting systems came about.</p>
 
             </div>
@@ -3132,7 +3133,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
         <div class="services-box">
             <div class="services-info">
-                <h4><i class="fa-solid fa-paint-brush"></i> Design &amp; Graphics</h4>
+                <h3><i class="fa-solid fa-paint-brush"></i> Design &amp; Graphics</h3>
                 <p>Four design credentials covering graphic design principles, logo development and visual communication. Credential-based rather than role-based: I have studied the discipline but do not currently work in it.</p>
 
             </div>
@@ -3155,7 +3156,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
         </div>
 </section>
 
-<section class="projects" id="projects">
+<section class="projects" id="projects" tabindex="-1">
     <h2 class="heading">Projects</h2>
     <p class="projects-intro">My public work on GitHub. Loaded live — check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">profile</a> for the full list.</p>
 
@@ -3173,7 +3174,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
     </div>
 </section>
 
-<section class="testimonials" id="testimonials">
+<section class="testimonials" id="testimonials" tabindex="-1">
     <h2 class="heading">Testimonials</h2>
     <div class="testimonials-grid">
         <div class="testimonial-card">
@@ -3181,7 +3182,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <p>Patrick is reliable and quick to help with any technical issue. His support helps keep our daily operations running smoothly.</p>
             <div class="testimonial-person">
                 <span class="testimonial-avatar"><img src="assets/avatars/supervisor.svg" alt="Illustrated portrait of a man in a collared shirt" width="56" height="56" loading="lazy" decoding="async"></span>
-                <h4>Work Supervisor</h4>
+                <h3>Work Supervisor</h3>
                 <span>Lead Generation and Donor Creation Inc.</span>
             </div>
         </div>
@@ -3190,7 +3191,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <p>Clean code, a keen eye for UI design, and always eager to learn new technologies. A really well-rounded developer.</p>
             <div class="testimonial-person">
                 <span class="testimonial-avatar"><img src="assets/avatars/classmate.svg" alt="Illustrated portrait of a woman with long hair" width="56" height="56" loading="lazy" decoding="async"></span>
-                <h4>Classmate &amp; Teammate</h4>
+                <h3>Classmate &amp; Teammate</h3>
                 <span>University of San Agustin</span>
             </div>
         </div>
@@ -3199,14 +3200,14 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <p>Great with both frontend interfaces and backend logic. He turns ideas into working systems with follow-through.</p>
             <div class="testimonial-person">
                 <span class="testimonial-avatar"><img src="assets/avatars/collaborator.svg" alt="Illustrated portrait of a person with glasses" width="56" height="56" loading="lazy" decoding="async"></span>
-                <h4>Project Collaborator</h4>
+                <h3>Project Collaborator</h3>
                 <span>IT Projects</span>
             </div>
         </div>
     </div>
 </section>
 
-<section class="blog" id="blog">
+<section class="blog" id="blog" tabindex="-1">
     <h2 class="heading">Technical <span>Blog</span></h2>
     <p class="blog-intro">Notes and write-ups from my journey in IT, networking, and cloud.</p>
     <p class="blog-all"><a href="blog.html">Browse all posts &rarr;</a></p>
@@ -3296,7 +3297,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 </section>
 
 
-<section class="contact" id="contact">
+<section class="contact" id="contact" tabindex="-1">
     <h2 class="heading">Contact <span>Me</span></h2>
     <div class="contact-direct">
         <span>Prefer email?</span>
@@ -3314,7 +3315,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             </div>
             <div class="input-box">
                 <label class="sr-only" for="phone-number">Phone Number</label>
-                <input type="tel" id="phone-number" name="phone_number" placeholder="Phone Number" autocomplete="tel" required>
+                <input type="tel" id="phone-number" name="phone_number" placeholder="Phone Number (optional)" autocomplete="tel">
                 <label class="sr-only" for="subject">Subject</label>
                 <input type="text" id="subject" name="subject" placeholder="Subject" autocomplete="off" required>
             </div>
@@ -3326,26 +3327,33 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <button type="submit" class="btn" id="contact-submit">Send Message</button>
         </div>
         <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
-    </form>
+</form>
 </section>
+</main>
 
 <script type="text/javascript"
-        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer>
+src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer>
 </script>
 <script type="text/javascript">
-    (function() {
-        // emailjs initialized in script.js via EMAILJS config
-    })();
-
     var contactForm = document.getElementById('contact-form');
 
     var fieldRules = {
         'full-name':     { test: function(v) { return v.trim().length >= 2; },      msg: 'Please enter your full name.' },
         'email':         { test: function(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); }, msg: 'Please enter a valid email address.' },
-        'phone-number':  { test: function(v) { return v.trim().length >= 7; },      msg: 'Please enter your phone number.' },
+        // Optional: an empty value is fine, but anything typed still has to look
+        // like a phone number. Marked optional rather than dropped from fieldRules
+        // so that a half-typed number is still caught instead of going out to
+        // EmailJS unchecked.
+        'phone-number':  { test: function(v) { return v.trim().length === 0 || v.trim().length >= 7; }, msg: 'Please enter your phone number.', optional: true },
         'subject':       { test: function(v) { return v.trim().length >= 2; },      msg: 'Please enter a subject.' },
         'message':       { test: function(v) { return v.trim().length >= 10; },     msg: 'Your message must be at least 10 characters.' }
     };
+
+    // True when the field is allowed to be left blank. Kept in one place because
+    // two validation paths consult it.
+    function isSatisfied(rule, value) {
+        return rule.optional && value.trim() === '' ? true : rule.test(value);
+    }
 
     function setFieldError(input, message) {
         var err = input.parentNode.querySelector('.field-error');
@@ -3369,7 +3377,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
     function validateField(input, id) {
         if (fieldRules[id]) {
-            setFieldError(input, fieldRules[id].test(input.value) ? null : fieldRules[id].msg);
+            setFieldError(input, isSatisfied(fieldRules[id], input.value) ? null : fieldRules[id].msg);
         }
     }
 
@@ -3378,7 +3386,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
         Object.keys(fieldRules).forEach(function(id) {
             var input = document.getElementById(id);
             if (!input) return;
-            if (fieldRules[id].test(input.value)) {
+            if (isSatisfied(fieldRules[id], input.value)) {
                 setFieldError(input, null);
             } else {
                 setFieldError(input, fieldRules[id].msg);
