@@ -94,10 +94,12 @@ The Projects section on the site loads live from GitHub and includes language fi
 ```
 node tests/blog_claims.js
 node tests/post_structure.js
+node tools/check_css.js
 ```
 
 - `tests/blog_claims.js` — the evidence suite. Checks that the chain's order and navigation match every post on disk, that `blog.html`, `index.html`, `sitemap.xml` and this README all agree on the same nine posts, that the claims in the new posts are still backed by the resume or the FAQ, and that touched files have no BOM, no replacement characters and no CRLF.
 - `tests/post_structure.js` — per-post structure. Heading numbering, TOC/body agreement, unique ids, anchor resolution, tag balance, encoding, `<title>`, and agreement between each spec and its rendered canonical URL and JSON-LD.
+- `tools/check_css.js` — parses every inline `<style>` block and fails on a stray top-level `}`, unbalanced braces, JSON-LD text inside a stylesheet, or invalid JSON-LD. Added after `index.html` was found to have had a JSON-LD block injected into its `<style>` 13 times, which left a stray `}` at top level in each spot. The braces still balanced and the page still rendered, but a top-level `}` does not close anything: the parser treats it as a selector prelude and swallows the next at-rule's block with it. That silently deleted `@keyframes word` and `@keyframes typing` — which froze the hero sub-headline on "IT Assistant" — along with 6 of the 13 responsive breakpoints and the `prefers-reduced-motion` fallback, so none of the small-screen layout fixes could take effect. It lives in `tools/` rather than `tests/` because it validates the markup of every page, not a post spec.
 
 ## Contact Me
 
