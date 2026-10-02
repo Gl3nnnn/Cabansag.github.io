@@ -207,7 +207,7 @@ function build(spec) {
         <a href="index.html" class="logo">Glenn Patrick <span>Cabansag</span></a>
         <button id="theme-toggle" aria-label="Toggle light and dark mode" title="Toggle light/dark mode"><i class="fa-solid fa-moon"></i></button>
         <a href="blog.html" class="back-link">&larr; Back to Blog</a>
-        <a href="index.html" class="back-link">Home</a>
+        
     </header>
 
     <article class="article" id="main" tabindex="-1">
