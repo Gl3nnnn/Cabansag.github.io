@@ -247,10 +247,21 @@ ok(scriptCompiles, 'script.js does not parse');
 
 // PROJECTS is read out of the source rather than by requiring script.js, which
 // touches document as it loads. Evaluating only the array literal is safe: it is
-// nothing but strings and string arrays.
+// nothing but strings and string arrays. Both steps are guarded, because a
+// malformed script.js has to come out as a reported failure with the other 300
+// assertions still printed, not as an uncaught SyntaxError that buries them.
 const projectsLiteral = scriptJs.match(/const PROJECTS = \[([\s\S]*?)\n\];/);
 ok(!!projectsLiteral, 'cannot find the PROJECTS array in script.js');
-const curated = projectsLiteral ? new Function(`return [${projectsLiteral[1]}]`)() : [];
+let curated = [];
+if (projectsLiteral) {
+  try {
+    curated = new Function(`return [${projectsLiteral[1]}]`)();
+  } catch (e) {
+    ok(false, `the PROJECTS array in script.js does not evaluate: ${e.message}`);
+  }
+} else if (scriptCompiles) {
+  // script.js parsed fine but the array is gone or renamed; already reported above.
+}
 ok(curated.length > 0, 'PROJECTS is empty');
 
 const names = curated.map(p => p.name);
