@@ -6,7 +6,11 @@
     <description>Technical notes on IT, networking, cybersecurity, and cloud.</description>
     <atom:link href="https://gl3nnnn.github.io/Cabansag.github.io/feed.xml" rel="self" type="application/rss+xml"/>
     <language>en-PH</language>
-    <lastBuildDate>Mon, 14 Sep 2026 16:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 14 Sep 2026 16:00:00 +0000</lastBuildDate>    <image>
+      <url>https://gl3nnnn.github.io/Cabansag.github.io/profile.jpg</url>
+      <title>Glenn Patrick Cabansag - Technical Blog</title>
+      <link>https://gl3nnnn.github.io/Cabansag.github.io/</link>
+    </image>
     <item>
       <title>Building a Queue System for a Training Centre Counter | Glenn Patrick Cabansag</title>
       <link>https://gl3nnnn.github.io/Cabansag.github.io/blog-queue-system.html</link>
