@@ -225,6 +225,74 @@ console.log('\n=== encoding and structure across every touched file ===');
   });
 });
 
+// ------------------------------------------------------- 6. portfolio drift
+//
+// The hero statistics are hand-written into index.html while the things they
+// count live in script.js or are counted from the markup itself, so nothing ever
+// forced the two to agree. They had drifted: the page rendered 13 project cards
+// and 8 skill cards under headings claiming 12 and 7, and renderProjects() raced
+// the count-up animation for the project figure so it could settle back on the
+// stale number. These assertions are the reason that cannot happen silently
+// again.
+console.log('\n=== the hero statistics match what the page actually contains ===');
+
+const scriptJs = read('script.js');
+
+// A syntax error in script.js would leave the Projects section empty at runtime
+// and fail nothing above, because every other check here reads index.html.
+// new Function parses the source without running it, which is the point.
+let scriptCompiles = true;
+try { new Function(scriptJs); } catch (e) { scriptCompiles = false; }
+ok(scriptCompiles, 'script.js does not parse');
+
+// PROJECTS is read out of the source rather than by requiring script.js, which
+// touches document as it loads. Evaluating only the array literal is safe: it is
+// nothing but strings and string arrays.
+const projectsLiteral = scriptJs.match(/const PROJECTS = \[([\s\S]*?)\n\];/);
+ok(!!projectsLiteral, 'cannot find the PROJECTS array in script.js');
+const curated = projectsLiteral ? new Function(`return [${projectsLiteral[1]}]`)() : [];
+ok(curated.length > 0, 'PROJECTS is empty');
+
+const names = curated.map(p => p.name);
+ok(names.every(n => typeof n === 'string' && n.length > 0), 'a PROJECTS entry has no name');
+// Duplicate names would collapse into a single card in the GitHub enrichment
+// pass, quietly dropping a project.
+ok(new Set(names).size === names.length, 'PROJECTS contains a duplicate name');
+
+// outcome is optional per card, but a half-filled set reads as an oversight
+// rather than a decision, so require all or none.
+const withOutcome = curated.filter(p => p.outcome).length;
+ok(withOutcome === 0 || withOutcome === curated.length,
+  `outcome is set on ${withOutcome} of ${curated.length} projects; it should be all or none`);
+
+// Read the hero stats as label -> target rather than by position, so adding a
+// stat later does not silently re-point these assertions at the wrong number.
+const heroStats = {};
+for (const [, block] of indexHtml.matchAll(/<div class="hero-stat">([\s\S]*?)<\/div>/g)) {
+  const target = block.match(/data-target="(\d+)"/);
+  const label = block.match(/hero-stat-label">([^<]+)</);
+  if (target && label) heroStats[label[1]] = Number(target[1]);
+}
+
+const skillBoxes = (indexHtml.match(/class="services-box"/g) || []).length;
+ok(heroStats['Skill Areas'] === skillBoxes,
+  `hero claims ${heroStats['Skill Areas']} skill areas but index.html has ${skillBoxes} .services-box cards`);
+ok(heroStats['Projects Built'] === curated.length,
+  `hero claims ${heroStats['Projects Built']} projects but script.js curates ${curated.length}`);
+
+// Certifications are counted straight out of the markup the same way, and the
+// README states the total in prose, so all three have to move together.
+const certCards = (indexHtml.match(/class="cert-card"/g) || []).length;
+ok(heroStats['Certifications'] === certCards,
+  `hero claims ${heroStats['Certifications']} certifications but index.html has ${certCards} .cert-card entries`);
+
+// A README that crams several projects onto one shared bullet cannot be checked
+// against the curated list at all, which is how counter_compass went unmentioned.
+curated.forEach(p => {
+  ok(readme.includes(`**${p.name}**`),
+    `README.md does not name the ${p.name} project that script.js lists`);
+});
+
 console.log(`\n  ${pass} passed, ${fails.length} failed`);
 if (fails.length) {
   console.log('\n  failures:');
