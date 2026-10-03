@@ -78,7 +78,11 @@ async function waitForTarget(port) {
 async function main() {
   const chrome = await findChrome();
   const port = 9333;
-  const userDir = path.join(os.tmpdir(), 'cdp-verify-profile');
+  // Per-run profile, deliberately. Reusing one fixed path let Chrome serve index.html
+  // from its disk cache, so the harness measured a stale page and reported values
+  // that did not move when the CSS changed - a measurement tool that can silently
+  // measure the wrong thing is worse than no tool. Unique per run, removed below.
+  const userDir = path.join(os.tmpdir(), 'cdp-verify-profile-' + process.pid);
   const proc = spawn(chrome, [
     '--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
     `--remote-debugging-port=${port}`, `--user-data-dir=${userDir}`,
@@ -147,6 +151,10 @@ async function main() {
     // not good enough: Chrome serialises `0 1px` as four separate stops, so a plain
     // comma split reports 18 "layers" for a 5-layer stack and would pass a check
     // that is not looking at anything.
+    // A function, not an IIFE with a trailing (), so each caller can re-read the
+    // stack at the moment it needs it. When this was invoked once on load, the
+    // theme loop below measured the dark theme's layers against the light theme's
+    // page background and reported it as a light-theme result.
     const SPLIT = `(() => {
       const s = document.querySelector('.home');
       const cs = getComputedStyle(s);
@@ -155,18 +163,18 @@ async function main() {
       for (const ch of cs.backgroundImage) {
         if (ch === '(') depth++;
         else if (ch === ')') depth--;
-        if (ch === ',' && depth === 0) { layers.push(cur); cur = ''; continue; }
+        if (ch === ',' && depth === 0) { layers.push(cur.trim()); cur = ''; continue; }
         cur += ch;
       }
-      if (cur.trim()) layers.push(cur);
+      if (cur.trim()) layers.push(cur.trim());
       return { layers, css: cs, img: document.querySelector('.home-img img') };
-    })()`;
+    })`;
 
     // The grid + glows are painted as `background` on .home rather than on a
     // pseudo-element, specifically so nothing needs `overflow: hidden`. If that
     // ever changes, this is the check that notices the photo getting sliced.
     const backdrop = await evaluate(`(() => {
-      const { layers, css, img } = ${SPLIT};
+      const { layers, css, img } = ${SPLIT}();
       const h = document.querySelector('.home').getBoundingClientRect();
       const i = img.getBoundingClientRect();
       return {
@@ -198,7 +206,6 @@ async function main() {
     // its own black fill is not read against the section gradient behind it; its
     // label is green on black and the backdrop is irrelevant to it.
     const contrast = await evaluate(`(() => {
-      const { layers } = ${SPLIT};
       const lum = ([r, g, b]) => {
         const f = c => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
         return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
@@ -207,8 +214,9 @@ async function main() {
       const alpha = s => { const p = (s.match(/[\\d.]+/g) || []).map(Number); return p.length > 3 ? p[3] : 1; };
       const ratio = (a, b) => { const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x); return (hi + 0.05) / (lo + 0.05); };
       // Composite the section's stack over the body background, bottom layer first,
-      // the way the browser paints them.
-      const sectionBackdrop = () => {
+      // the way the browser paints them. Takes the stack as an argument so it can
+      // never close over a stack captured before the theme was set.
+      const sectionBackdrop = layers => {
         let acc = parse(getComputedStyle(document.body).backgroundColor);
         for (const layer of layers) {
           const m = layer.match(/rgba?\\(([^)]+)\\)/);
@@ -229,6 +237,8 @@ async function main() {
       // it is the more likely of the two to quietly cost contrast.
       for (const theme of ['dark', 'light']) {
         root.setAttribute('data-theme', theme);
+        // Re-read per theme: the stack is theme-dependent.
+        const { layers } = ${SPLIT}();
         const results = {};
         for (const sel of SELS) {
           const el = document.querySelector(sel);
@@ -237,7 +247,7 @@ async function main() {
           while (node && node !== document.body) {
             const bg = getComputedStyle(node).backgroundColor;
             if (alpha(bg) > 0) { base = parse(bg); break; }
-            if (node === home) { base = sectionBackdrop(); via = 'section gradient stack'; break; }
+            if (node === home) { base = sectionBackdrop(layers); via = 'section gradient stack'; break; }
             node = node.parentElement;
           }
           if (!base) base = parse(getComputedStyle(document.body).backgroundColor);
@@ -255,6 +265,74 @@ async function main() {
         check(ratio >= min, `contrast over the backdrop (${theme}): ${sel.replace('.home-content ', '')}`,
           `${ratio}:1 against its ${via} (needs ${min}:1)`);
       }
+    }
+
+    // The check above only proves the backdrop is *present*. This one proves it is
+    // *visible*, which is a different question and the one that actually matters: the
+    // first version of this backdrop used a 5% grid line and a 10% glow, which
+    // composited to 1.05:1 and 1.13:1 against the background - below the ~1.1:1
+    // where two surfaces are distinguishable at all. It shipped to production fully
+    // formed, correct in the stylesheet, and invisible. Every other check here
+    // passed while it was broken.
+    //
+    // So: composite each feature's own colour over the page background in isolation
+    // and require it to clear a floor. 1.1:1 is roughly where a surface stops being
+    // noticeable; the floors sit above that so there is margin, not on it.
+    const visibility = await evaluate(`(() => {
+      const lum = ([r, g, b]) => {
+        const f = c => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+        return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+      };
+      const parse = s => (s.match(/[\\d.]+/g) || []).slice(0, 3).map(Number);
+      const ratio = (a, b) => { const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x); return (hi + 0.05) / (lo + 0.05); };
+      const over = (fg, bg) => {
+        const m = fg.match(/rgba?\\(([^)]+)\\)/);
+        if (!m) return null;
+        const p = m[1].split(',').map(s => parseFloat(s));
+        const [r, g, b] = p, a = p.length > 3 ? p[3] : 1;
+        if (a === 0) return null;
+        return [r * a + bg[0] * (1 - a), g * a + bg[1] * (1 - a), b * a + bg[2] * (1 - a)];
+      };
+      const root = document.documentElement;
+      const had = root.getAttribute('data-theme');
+      const out = {};
+      for (const theme of ['dark', 'light']) {
+        root.setAttribute('data-theme', theme);
+        // Re-read per theme: the stack is theme-dependent.
+        const { layers } = ${SPLIT}();
+        // Uses the same shared depth-aware splitter as the layer count, so this
+        // cannot measure a different set of layers than the check above it counts.
+        const bg = parse(getComputedStyle(document.body).backgroundColor);
+        const grid = layers.filter(l => l.startsWith('repeating-linear-gradient'));
+        const glows = layers.filter(l => l.startsWith('radial-gradient'));
+        const meas = {};
+        // Both grid axes carry the same tint; one is enough and both must agree.
+        const line = grid.map(l => over(l, bg)).filter(Boolean);
+meas.grid = line.length
+          ? { r: +Math.min(...line.map(c => ratio(c, bg))).toFixed(2), axes: line.length }
+          : null;
+        const centres = glows.map(l => over(l, bg)).filter(Boolean);
+        meas.glow = centres.length
+          ? { r: +Math.min(...centres.map(c => ratio(c, bg))).toFixed(2), count: centres.length }
+          : null;
+        out[theme] = meas;
+      }
+      if (had === null) root.removeAttribute('data-theme'); else root.setAttribute('data-theme', had);
+      return out;
+    })()`);
+    for (const theme of ['dark', 'light']) {
+      // The grid carries the whole effect, so it gets the higher floor.
+      const gridMin = 1.15;      check(visibility[theme].grid && visibility[theme].grid.r >= gridMin,
+        `grid lines are actually visible (${theme})`,
+        visibility[theme].grid
+          ? `${visibility[theme].grid.r}:1 against the page background across ${visibility[theme].grid.axes} axes (needs ${gridMin}:1 to be noticeable at all)`
+          : 'no grid line found in the stack');
+      const glowMin = 1.12;
+      check(visibility[theme].glow && visibility[theme].glow.r >= glowMin,
+        `glows are actually visible (${theme})`,
+        visibility[theme].glow
+          ? `weakest of ${visibility[theme].glow.count} is ${visibility[theme].glow.r}:1 at its centre (needs ${glowMin}:1)`
+          : 'no radial glow found in the stack');
     }
 
     // The backdrop must not be dark-mode-only. Toggle the theme the way the button
@@ -473,6 +551,9 @@ async function main() {
     cdp.close();
   } finally {
     proc.kill();
+    // Best-effort: a leftover profile dir is harmless, but accumulating one per
+    // run would slowly fill the temp directory.
+    try { fs.rmSync(userDir, { recursive: true, force: true }); } catch (e) { /* Windows may still hold it */ }
   }
 
   console.log(failures === 0 ? '\n  all checks passed' : `\n  ${failures} check(s) failed`);
