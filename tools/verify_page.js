@@ -341,6 +341,242 @@ meas.grid = line.length
     check(bothThemes.differs, 'light and dark backdrops are not identical',
       bothThemes.differs ? 'differ' : 'IDENTICAL - the light override is not applying');
 
+    // The same failure as the invisible grid, one level up: --second-bg-color was
+    // the alternating section bands AND the raised surfaces inside them, so the page
+    // could not step away from itself without dragging every card along. The result
+    // was a 1.124:1 seam in dark theme and 1.07:1 in light - nothing - while the
+    // contact fields resolved to the exact colour of the section behind them. Fixed
+    // by splitting the token, so this asserts the split still holds and that each
+    // half is doing its own job.
+    const surfaces = await evaluate(`(() => {
+      const lum = ([r, g, b]) => {
+        const f = c => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+        return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+      };
+      const parse = s => (s.match(/[\\d.]+/g) || []).slice(0, 3).map(Number);
+      const ratio = (a, b) => { const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x); return +((hi + 0.05) / (lo + 0.05)).toFixed(3); };
+      const bgOf = sel => {
+        const el = document.querySelector(sel);
+        return el ? parse(getComputedStyle(el).backgroundColor) : null;
+      };
+      const root = document.documentElement;
+      const had = root.getAttribute('data-theme');
+      const out = {};
+      for (const theme of ['dark', 'light']) {
+        root.setAttribute('data-theme', theme);
+        const page = parse(getComputedStyle(document.body).backgroundColor);
+        // Probed by role, not by a list that can rot: these are the sections that
+        // are *meant* to be bands. An earlier version hardcoded .about here, which
+        // passed until .about was flipped to the page colour to break up a run of
+        // bands - at which point it correctly reported 1:1 against itself. The
+        // alternation itself is asserted by the boundary walk below.
+        const bands = ['.education', '.certifications', '.hero-stats', '.footer'].map(bgOf);
+        const card = bgOf('.testimonial-card');
+        const field = bgOf('.contact form textarea');
+        out[theme] = {
+          band: +Math.min(...bands.filter(Boolean).map(b => ratio(b, page))).toFixed(3),
+          bandSpread: bands.filter(Boolean).map(b => ratio(b, page)),
+          cardOnPage: card ? ratio(card, page) : null,
+          fieldOnBand: field ? ratio(field, bgOf('.contact')) : null,
+        };
+      }
+      if (had === null) root.removeAttribute('data-theme'); else root.setAttribute('data-theme', had);
+      return out;
+    })()`);
+    // A band wants to read as a band without becoming a slab, so this is a floor
+    // AND a ceiling. The floor is the part that matters: the old shared token sat
+    // at 1.124:1 dark and 1.07:1 light, which is why the seams were invisible.
+    const BAND_MIN = 1.15, BAND_MAX = 1.35;
+    for (const theme of ['dark', 'light']) {
+      const s = surfaces[theme];
+      check(s.band >= BAND_MIN && s.band <= BAND_MAX,
+        `section seams are visible but not slabs (${theme})`,
+        `weakest band ${s.band}:1 vs page, across ${s.bandSpread.join(', ')}:1 (needs ${BAND_MIN}-${BAND_MAX}:1; was 1.124 dark, 1.07 light)`);
+      // A raised surface has to clear whichever it lands on. This one used to be
+      // exactly the colour of the section behind it.
+      check(s.fieldOnBand !== null && s.fieldOnBand >= 1.05,
+        `form fields are a visible surface (${theme})`,
+        s.fieldOnBand === null ? 'no textarea found'
+          : `${s.fieldOnBand}:1 against the surface behind them (needs 1.05:1; was 1.0 - identical)`);
+      check(s.cardOnPage !== null && s.cardOnPage >= 1.05,
+        `cards lift off the page (${theme})`,
+        `${s.cardOnPage}:1 against the page (needs 1.05:1)`);
+    }
+
+    // Giving the bands a visible step was not enough on its own: the page still
+    // had three joins where two bands sat back to back - stats/about,
+    // about/education and blog/contact - so those seams stayed invisible while
+    // every per-section assertion above passed. A palette fix does not make a
+    // page alternate; the assignment has to. So walk the real DOM order and
+    // compare neighbours instead of trusting any one section's colour.
+    const joins = await evaluate(`(() => {
+      const lum = ([r, g, b]) => {
+        const f = c => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+        return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+      };
+      const parse = s => (s.match(/[\\d.]+/g) || []).slice(0, 3).map(Number);
+      const ratio = (a, b) => { const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x); return +((hi + 0.05) / (lo + 0.05)).toFixed(3); };
+      // A transparent background means "whatever is behind me": the hero paints a
+      // grid over the page, so reading its own colour would compare nothing.
+      const effective = el => {
+        for (let n = el; n && n !== document.documentElement; n = n.parentElement) {
+          const c = getComputedStyle(n).backgroundColor;
+          const m = c.match(/[\\d.]+/g) || [];
+          if (m.length >= 3 && (m.length < 4 || parseFloat(m[3]) > 0)) return parse(c);
+        }
+        return parse(getComputedStyle(document.body).backgroundColor);
+      };
+      const flow = [...document.querySelectorAll('#main > section, #main > div, footer.footer')];
+      const root = document.documentElement;
+      const had = root.getAttribute('data-theme');
+      const out = {};
+      for (const theme of ['dark', 'light']) {
+        root.setAttribute('data-theme', theme);
+        const rows = flow.map(el => ({ name: el.id || el.className.split(' ')[0], c: effective(el) }));
+        out[theme] = rows.slice(1).map((r, i) => ({
+          a: rows[i].name, b: r.name, r: ratio(rows[i].c, r.c),
+        }));
+      }
+      if (had === null) root.removeAttribute('data-theme'); else root.setAttribute('data-theme', had);
+      return out;
+    })()`);
+    // 1.0 would mean the two sections resolved to the same colour, which is the
+    // bug; the seams in play measure 1.17-1.19, so this only has to clear "equal".
+    const JOIN_MIN = 1.05;
+    for (const theme of ['dark', 'light']) {
+      const dead = joins[theme].filter(j => j.r < JOIN_MIN);
+      check(dead.length === 0, `every section boundary is visible (${theme})`,
+        dead.length
+          ? dead.map(j => `${j.a} -> ${j.b} at ${j.r}:1`).join('; ')
+          : `${joins[theme].length} boundaries, weakest ${Math.min(...joins[theme].map(j => j.r))}:1 (needs ${JOIN_MIN}:1; three joins were 1.0)`);
+    }
+
+    console.log('\n=== header / nav ===');
+    // The header was 119px at 1920 - 38.4px of padding above and below a 37px logo,
+    // on a fixed bar that never scrolls away - and at 1280 the logo wrapped to a
+    // second line and took it to 150.8px. Neither is visible in the CSS text: both
+    // only show up as a measured height, which is why these are numbers.
+    const barAt = async (w, h, mobile) => {
+      await cdp.send('Emulation.setDeviceMetricsOverride',
+        { width: w, height: h, deviceScaleFactor: 1, mobile: !!mobile });
+      await cdp.send('Page.navigate', { url: PAGE });
+      await sleep(3000);
+      return evaluate(`(() => {
+        const hd = document.querySelector('.header');
+        const cs = getComputedStyle(hd);
+        const logo = document.querySelector('.logo');
+        const lr = logo.getBoundingClientRect();
+        const lfs = parseFloat(getComputedStyle(logo).fontSize);
+        const links = [...document.querySelectorAll('.navbar a')];
+        const last = links[links.length - 1].getBoundingClientRect();
+        const tog = document.getElementById('theme-toggle').getBoundingClientRect();
+        const icon = document.getElementById('menu-icon').getBoundingClientRect();
+        const hr = hd.getBoundingClientRect();
+        // The bar's own content box, not the viewport. Everything inside it is
+        // meant to align to these two edges, and the viewport edge is the wrong
+        // reference as soon as the max-width container is narrower than the screen.
+        const contentL = hr.left + parseFloat(cs.paddingLeft);
+        const contentR = hr.right - parseFloat(cs.paddingRight);
+        const nr = document.querySelector('.navbar').getBoundingClientRect();
+        return {
+          h: +hr.height.toFixed(1),
+          edge: parseFloat(cs.borderBottomWidth),
+          // A wrapped two-line logo is ~3x its own line box; a single line is ~1.5x
+          // because of the font's ascent+descent. Measured 37px vs 74px for the same
+          // 24.96px type, so this threshold separates them with room to spare.
+          logoLines: +(lr.height / lfs).toFixed(2),
+          // Distance from the last nav link's right edge to the controls' left edge.
+          // Negative means they overlap.
+          clearance: +(tog.left - last.right).toFixed(1),
+          // Measured from the theme toggle, not the hamburger: the hamburger is
+          // display:none above 1150px, so its rect is all zeroes and reading the
+          // inset from it reports the toggle as being a whole viewport away.
+          vw: innerWidth,
+          navCentre: +((nr.left + nr.right) / 2).toFixed(1),
+          contentL: +contentL.toFixed(1),
+          contentR: +contentR.toFixed(1),
+          contentW: +(contentR - contentL).toFixed(1),
+          logoOffLeft: +(lr.left - contentL).toFixed(1),
+          toggleOffRight: +(contentR - tog.right).toFixed(1),
+          navShown: getComputedStyle(document.querySelector('.navbar')).display !== 'none',
+          overflow: +(document.documentElement.scrollWidth - document.documentElement.clientWidth).toFixed(1),
+        };
+      })()`);
+    };
+    const barWide = await barAt(1920, 1080, false);
+    check(barWide.h <= 80, 'the header is not a slab', `${barWide.h}px tall (was 119px)`);
+    check(barWide.h >= 55 && barWide.h <= 66, 'the header height is in the 60-65px target',
+      `${barWide.h}px at 1920 (padding carries the height; the toggle keeps its own 4.4rem)`);
+    check(barWide.logoLines < 2, 'the logo does not wrap to two lines',
+      `${barWide.logoLines}x its font size per line`);
+    check(barWide.clearance >= 0, 'the nav does not collide with the controls',
+      `${barWide.clearance}px between the last link and the toggle`);
+    // With space-between and the toggle ahead of the nav in the markup, the toggle
+    // measured 899px from the right edge - dead centre of a 1920px bar. Alignment is
+    // asserted against the bar's content box, not the viewport, because the
+    // max-width container is narrower than a 1920px screen.
+    check(barWide.toggleOffRight <= 40, 'the toggle sits on the container right edge',
+      `${barWide.toggleOffRight}px inside it (was 899px from the viewport edge - centred)`);
+    check(Math.abs(barWide.logoOffLeft) <= 1, 'the logo sits on the container left edge',
+      `${barWide.logoOffLeft}px out from it`);
+    check(barWide.contentW <= 1441, 'one max-width container holds the whole bar',
+      `${barWide.contentW}px of content at 1920 (capped at 1440, so 240px gutters)`);
+    // The requirement is a centred nav, which flexbox cannot express: margin-left:auto
+    // only pushes an item against an edge. The grid's 1fr auto 1fr does, and this is
+    // what proves the middle column is really the middle rather than approximately so.
+    //
+    // Centred on the *content box*, not on innerWidth. This page has a 15px
+    // scrollbar, so the layout viewport the fixed bar actually spans is 1905px at a
+    // nominal 1920 - measuring against innerWidth/2 = 960 reports the nav at 952.5px
+    // as "7.5px off centre" when it is exactly centred in the bar it lives in.
+    const boxCentre = (barWide.contentL + barWide.contentR) / 2;
+    check(Math.abs(barWide.navCentre - boxCentre) <= 2, 'the nav is centred in the bar',
+      `nav centre ${barWide.navCentre}px vs bar centre ${boxCentre}px ` +
+      `(bar spans ${barWide.contentL}-${barWide.contentR}, ${barWide.vw}px viewport less a 15px scrollbar)`);
+    check(barWide.edge >= 1, 'the header has a defined bottom edge',
+      `${barWide.edge}px border (was none - content just stopped at an arbitrary line)`);
+    check(barWide.overflow <= 0.5, 'the header does not cause horizontal overflow',
+      `scrollWidth exceeds the viewport by ${barWide.overflow}px`);
+
+    const barMid = await barAt(1280, 800, false);
+    check(barMid.h <= 80 && barMid.logoLines < 2, 'the header stays thin at 1280px',
+      `${barMid.h}px, logo ${barMid.logoLines}x (was 150.8px with a wrapped logo)`);
+
+    const barPhone = await barAt(375, 812, true);
+    check(barPhone.h <= 56, 'the header is thin on a phone',
+      `${barPhone.h}px tall (was 95.4px, stacked vertically by a column flex-direction)`);
+    check(!barPhone.navShown, 'the nav collapses on a phone',
+      `navbar display ${barPhone.navShown ? 'shown' : 'none'} at 375px`);
+    check(barPhone.overflow <= 0.5, 'no horizontal overflow at 375px',
+      `scrollWidth exceeds the viewport by ${barPhone.overflow}px`);
+
+    // The logo glow is a permanent animation in the always-visible header. The first
+    // reduced-motion block sits mid-stylesheet while the light theme restates the
+    // same animation further down at equal specificity, so a single early rule
+    // covers dark theme only and light theme keeps pulsing forever. Assert both.
+    await cdp.send('Emulation.setEmulatedMedia',
+      { media: 'screen', features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+    const logoStill = await evaluate(`(() => {
+      const root = document.documentElement;
+      const had = root.getAttribute('data-theme');
+      const read = () => getComputedStyle(document.querySelector('.logo span')).animationName;
+      root.setAttribute('data-theme', 'dark');
+      const dark = read();
+      root.setAttribute('data-theme', 'light');
+      const light = read();
+      if (had === null) root.removeAttribute('data-theme'); else root.setAttribute('data-theme', had);
+      return { dark, light };
+    })()`);
+    check(logoStill.dark === 'none' && logoStill.light === 'none',
+      'the logo glow stops under prefers-reduced-motion in both themes',
+      `dark ${logoStill.dark}, light ${logoStill.light} (light restates it later at equal specificity)`);
+    await cdp.send('Emulation.setEmulatedMedia', { media: '', features: [] });
+    // barAt leaves the viewport wherever it last measured, and the hero photo suite
+    // below assumes the 1280x900 window the harness launched with - it inherited a
+    // 375px phone viewport here and measured the photo's 28rem floor, then failed
+    // its own "not oversized" check at 48% of the screen. Put it back.
+    await cdp.send('Emulation.clearDeviceMetricsOverride');
+
     console.log('\n=== hero photo ===');
     // The photo was a circle only at the one size the base rule was written for.
     // `width` was overridden at every breakpoint but `height` never was, so below

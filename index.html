@@ -679,7 +679,22 @@ font-family: "Poppins" , sans-serif;
 
 :root {
     --bg-color: #121212; /* Dark grey */
-    --second-bg-color: #1e1e1e; /* Slightly lighter dark grey */
+    /* Three surfaces, not two, and the split is load-bearing.
+     *
+     * `--second-bg-color` used to do double duty: the alternating section bands
+     * AND the raised surfaces inside them (cards, code, blockquote, inputs). One
+     * value cannot serve both, because a band wants to differ from the page while
+     * a card wants to differ from the band it sits on. Sharing the token meant the
+     * step from page to band was 1.124:1 - and 1.07:1 in light theme, which is
+     * nothing - so the section seams were invisible, while `.cert-card` inside
+     * `.certifications` resolved to the same colour as the section behind it and
+     * had no surface at all. Splitting the token fixes both at once.
+     *
+     * #232323 against #121212 is 1.20:1: visible as a band, quiet enough not to
+     * read as a slab. #2a2a2a then clears the band by 1.10:1 and the page by
+     * 1.22:1, so a card lifts off whichever it lands on. */
+    --band-bg-color: #232323; /* Alternating section band; 1.20:1 on --bg-color */
+    --second-bg-color: #2a2a2a; /* Raised surfaces; 1.22:1 on --bg-color */
     --text-color: #e0e0e0; /* Light grey */
     --main-color: #1bb30e; /* Green */
     --accent-color: #03dac6; /* Teal */
@@ -708,12 +723,33 @@ position: fixed;
 top: 0; 
 left: 0; 
 width: 100%; 
-padding: 4rem 8% 4rem; 
-background: rgba(0, 0, 0, 0.3); 
-backdrop-filter: blur(10px); 
-display: flex; 
-justify-content: space-between; 
-align-items: center; 
+/* 1rem, down from the 1.4rem this measured at: the tallest thing in the bar is
+ * the theme toggle at 4.4rem (42.2px), not the logo, so 1.4rem put the header at
+ * 70.1px and 1rem brings it to ~61px. The toggle keeps its own size - the height
+ * comes out of the padding, which is where it belongs. */
+padding: 1rem max(4%, calc((100% - 1440px) / 2)); 
+/* One inline padding for the whole bar, expressed as a max() so the content
+ * stops widening at 1440px and centres from there up rather than drifting to the
+ * viewport edge on a large monitor. Every zone - logo, nav, toggle - hangs off
+ * this single declaration, so they share an edge by construction instead of by
+ * three rules agreeing. At 1920 that is 240px of gutter, close to the 12% the
+ * page's own sections indent by. */
+background: rgba(18, 18, 18, 0.72); 
+backdrop-filter: blur(14px);
+border-bottom: 1px solid rgba(27, 179, 14, 0.18);
+box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+/* Grid rather than flex, because "logo left, nav centred, toggle right" is not a
+ * flexbox arrangement - margin-left:auto can only push the nav against an edge,
+ * not centre it on the viewport. 1fr auto 1fr puts the nav in the middle column
+ * and gives the two outer zones equal width, so the centre is the real centre
+ * whatever the logo's text length. The hamburger is display:none above 1150px
+ * and so takes no cell; the theme toggle needs justify-self: end or it stretches
+ * to fill its whole 1fr column. Below 1150px this reverts to flex, where the nav
+ * is out of flow and the toggle's margin-left: auto does the pinning. */
+display: grid;
+grid-template-columns: 1fr auto 1fr;
+align-items: center;
+gap: 1.2rem;
 z-index: 5;
 }
 
@@ -724,10 +760,18 @@ z-index: 5;
     cursor: pointer;
     transition: all 0.3s ease;
     text-shadow: 2px 2px 4px rgba(116, 28, 76, 0.5); 
+    /* Without this the logo wraps to two lines rather than shrinking or
+     * overflowing, and because the header is fixed and centred on its tallest
+     * child, that pushed the whole bar from 119px to 150.8px at 1280. */
+    white-space: nowrap;
 }
 
 .logo:hover {
-    transform: scale(1.1);
+    /* Was scale(1.1). In a fixed bar that scales a layout box, so it shoved its
+     * neighbours aside on hover and the whole header re-flowed; with the logo now
+     * nowrap it is wide enough that a 10% grow would reach the nav. A lift is a
+     * compositor-only transform and moves nothing. */
+    transform: translateY(-1px);
     color: var(--main-color); 
 }
 
@@ -746,18 +790,39 @@ z-index: 5;
     }
   }
 
+/* Flex with a single gap rather than a margin on every link: margin-left: 1.5rem
+ * indented the first item too, and ten links meant ten chances to be off. gap
+ * spends 9 intervals instead of 10 and puts the space where it belongs - between
+ * the links, not before the first one.
+ *
+ * margin-left:auto is gone: it belongs to the header's grid now, and leaving it
+ * here would push the nav against the edge of its middle column and undo the
+ * centring. */
+.navbar{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+}
 .navbar a{
-    font-size: 1.35rem;
+    font-size: 1.25rem;
     color: var(--text-color);
-    margin-left: 1.5rem;
     font-weight: 500;
-    transition: 0.3s ease;
-    border-bottom: 3px solid transparent;
+    /* Named properties, not the shorthand `0.3s ease` - that resolves to
+     * transition-property: all, which also animates layout properties nobody
+     * asked to move. Two named properties, 0.25s, is the whole hover. */
+    transition: color 0.25s ease, border-color 0.25s ease;
+    /* 2px to match the accent borders elsewhere on the page, and 3px to 4px of
+     * padding so the indicator sits under the text as a rule instead of touching
+     * the descenders. The transparent border is what reserves the space, so the
+     * bar does not jump when a link becomes active. */
+    border-bottom: 2px solid transparent;
+    padding-bottom: 0.4rem;
 }
 .navbar a:hover,
 .navbar a.active{
     color: var(--main-color);
-    border-bottom: 3px solid var(--main-color);
+    border-bottom-color: var(--main-color);
 }
 #menu-icon{
     font-size: 3.6rem;
@@ -1143,7 +1208,7 @@ span{
 }
 .education{
     padding: 100px 15px;
-    background: var(--second-bg-color);
+    background: var(--band-bg-color);
 }
 .education h2{
     margin-bottom: 5rem;
@@ -1254,7 +1319,7 @@ top: 10px;
     font-weight: 600;
 }
 .projects{
-    background: var(--second-bg-color);
+    background: var(--band-bg-color);
 }
 .projects h2{
     margin-bottom: 3rem;
@@ -1519,7 +1584,7 @@ top: 10px;
 }
 /* Technical Blog */
 .blog{
-    background: var(--second-bg-color);
+    background: var(--band-bg-color);
 }
 .blog h2{
     margin-bottom: 3rem;
@@ -1843,7 +1908,7 @@ top: 10px;
 }
 
 .contact{
-    background-color: var(--second-bg-color);
+    background-color: var(--bg-color);
 }
   
 .contact h2{
@@ -1884,7 +1949,7 @@ margin-top: 2rem;
     bottom: 0;
     width: 100%;
     padding: 40px 0;
-    background-color: var(--bg-color);
+    background-color: var(--band-bg-color);
 }
 .footer .social{
     text-align: center;
@@ -1944,6 +2009,12 @@ border-bottom: 3px solid var(--main-color);
 
 @media(max-width:1150px){
     #menu-icon{display:block;}
+    /* Back to flex once the nav leaves the flow. A 1fr auto 1fr grid has no
+     * meaningful centre column here - only the logo, the toggle and the hamburger
+     * remain, and it would strand the toggle in the middle of a bar that is now
+     * two controls wide. In flex the toggle's margin-left: auto pins the pair to
+     * the right edge, which is the same job it does on the grid's outer column. */
+    .header{ display: flex; }
     .navbar{
         position:absolute;top:100%;right:0;width:50%;padding:1rem 3%;
         background:rgba(0,0,0,.8);backdrop-filter:blur(20px);
@@ -1951,6 +2022,14 @@ border-bottom: 3px solid var(--main-color);
         border-bottom:2px solid var(--main-color);display:none;flex-direction:column;
     }
     .navbar.active{display:flex;}
+    /* The nav becomes a dropdown from here down, so it can no longer be the thing
+     * that pins the right-hand group to the edge: display:none removes it from the
+     * flow and takes margin-left: auto with it, which would leave the toggle and
+     * the hamburger stranded beside the logo. The toggle inherits the job.
+     * gap goes to 0 because the links carry margin: 1rem 0 in this layout and
+     * would otherwise sit 2.25rem apart. */
+    .navbar{ margin-left: 0; gap: 0; }
+    #theme-toggle{ margin-left: auto; }
     .navbar a{display:block;font-size:2rem;margin:1rem 0;color:#fff;}
 }
 {
@@ -2101,7 +2180,7 @@ padding-left:37px;
         font-size: 50%;
     }
     .header {
-        padding: 2rem 3%;
+        padding: 1.2rem 3%;
     }
     .navbar {
         width: 100%;
@@ -2134,7 +2213,7 @@ padding-left:37px;
         font-size: 45%;
     }
     .header {
-        padding: 1.5rem 3%;
+        padding: 1rem 3%;
     }
     .home-content h1 {
         font-size: 5rem;
@@ -2158,9 +2237,14 @@ padding-left:37px;
     html {
         font-size: 40%;
     }
+    /* Was flex-direction: column, which stacked the logo, the theme toggle and
+     * the hamburger vertically - a 105px-tall bar on a phone, and the tallest
+     * thing on the page after the hero. The controls belong on one row at the
+     * right edge, which is what the toggle's margin-left: auto above arranges.
+     * align-items: flex-start is likewise worse than centre for a bar this thin. */
     .header {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
     }
     .logo {
         font-size: 2.5rem;
@@ -2210,7 +2294,7 @@ padding-left:37px;
         font-size: 35%;
     }
     .header {
-        padding: 1rem 2%;
+        padding: 0.85rem 2%;
     }
     .home {
         margin: 2rem 1rem;
@@ -2248,7 +2332,7 @@ padding-left:37px;
 /* About */
 .about{
     padding: 100px 9%;
-    background: var(--second-bg-color);
+    background: var(--bg-color);
 }
 .about h2{
     text-align: center;
@@ -2325,7 +2409,7 @@ padding-left:37px;
     .about-lead{ font-size: 1.5rem; }
 }
 .certifications{
-    background: var(--second-bg-color);
+    background: var(--band-bg-color);
 }
 .certifications h2{
     margin-bottom: 5rem;
@@ -2726,7 +2810,14 @@ section{
     background: transparent;
     color: var(--main-color);
     font-size: 1.9rem;
-    margin-left: auto;
+    /* Grid's outer column is 1fr, and a grid item stretches by default - without
+     * justify-self: end the button would span the whole right third of the bar.
+     *
+     * margin-left: auto is deliberately NOT set here. It was the flex-layout way of
+     * pinning this button right, and it is still what the <=1150px fallback uses -
+     * but inside the grid it shifted the middle column's tracks by 7.5px and the
+     * nav measured 952.5px against a 960px centre. justify-self replaces it here. */
+    justify-self: end;
     margin-right: 1.5rem;
     cursor: pointer;
     display: inline-flex;
@@ -2746,7 +2837,7 @@ section{
     justify-content: center;
     gap: 2.5rem 6rem;
     padding: 5rem 12%;
-    background: var(--second-bg-color);
+    background: var(--band-bg-color);
     border-top: 2px solid var(--main-color);
     border-bottom: 2px solid var(--main-color);
     margin: 0;
@@ -2783,6 +2874,12 @@ section{
 /* Light theme overrides */
 [data-theme="light"]{
     --bg-color: #f6f7f9;
+    /* See the :root note: the band is its own token so it can differ from the
+     * page, and the card surface can differ from the band. Here the card is
+     * white, so only the band needs a value - #e4e6ea is 1.17:1 on #f6f7f9 (the
+     * dark theme's 1.20:1, nudged down because the light page is already close to
+     * white) and a white card clears it by 1.25:1. */
+    --band-bg-color: #e4e6ea;
     --second-bg-color: #ffffff;
     --text-color: #17181c;
     --main-color: #166534;
@@ -2805,7 +2902,16 @@ section{
         repeating-linear-gradient(0deg, rgba(22, 101, 52, 0.17) 0 1px, transparent 1px 4rem),
         repeating-linear-gradient(90deg, rgba(22, 101, 52, 0.17) 0 1px, transparent 1px 4rem);
 }
-[data-theme="light"] .header{ background: rgba(255, 255, 255, 0.85); }
+[data-theme="light"] .header{
+    /* Was rgba(255,255,255,0.85) against the dark bar's rgba(0,0,0,0.3) - two
+     * different weights of scrim for the same component. The hairline is the same
+     * accent at a lower alpha because the dark theme's 0.18 all but vanishes on
+     * near-white, and the shadow has to be a hair lighter or it reads as a smudge
+     * under a white bar. */
+    background: rgba(255, 255, 255, 0.82);
+    border-bottom-color: rgba(22, 101, 52, 0.14);
+    box-shadow: 0 8px 24px rgba(22, 101, 52, 0.08);
+}
 [data-theme="light"] .timeline-school{ color: var(--main-color); }
 [data-theme="light"] .timeline-date,
 /* .timeline-content h3 was missing from this list, leaving every education
@@ -2862,8 +2968,13 @@ section{
     0%, 100%{ text-shadow: 0 0 12px rgba(22, 101, 52, 0); }
     50%{ text-shadow: 0 0 18px rgba(22, 101, 52, 0.35); }
 }
+/* The 4px gap ring has to be the colour of the surface the dot is sitting on, or
+ * it draws a halo of the wrong shade around it. The education timeline lives in
+ * a band, not on a card, so this follows --band-bg-color - it was
+ * --second-bg-color, which was correct only while sections and cards shared one
+ * token. */
 [data-theme="light"] .timeline-dot{
-    box-shadow: 0 0 0 4px var(--second-bg-color), 0 0 0 6px rgba(22, 101, 52, 0.3);
+    box-shadow: 0 0 0 4px var(--band-bg-color), 0 0 0 6px rgba(22, 101, 52, 0.3);
 }
 /* Light: the photo's ring and halo. The dark theme's rgba(27,179,14,...) is a
  * saturated green on near-black, but on #f6f7f9 it reads as a smudge rather
@@ -3143,6 +3254,30 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
   .home-content h1 { font-size: 4.5rem; }
   .home-content h3 { font-size: 2rem; }
 }
+
+/* Second reduced-motion block, deliberately last.
+ *
+ * The first one sits mid-stylesheet, but the light theme restates the logo glow
+ * further down as `[data-theme="light"] .logo span { animation: glow-light ... }`
+ * at equal specificity - and a media query adds none. Later wins, so light theme
+ * would have kept pulsing forever for someone who asked for reduced motion, and
+ * the opt-out in the earlier block would have silently covered only dark theme.
+ * Placing this after the theme overrides fixes both themes with one rule. */
+@media (prefers-reduced-motion: reduce) {
+    /* The glow is decoration on top of a word that is already legible, so holding
+     * a fixed shadow loses nothing that the name was carrying. */
+    .logo,
+    .logo span {
+        animation: none;
+    }
+    .logo span {
+        text-shadow: 0 0 16px rgba(27, 179, 14, 0.4);
+    }
+    [data-theme="light"] .logo span {
+        animation: none;
+        text-shadow: 0 0 14px rgba(22, 101, 52, 0.28);
+    }
+}
 </style>
     <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>
@@ -3157,8 +3292,6 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
         <a href="#home" class="logo">Glenn Patrick
             <span>Cabansag</span>
         </a>
-        <button id="theme-toggle" aria-label="Toggle light and dark mode" title="Toggle light/dark mode"><i class="fa-solid fa-moon"></i></button>
-        <i class="fa-solid fa-bars" id="menu-icon"></i>
         <nav class="navbar">
             <a href="#home" class="active">Home</a>
             <a href="#about">About</a>
@@ -3171,6 +3304,11 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <a href="#blog">Blog</a>
             <a href="#contact">Contact</a>
         </nav>
+        <!-- After the nav, not before it. As siblings of a space-between header the
+             toggle landed in the middle of the bar; here the nav's margin-left: auto
+             pushes this group to the right edge, where a theme switch belongs. -->
+        <button id="theme-toggle" aria-label="Toggle light and dark mode" title="Toggle light/dark mode"><i class="fa-solid fa-moon"></i></button>
+        <i class="fa-solid fa-bars" id="menu-icon" aria-hidden="true"></i>
 </header>
 
 <main id="main">
