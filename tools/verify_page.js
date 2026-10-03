@@ -142,6 +142,139 @@ async function main() {
       'every card has an outcome line',
       await evaluate('document.querySelectorAll(".project-outcome").length + " rendered"'));
 
+    console.log('\n=== hero backdrop ===');
+    // Split a computed background stack into real layers. Splitting on commas is
+    // not good enough: Chrome serialises `0 1px` as four separate stops, so a plain
+    // comma split reports 18 "layers" for a 5-layer stack and would pass a check
+    // that is not looking at anything.
+    const SPLIT = `(() => {
+      const s = document.querySelector('.home');
+      const cs = getComputedStyle(s);
+      const layers = [];
+      let depth = 0, cur = '';
+      for (const ch of cs.backgroundImage) {
+        if (ch === '(') depth++;
+        else if (ch === ')') depth--;
+        if (ch === ',' && depth === 0) { layers.push(cur); cur = ''; continue; }
+        cur += ch;
+      }
+      if (cur.trim()) layers.push(cur);
+      return { layers, css: cs, img: document.querySelector('.home-img img') };
+    })()`;
+
+    // The grid + glows are painted as `background` on .home rather than on a
+    // pseudo-element, specifically so nothing needs `overflow: hidden`. If that
+    // ever changes, this is the check that notices the photo getting sliced.
+    const backdrop = await evaluate(`(() => {
+      const { layers, css, img } = ${SPLIT};
+      const h = document.querySelector('.home').getBoundingClientRect();
+      const i = img.getBoundingClientRect();
+      return {
+        image: css.backgroundImage,
+        layers: layers.length,
+        overflow: css.overflow,
+        photoBottomPastSection: +(i.bottom - h.bottom).toFixed(1),
+        photoVisible: i.width > 0 && i.height > 0,
+      };
+    })()`);
+    check(backdrop.image !== 'none', '.home paints a backdrop', backdrop.layers + ' layers');
+    check(backdrop.layers === 5, 'all five declared layers survived parsing',
+      backdrop.layers + ' layers (2 glows, 1 fade, 2 grid axes)');
+    check(backdrop.overflow === 'visible',
+      '.home does not clip (overflow stays visible, so the photo cannot be sliced)',
+      'overflow: ' + backdrop.overflow);
+    check(backdrop.photoVisible, 'the hero photo still has a box',
+      `${backdrop.photoBottomPastSection}px past section bottom`);
+
+    // The backdrop sits behind body copy, so the contrast of the bio paragraph has
+    // to be measured rather than assumed. WCAG relative luminance, composited here
+    // because the painted backdrop is a gradient stack and cannot be read off a
+    // single computed colour. Each layer contributes its first colour stop, so this
+    // treats a gradient as flat: an approximation, but a close one, and the margins
+    // reported are wide enough that it cannot flip a pass into a fail.
+    //
+    // Text is measured against the surface it is actually painted on, so this walks
+    // up from the element and stops at the first opaque background. A button with
+    // its own black fill is not read against the section gradient behind it; its
+    // label is green on black and the backdrop is irrelevant to it.
+    const contrast = await evaluate(`(() => {
+      const { layers } = ${SPLIT};
+      const lum = ([r, g, b]) => {
+        const f = c => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+        return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+      };
+      const parse = s => (s.match(/[\\d.]+/g) || []).slice(0, 3).map(Number);
+      const alpha = s => { const p = (s.match(/[\\d.]+/g) || []).map(Number); return p.length > 3 ? p[3] : 1; };
+      const ratio = (a, b) => { const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x); return (hi + 0.05) / (lo + 0.05); };
+      // Composite the section's stack over the body background, bottom layer first,
+      // the way the browser paints them.
+      const sectionBackdrop = () => {
+        let acc = parse(getComputedStyle(document.body).backgroundColor);
+        for (const layer of layers) {
+          const m = layer.match(/rgba?\\(([^)]+)\\)/);
+          if (!m) continue;
+          const parts = m[1].split(',').map(s => parseFloat(s));
+          const [r, g, b] = parts, a = parts.length > 3 ? parts[3] : 1;
+          if (a === 0) continue;
+          acc = [r * a + acc[0] * (1 - a), g * a + acc[1] * (1 - a), b * a + acc[2] * (1 - a)];
+        }
+        return acc;
+      };
+      const home = document.querySelector('.home');
+      const SELS = ['.home-content h1', '.home-content p:not(.text-animation)', '.home-content .btn'];
+      const root = document.documentElement;
+      const had = root.getAttribute('data-theme');
+      const out = {};
+      // Measured in both themes. The light backdrop is the subtle one by design, so
+      // it is the more likely of the two to quietly cost contrast.
+      for (const theme of ['dark', 'light']) {
+        root.setAttribute('data-theme', theme);
+        const results = {};
+        for (const sel of SELS) {
+          const el = document.querySelector(sel);
+          if (!el) continue;
+          let node = el, base = null, via = 'own background';
+          while (node && node !== document.body) {
+            const bg = getComputedStyle(node).backgroundColor;
+            if (alpha(bg) > 0) { base = parse(bg); break; }
+            if (node === home) { base = sectionBackdrop(); via = 'section gradient stack'; break; }
+            node = node.parentElement;
+          }
+          if (!base) base = parse(getComputedStyle(document.body).backgroundColor);
+          results[sel] = { r: +ratio(parse(getComputedStyle(el).color), base).toFixed(2), via };
+        }
+        out[theme] = results;
+      }
+      if (had === null) root.removeAttribute('data-theme'); else root.setAttribute('data-theme', had);
+      return out;
+    })()`);
+    for (const [theme, set] of Object.entries(contrast)) {
+      for (const [sel, { r: ratio, via }] of Object.entries(set)) {
+        // 4.5 is the AA threshold for body text; the h1 is large so it needs only 3.
+        const min = sel.includes('h1') ? 3 : 4.5;
+        check(ratio >= min, `contrast over the backdrop (${theme}): ${sel.replace('.home-content ', '')}`,
+          `${ratio}:1 against its ${via} (needs ${min}:1)`);
+      }
+    }
+
+    // The backdrop must not be dark-mode-only. Toggle the theme the way the button
+    // does and confirm the light theme still gets a backdrop of its own.
+    const bothThemes = await evaluate(`(() => {
+      const read = () => getComputedStyle(document.querySelector('.home')).backgroundImage;
+      const root = document.documentElement;
+      const before = read();
+      const had = root.getAttribute('data-theme');
+      root.setAttribute('data-theme', 'light');
+      const light = read();
+      root.setAttribute('data-theme', 'dark');
+      const dark = read();
+      if (had === null) root.removeAttribute('data-theme'); else root.setAttribute('data-theme', had);
+      return { before, light, dark, differs: light !== dark };
+    })()`);
+    check(bothThemes.light !== 'none', 'light theme still has a backdrop');
+    check(bothThemes.differs, 'light and dark backdrops are not identical',
+      bothThemes.differs ? 'differ' : 'IDENTICAL - the light override is not applying');
+
     console.log('\n=== hero count-up (the race) ===');
     // The stats sit below the fold, and the observer is deliberately lazy, so they
     // have to be scrolled into view before the animation is allowed to start.
@@ -295,6 +428,47 @@ async function main() {
     })()`);
     check(/^0 visible, empty-state shown: true$/.test(none),
       'an unmatched query shows the empty state instead of everything', none);
+
+    // A backdrop is easy to make responsive-hostile: gradients sized in rem scale
+    // with the root font-size, which the breakpoints shrink from 60% to 35%, and
+    // `html { overflow-x: hidden }` hides any overflow rather than letting it be
+    // noticed. So measure the hero at phone width instead of trusting it.
+    console.log('\n=== hero at phone width ===');
+    await cdp.send('Emulation.setDeviceMetricsOverride',
+      { width: 375, height: 820, deviceScaleFactor: 2, mobile: true });
+    await cdp.send('Page.navigate', { url: PAGE });
+    await sleep(3000);
+    const narrow = await evaluate(`(() => {
+      const vw = document.documentElement.clientWidth;
+      const home = document.querySelector('.home');
+      const ta = document.querySelector('.text-animation');
+      const img = document.querySelector('.home-img img');
+      const tr = ta.getBoundingClientRect();
+      let worst = null;
+      for (const el of document.querySelectorAll('.home *')) {
+        const r = el.getBoundingClientRect();
+        if (r.width === 0 && r.height === 0) continue;
+        if (!worst || r.right > worst.over) {
+          worst = { over: r.right - vw, tag: el.tagName.toLowerCase() + (el.className ? '.' + String(el.className).split(' ')[0] : '') };
+        }
+      }
+      return {
+        vw,
+        scrollW: document.documentElement.scrollWidth,
+        taglineRight: +tr.right.toFixed(1),
+        taglineClipped: tr.right > vw + 0.5,
+        photoW: +img.getBoundingClientRect().width.toFixed(1),
+        layers: getComputedStyle(home).backgroundImage.split('gradient(').length - 1,
+        worst: worst.over > 0.5 ? worst.tag + ' by ' + worst.over.toFixed(1) + 'px' : 'nothing',
+      };
+    })()`);
+    check(narrow.scrollW <= narrow.vw + 0.5, 'no horizontal overflow at 375px',
+      `scrollWidth ${narrow.scrollW} vs viewport ${narrow.vw}; worst: ${narrow.worst}`);
+    check(!narrow.taglineClipped, 'tagline is not clipped at 375px',
+      'right edge at ' + narrow.taglineRight + 'px');
+    check(narrow.layers === 5, 'backdrop survives the phone breakpoints',
+      narrow.layers + ' layers, photo ' + narrow.photoW + 'px wide');
+    await cdp.send('Emulation.clearDeviceMetricsOverride');
 
     cdp.close();
   } finally {

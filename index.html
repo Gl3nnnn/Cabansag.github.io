@@ -681,7 +681,7 @@ font-family: "Poppins" , sans-serif;
     --bg-color: #121212; /* Dark grey */
     --second-bg-color: #1e1e1e; /* Slightly lighter dark grey */
     --text-color: #e0e0e0; /* Light grey */
-    --main-color: #1bb30e; /* Soft purple */
+    --main-color: #1bb30e; /* Green */
     --accent-color: #03dac6; /* Teal */
     --secondary-accent-color: #cf6679; /* Soft red */
     --muted-color: #9aa0a6; /* Dimmed text for meta/secondary lines */
@@ -775,7 +775,28 @@ section{
     align-items: center;
     justify-content: center;
     gap: 15rem;
-
+    position: relative;
+    /* Hero backdrop: a faint blueprint grid under two soft glows in the site's own
+    * green and teal, faded toward the bottom so the grid does not stop on a hard
+    * line where the section meets the stats band.
+    *
+    * Painted as `background` rather than on a ::before on purpose. A pseudo-element
+    * or absolutely-positioned layer would need `overflow: hidden` to stay inside
+    * the section, and that would clip the photo: .home-img img is
+    * `position: relative; top: 3rem`, so it can already sit lower than the .home
+    * box and would get its bottom sliced off. Backgrounds are bounded by the
+    * element's own box on their own, so containment costs nothing here and nothing
+    * else has to change - no z-index, no stacking context, no pseudo-element.
+    *
+    * Static rather than animated for the same reason the rotator's reduced-motion
+    * swap exists: a large blurred element repainting forever is expensive on a
+    * phone, and there is nothing to disable under prefers-reduced-motion. */
+    background:
+        radial-gradient(58rem 40rem at 78% 26%, rgba(27, 179, 14, 0.10), transparent 62%),
+        radial-gradient(46rem 32rem at 8% 82%, rgba(3, 218, 198, 0.07), transparent 60%),
+        linear-gradient(180deg, transparent 55%, var(--bg-color) 100%),
+        repeating-linear-gradient(0deg, rgba(27, 179, 14, 0.05) 0 1px, transparent 1px 4rem),
+        repeating-linear-gradient(90deg, rgba(27, 179, 14, 0.05) 0 1px, transparent 1px 4rem);
 }
 
 .home-content{
@@ -2685,6 +2706,18 @@ section{
     --accent-color: #115e59;
     --secondary-accent-color: #b03a4e;
     --muted-color: #5f6368;
+}
+/* Hero backdrop, light theme. Alphas come down and the grid is tinted toward the
+* light theme's dark green (#166534): the dark theme's rgba(27,179,14,.05) is a
+* green tint on near-black, but on #f6f7f9 it would be invisible, and the teal
+* glow reads as a smudge rather than a glow. Faded to the light --bg-color. */
+[data-theme="light"] .home{
+    background:
+        radial-gradient(58rem 40rem at 78% 26%, rgba(22, 101, 52, 0.07), transparent 62%),
+        radial-gradient(46rem 32rem at 8% 82%, rgba(17, 94, 89, 0.05), transparent 60%),
+        linear-gradient(180deg, transparent 55%, var(--bg-color) 100%),
+        repeating-linear-gradient(0deg, rgba(22, 101, 52, 0.045) 0 1px, transparent 1px 4rem),
+        repeating-linear-gradient(90deg, rgba(22, 101, 52, 0.045) 0 1px, transparent 1px 4rem);
 }
 [data-theme="light"] .header{ background: rgba(255, 255, 255, 0.85); }
 [data-theme="light"] .timeline-school{ color: var(--main-color); }
