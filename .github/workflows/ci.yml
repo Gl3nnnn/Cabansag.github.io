@@ -1,0 +1,104 @@
+# Every generator in this repo writes a committed file. This runs them and fails
+# if any of them changes anything, so a stale generated file cannot be merged and
+# a generator that has silently stopped parsing cannot pass unnoticed.
+#
+# The failure this most protects against is not style, it is breakage that stays
+# invisible. build_resume.js parsed certification titles with a literal <h4>, and
+# when the cards were retagged to <h3> it parsed zero certifications. Its own count
+# guard caught it, but only because somebody happened to run it by hand.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # No dependencies: every tool here uses only the Node standard library, so
+      # there is no package.json to install and no lockfile to drift.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Evidence and drift suite
+        run: node tests/blog_claims.js
+
+      - name: Per-post structure suite
+        run: node tests/post_structure.js
+
+      - name: Inline CSS and JSON-LD well-formedness
+        run: node tools/check_css.js
+
+      - name: index.html JSON-LD is generated from the page
+        run: node tools/build_jsonld.js --check
+
+      # Everything below regenerates a committed file and then asserts the working
+      # tree is unchanged. That is what makes the generators trustworthy: one that
+      # drifts from its input fails here rather than at the next release.
+      - name: Regenerate the generated blog posts
+        run: |
+          node tools/build_post.js tools/posts/queue-system.js
+          node tools/build_post.js tools/posts/accounting-laravel.js
+          node tools/build_post.js tools/posts/it-support-shift.js
+
+      - name: Regenerate resume.html
+        run: node tools/build_resume.js
+
+      - name: Regenerate index.html JSON-LD
+        run: node tools/build_jsonld.js
+
+      - name: Generated files are up to date
+        run: |
+          if ! git diff --exit-code; then
+            echo
+            echo "::error::A generated file is stale. Run the tools above, commit the"
+            echo "::error::result and push again. Usual causes: an edit to a post spec,"
+            echo "::error::a certification card added or retitled, or a selector in a"
+            echo "::error::generator that no longer matches the markup."
+            exit 1
+          fi
+          echo "generated files match their sources"
+
+      # blog_claims.js checks encoding per file for the files it reads. This covers
+      # every other tracked text file, including ones no suite opens, so a CRLF or a
+      # BOM cannot arrive through a file nobody was looking at. Written in node
+      # rather than grep because comparing raw bytes in shell needs od and quoting
+      # care that varies by shell; node is already a dependency of this workflow and
+      # reads the bytes exactly.
+      - name: No BOM, CRLF or replacement characters anywhere
+        run: |
+          node -e '
+            const fs = require("fs");
+            const { execSync } = require("child_process");
+            const files = execSync("git ls-files", { encoding: "utf8" })
+              .split("\n").filter(Boolean)
+              .filter(f => /\.(html|js|json|md|xml|css|webmanifest|yml|svg|txt)$/.test(f));
+            const fffd = Buffer.from([0xEF, 0xBF, 0xBD]);
+            let bad = 0;
+            for (const f of files) {
+              const b = fs.readFileSync(f);
+              // A binary asset would fail every check below, but the extension
+              // filter above keeps them out; the BOM and CR tests would also be
+              // meaningless on one.
+              if (b[0] === 0xEF && b[1] === 0xBB && b[2] === 0xBF) {
+                console.log("::error::" + f + " starts with a UTF-8 BOM"); bad++;
+              }
+              if (b.includes(0x0D)) {
+                console.log("::error::" + f + " contains CR; the working tree must be LF"); bad++;
+              }
+              if (b.includes(fffd)) {
+                console.log("::error::" + f + " contains U+FFFD, a decoding error already baked in"); bad++;
+              }
+            }
+            console.log("  encoding checked : " + files.length + " files");
+            process.exit(bad ? 1 : 0);
+          '
