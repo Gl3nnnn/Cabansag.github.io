@@ -174,6 +174,32 @@ async function main() {
       settled.map(([k, ok]) => `${k}=${ok ? 'ok' : 'MISMATCH'}`).join(' '));
 
     console.log('\n=== hero sub-headline rotator ===');
+    // The tagline is a <p>, so `.home-content p` applies to it. That rule sets
+    // 1.5rem and outranks `.text-animation`, which is how the running text came to
+    // render at a little over half its intended size without any markup changing.
+    // A size assertion is the only thing that catches that class of regression.
+    const type = await evaluate(`(() => {
+      const el = document.querySelector('.text-animation');
+      const cs = getComputedStyle(el);
+      const body = document.querySelector('.home-content p:not(.text-animation)');
+      return {
+        tag: el.tagName,
+        size: parseFloat(cs.fontSize),
+        weight: cs.fontWeight,
+        declared: parseFloat(cs.fontSize) / parseFloat(getComputedStyle(document.documentElement).fontSize),
+        bodySize: body ? parseFloat(getComputedStyle(body).fontSize) : 0,
+        h1: parseFloat(getComputedStyle(document.querySelector('h1')).fontSize),
+      };
+    })()`);
+    check(type.tag === 'P', 'tagline is a p, not a heading', type.tag);
+    check(Math.abs(type.declared - 3.5) < 0.05, 'tagline renders at its declared 3.5rem',
+      type.size + 'px = ' + type.declared.toFixed(2) + 'rem');
+    check(type.size > type.bodySize * 2, 'tagline is not collapsed to body-copy size',
+      `tagline ${type.size}px vs body ${type.bodySize}px (${(type.size / type.bodySize).toFixed(2)}x)`);
+    check(type.weight === '600', 'tagline keeps its 600 weight', type.weight);
+    check(type.size < type.h1, 'tagline still sits below the h1 in the size hierarchy',
+      `${type.size}px < h1 ${type.h1}px`);
+
     // The visible words are CSS `content` on ::before, so textContent is empty by
     // design. Ask the pseudo-element instead: that is what the reader actually sees.
     const rot = await evaluate(`getComputedStyle(document.querySelector('.ta-rotator'),'::before').animationName`);

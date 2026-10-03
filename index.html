@@ -896,9 +896,27 @@ border-radius: 50%;
     color: black;   
 }
 .text-animation{
-    font-size: 34px;
     font-weight: 600;
     min-width: 280px;
+}
+/* The tagline. This was an h3, so the page opened with a skipped heading level
+ * (h1, then straight to h3) and it is a p now. That tag change quietly cost the
+ * element its typography, because `.home-content p` sets 1.5rem/500/1.8 and
+ * beats `.text-animation` on specificity (0,1,1 against 0,1,0) - so the running
+ * text rendered at 1.5rem, a little over half its intended size, in regular
+ * weight, with loose line spacing. Nothing in the markup changed to show for it.
+ *
+ * So restate what `.home-content h3` used to hand this element, at a specificity
+ * that actually holds. Sizes are in rem because the hero scales with the root
+ * font-size: the h1 above is 7rem, this is 3.5rem, body copy is 1.5rem. The old
+ * `font-size: 34px` on `.text-animation` had been dead for a long time - it lost
+ * to `.home-content h3` even back when the tagline was an h3. */
+.home-content p.text-animation{
+    font-size: 3.5rem;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
 }
 /*
  * The rotating job titles used to live only in CSS `content:`, which made the
