@@ -148,9 +148,9 @@ async function main() {
 
     console.log('\n=== hero backdrop ===');
     // Split a computed background stack into real layers. Splitting on commas is
-    // not good enough: Chrome serialises `0 1px` as four separate stops, so a plain
-    // comma split reports 18 "layers" for a 5-layer stack and would pass a check
-    // that is not looking at anything.
+    // not good enough: Chrome expands `0 1px` into more than one stop, so a plain
+    // comma split reports several times as many "layers" as the stack really has
+    // and would pass a check that is not looking at anything.
     // A function, not an IIFE with a trailing (), so each caller can re-read the
     // stack at the moment it needs it. When this was invoked once on load, the
     // theme loop below measured the dark theme's layers against the light theme's
@@ -170,7 +170,7 @@ async function main() {
       return { layers, css: cs, img: document.querySelector('.home-img img') };
     })`;
 
-    // The grid + glows are painted as `background` on .home rather than on a
+    // The grid + fade are painted as `background` on .home rather than on a
     // pseudo-element, specifically so nothing needs `overflow: hidden`. If that
     // ever changes, this is the check that notices the photo getting sliced.
     const backdrop = await evaluate(`(() => {
@@ -186,8 +186,8 @@ async function main() {
       };
     })()`);
     check(backdrop.image !== 'none', '.home paints a backdrop', backdrop.layers + ' layers');
-    check(backdrop.layers === 5, 'all five declared layers survived parsing',
-      backdrop.layers + ' layers (2 glows, 1 fade, 2 grid axes)');
+    check(backdrop.layers === 3, 'all three declared layers survived parsing',
+      backdrop.layers + ' layers (1 fade, 2 grid axes)');
     check(backdrop.overflow === 'visible',
       '.home does not clip (overflow stays visible, so the photo cannot be sliced)',
       'overflow: ' + backdrop.overflow);
@@ -269,11 +269,10 @@ async function main() {
 
     // The check above only proves the backdrop is *present*. This one proves it is
     // *visible*, which is a different question and the one that actually matters: the
-    // first version of this backdrop used a 5% grid line and a 10% glow, which
-    // composited to 1.05:1 and 1.13:1 against the background - below the ~1.1:1
-    // where two surfaces are distinguishable at all. It shipped to production fully
-    // formed, correct in the stylesheet, and invisible. Every other check here
-    // passed while it was broken.
+    // first version of this backdrop used a 5% grid line, which composited to
+    // 1.06:1 against the background - below the ~1.1:1 where two surfaces are
+    // distinguishable at all. It shipped to production fully formed, correct in the
+    // stylesheet, and invisible. Every other check here passed while it was broken.
     //
     // So: composite each feature's own colour over the page background in isolation
     // and require it to clear a floor. 1.1:1 is roughly where a surface stops being
@@ -304,16 +303,11 @@ async function main() {
         // cannot measure a different set of layers than the check above it counts.
         const bg = parse(getComputedStyle(document.body).backgroundColor);
         const grid = layers.filter(l => l.startsWith('repeating-linear-gradient'));
-        const glows = layers.filter(l => l.startsWith('radial-gradient'));
         const meas = {};
         // Both grid axes carry the same tint; one is enough and both must agree.
         const line = grid.map(l => over(l, bg)).filter(Boolean);
 meas.grid = line.length
           ? { r: +Math.min(...line.map(c => ratio(c, bg))).toFixed(2), axes: line.length }
-          : null;
-        const centres = glows.map(l => over(l, bg)).filter(Boolean);
-        meas.glow = centres.length
-          ? { r: +Math.min(...centres.map(c => ratio(c, bg))).toFixed(2), count: centres.length }
           : null;
         out[theme] = meas;
       }
@@ -321,18 +315,12 @@ meas.grid = line.length
       return out;
     })()`);
     for (const theme of ['dark', 'light']) {
-      // The grid carries the whole effect, so it gets the higher floor.
-      const gridMin = 1.15;      check(visibility[theme].grid && visibility[theme].grid.r >= gridMin,
+      const gridMin = 1.15;
+      check(visibility[theme].grid && visibility[theme].grid.r >= gridMin,
         `grid lines are actually visible (${theme})`,
         visibility[theme].grid
           ? `${visibility[theme].grid.r}:1 against the page background across ${visibility[theme].grid.axes} axes (needs ${gridMin}:1 to be noticeable at all)`
           : 'no grid line found in the stack');
-      const glowMin = 1.12;
-      check(visibility[theme].glow && visibility[theme].glow.r >= glowMin,
-        `glows are actually visible (${theme})`,
-        visibility[theme].glow
-          ? `weakest of ${visibility[theme].glow.count} is ${visibility[theme].glow.r}:1 at its centre (needs ${glowMin}:1)`
-          : 'no radial glow found in the stack');
     }
 
     // The backdrop must not be dark-mode-only. Toggle the theme the way the button
@@ -544,7 +532,7 @@ meas.grid = line.length
       `scrollWidth ${narrow.scrollW} vs viewport ${narrow.vw}; worst: ${narrow.worst}`);
     check(!narrow.taglineClipped, 'tagline is not clipped at 375px',
       'right edge at ' + narrow.taglineRight + 'px');
-    check(narrow.layers === 5, 'backdrop survives the phone breakpoints',
+    check(narrow.layers === 3, 'backdrop survives the phone breakpoints',
       narrow.layers + ' layers, photo ' + narrow.photoW + 'px wide');
     await cdp.send('Emulation.clearDeviceMetricsOverride');
 

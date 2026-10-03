@@ -776,35 +776,31 @@ section{
     justify-content: center;
     gap: 15rem;
     position: relative;
-    /* Hero backdrop: a faint blueprint grid under two soft glows in the site's own
-    * green and teal, faded toward the bottom so the grid does not stop on a hard
-    * line where the section meets the stats band.
-    *
-    * Painted as `background` rather than on a ::before on purpose. A pseudo-element
-    * or absolutely-positioned layer would need `overflow: hidden` to stay inside
-    * the section, and that would clip the photo: .home-img img is
-    * `position: relative; top: 3rem`, so it can already sit lower than the .home
-    * box and would get its bottom sliced off. Backgrounds are bounded by the
-    * element's own box on their own, so containment costs nothing here and nothing
-    * else has to change - no z-index, no stacking context, no pseudo-element.
-    *
-* Static rather than animated for the same reason the rotator's reduced-motion
-     * swap exists: a large blurred element repainting forever is expensive on a
+/* Hero backdrop: a faint blueprint grid under a fade to the page background,
+     * in the site's own green, faded out toward the bottom so the grid does not
+     * stop on a hard line where the section meets the stats band.
+     *
+     * Painted as `background` rather than on a ::before on purpose. A pseudo-element
+     * or absolutely-positioned layer would need `overflow: hidden` to stay inside
+     * the section, and that would clip the photo: .home-img img is
+     * `position: relative; top: 3rem`, so it can already sit lower than the .home
+     * box and would get its bottom sliced off. Backgrounds are bounded by the
+     * element's own box on their own, so containment costs nothing here and nothing
+     * else has to change - no z-index, no stacking context, no pseudo-element.
+     *
+     * Static rather than animated for the same reason the rotator's reduced-motion
+      * swap exists: a large blurred element repainting forever is expensive on a
      * phone, and there is nothing to disable under prefers-reduced-motion.
      *
-     * The alphas are calibrated against the surface they sit on, not chosen by
-     * taste alone. A 5% green line over #121212 composites to rgb(18, 26, 18)
-     * against a rgb(18, 18, 18) background: 8 of 255 on one channel, 1.06:1. That
-     * is below the ~1.1:1 where a surface is noticeable at all, so the first pass
-     * at this was in the DOM, in the stylesheet and in the deployed CSS, and
-     * completely invisible. 17% gives 1.27:1 and the glows land at 1.34:1 and
-     * 1.26:1 at their centres. verify_page.js asserts those floors, so quietly
+     * The alpha is calibrated against the surface it sits on, not chosen by taste
+     * alone. A 5% green line over #121212 composites to rgb(18, 26, 18) against a
+     * rgb(18, 18, 18) background: 8 of 255 on one channel, 1.06:1. That is below
+     * the ~1.1:1 where a surface is noticeable at all, so the first pass at this
+     * was in the DOM, in the stylesheet and in the deployed CSS, and completely
+     * invisible. 17% gives 1.27:1. verify_page.js asserts that floor, so quietly
      * tuning the backdrop back down to nothing now fails the suite. Body copy
-     * over the stronger backdrop measures 5.16:1, clear of the 4.5:1 AA
-     * threshold for body text. */
+     * over it measures well clear of the 4.5:1 AA threshold for body text. */
     background:
-        radial-gradient(58rem 40rem at 78% 26%, rgba(27, 179, 14, 0.20), transparent 62%),
-        radial-gradient(46rem 32rem at 8% 82%, rgba(3, 218, 198, 0.13), transparent 60%),
         linear-gradient(180deg, transparent 55%, var(--bg-color) 100%),
         repeating-linear-gradient(0deg, rgba(27, 179, 14, 0.17) 0 1px, transparent 1px 4rem),
         repeating-linear-gradient(90deg, rgba(27, 179, 14, 0.17) 0 1px, transparent 1px 4rem);
@@ -2718,19 +2714,17 @@ section{
     --secondary-accent-color: #b03a4e;
     --muted-color: #5f6368;
 }
-/* Hero backdrop, light theme. Alphas come down and the grid is tinted toward the
-* light theme's dark green (#166534): the dark theme's rgba(27,179,14,.05) is a
-* green tint on near-black, but on #f6f7f9 it would be invisible, and the teal
- * glow reads as a smudge rather than a glow. Faded to the light --bg-color.
+/* Hero backdrop, light theme. The alpha comes down but the grid is tinted toward the
+ * light theme's dark green (#166534): the dark theme's rgba(27,179,14,.05) is a
+ * green tint on near-black, but on #f6f7f9 it would be invisible. Faded to the light
+ * --bg-color.
  *
-* Dark on a light background needs more alpha, not less, to read as the same
+ * Dark on a light background needs more alpha, not less, to read as the same
      * surface: 4.5% green over #f6f7f9 is 1.02:1, invisible for the same reason the
-     * dark theme's 5% was. At 17% the grid is 1.29:1 and the weaker glow 1.20:1,
-     * close to the dark theme's 1.27:1 and 1.26:1. */
+     * dark theme's 5% was. At 17% the grid is 1.29:1, close to the dark theme's
+     * 1.27:1. */
 [data-theme="light"] .home{
     background:
-        radial-gradient(58rem 40rem at 78% 26%, rgba(22, 101, 52, 0.13), transparent 62%),
-        radial-gradient(46rem 32rem at 8% 82%, rgba(17, 94, 89, 0.12), transparent 60%),
         linear-gradient(180deg, transparent 55%, var(--bg-color) 100%),
         repeating-linear-gradient(0deg, rgba(22, 101, 52, 0.17) 0 1px, transparent 1px 4rem),
         repeating-linear-gradient(90deg, rgba(22, 101, 52, 0.17) 0 1px, transparent 1px 4rem);
