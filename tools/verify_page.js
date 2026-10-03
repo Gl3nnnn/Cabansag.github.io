@@ -341,6 +341,93 @@ meas.grid = line.length
     check(bothThemes.differs, 'light and dark backdrops are not identical',
       bothThemes.differs ? 'differ' : 'IDENTICAL - the light override is not applying');
 
+    console.log('\n=== hero photo ===');
+    // The photo was a circle only at the one size the base rule was written for.
+    // `width` was overridden at every breakpoint but `height` never was, so below
+    // 895px it rendered as a 300x120px ellipse on a 375px phone - and nothing
+    // caught it, because "the image has a box" is true of an ellipse too. These
+    // checks measure the shape rather than the presence.
+    const photo = await evaluate(`(() => {
+      const wrap = document.querySelector('.home-img');
+      const img = wrap.querySelector('img');
+      const cs = getComputedStyle(img);
+      const r = img.getBoundingClientRect(), w = wrap.getBoundingClientRect();
+      const halo = getComputedStyle(wrap, '::after');
+      return {
+        w: +r.width.toFixed(1), h: +r.height.toFixed(1),
+        vw: document.documentElement.clientWidth,
+        top: cs.top,
+        dx: +(((r.left + r.width / 2) - (w.left + w.width / 2))).toFixed(1),
+        objectFit: cs.objectFit,
+        objectPosition: cs.objectPosition,
+        haloContent: halo.content,
+        haloAnim: halo.animationName,
+        floatAnim: getComputedStyle(wrap).animationName,
+        shadow: cs.boxShadow,
+        radius: cs.borderTopLeftRadius,
+      };
+    })()`);
+    check(Math.abs(photo.w - photo.h) <= 1, 'the photo is a circle, not an ellipse',
+      `${photo.w}x${photo.h}px (was 300x120 at 375px wide before aspect-ratio)`);
+    check(photo.w <= photo.vw * 0.3, 'the photo is not oversized',
+      `${photo.w}px = ${Math.round(photo.w / photo.vw * 100)}% of the viewport (was 32vw, 461px at 1440)`);
+    check(photo.top === 'auto' && Math.abs(photo.dx) <= 1,
+      'the photo is centred, not offset by a top hack',
+      `computed top: ${photo.top}, off centre by ${photo.dx}px`);
+    check(photo.objectFit === 'cover', 'the portrait is cropped, not squashed',
+      'object-fit: ' + photo.objectFit + ' at ' + photo.objectPosition);
+    check(photo.haloContent !== 'none' && photo.haloAnim === 'profile-halo',
+      'the halo is present and pulsing',
+      `::after content ${photo.haloContent}, animation ${photo.haloAnim}`);
+    // On the wrapper, not the image: the halo's inset: 0 has to travel with the
+    // photo or the circle would slide around inside a stationary ring.
+    check(photo.floatAnim === 'profile-float', 'the photo floats',
+      'wrapper animation ' + photo.floatAnim);
+    check(photo.radius === '50%', 'the frame is fully round',
+      'border-radius: ' + photo.radius);
+
+    // A permanent animation has to stop for people who asked for that, and the
+    // only way to know the swap works is to ask the browser with the media
+    // feature actually set rather than reading the stylesheet and hoping.
+    await cdp.send('Emulation.setEmulatedMedia',
+      { media: 'screen', features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+    const still = await evaluate(`(() => {
+      const wrap = document.querySelector('.home-img');
+      const halo = getComputedStyle(wrap, '::after');
+      return { anim: halo.animationName, opacity: halo.opacity,
+               float: getComputedStyle(wrap).animationName,
+               rotator: getComputedStyle(document.querySelector('.ta-rotator')).display };
+    })()`);
+    check(still.anim === 'none', 'the pulse stops under prefers-reduced-motion',
+      `animation-name: ${still.anim} at opacity ${still.opacity}`);
+    check(still.float === 'none', 'the float stops under prefers-reduced-motion',
+      'wrapper animation-name: ' + still.float);
+    // Confirms the emulation is real and this check is not passing by accident:
+    // the rotator's swap below is already known to work, so it must flip too.
+    check(still.rotator === 'none', 'the reduced-motion emulation is actually in effect',
+      '.ta-rotator display: ' + still.rotator);
+    await cdp.send('Emulation.setEmulatedMedia', { media: '', features: [] });
+
+    // The photo transitions box-shadow over 0.45s, so reading it in the same tick
+    // as the theme flip returns the value the transition started from - the dark
+    // one - and reports the light override as not applying when it applies fine.
+    // Sampled after the transition instead, which is also what a visitor sees.
+    const hadTheme = await evaluate(`document.documentElement.getAttribute('data-theme')`);
+    await evaluate(`document.documentElement.setAttribute('data-theme', 'light')`);
+    await sleep(700);
+    const lightRing = await evaluate(
+      `getComputedStyle(document.querySelector('.home-img img')).boxShadow`);
+    await evaluate(`document.documentElement.setAttribute('data-theme', 'dark')`);
+    await sleep(700);
+    const darkRing = await evaluate(
+      `getComputedStyle(document.querySelector('.home-img img')).boxShadow`);
+    if (hadTheme === null) await evaluate(`document.documentElement.removeAttribute('data-theme')`);
+    else await evaluate(`document.documentElement.setAttribute('data-theme', '${hadTheme}')`);
+    check(lightRing !== darkRing, 'light and dark photo rings are not identical',
+      lightRing !== darkRing
+        ? 'differ: ' + lightRing.slice(0, 34) + ' vs ' + darkRing.slice(0, 34)
+        : `IDENTICAL - light: ${lightRing}, dark: ${darkRing}`);
+
     console.log('\n=== hero count-up (the race) ===');
     // The stats sit below the fold, and the observer is deliberately lazy, so they
     // have to be scrolled into view before the animation is allowed to start.
@@ -495,6 +582,38 @@ meas.grid = line.length
     check(/^0 visible, empty-state shown: true$/.test(none),
       'an unmatched query shows the empty state instead of everything', none);
 
+    // The photo's diameter is specified as a target on a 1920px screen, and every
+    // other photo check runs at the 1280px window this harness launches with.
+    // This is the only thing holding that number still true.
+    console.log('\n=== hero photo at 1920px ===');
+    await cdp.send('Emulation.setDeviceMetricsOverride',
+      { width: 1920, height: 1080, deviceScaleFactor: 1, mobile: false });
+    await cdp.send('Page.navigate', { url: PAGE });
+    await sleep(3000);
+    const wide = await evaluate(`(() => {
+      const r = document.querySelector('.home-img img').getBoundingClientRect();
+      const home = document.querySelector('.home').getBoundingClientRect();
+      const cs = getComputedStyle(document.querySelector('.home'));
+      return {
+        d: +r.width.toFixed(1),
+        square: +r.height.toFixed(1),
+        overflow: +(document.documentElement.scrollWidth - document.documentElement.clientWidth).toFixed(1),
+        gap: cs.gap,
+        textW: +document.querySelector('.home-content').getBoundingClientRect().width.toFixed(1),
+        homeW: +home.width.toFixed(1),
+      };
+    })()`);
+    check(wide.d >= 330 && wide.d <= 380, 'the photo hits the 330-380px target at 1920px',
+      `${wide.d}px diameter (target 330-380, was 278px before this change)`);
+    check(Math.abs(wide.d - wide.square) <= 1, 'still a circle at 1920px',
+      `${wide.d}x${wide.square}px`);
+    // The 26vw term in the clamp exists for this band: at 1920 it is capped by the
+    // rem bound, and the text column has to survive the gap that leaves behind.
+    check(wide.textW > 300, 'the hero text column still has room at 1920px',
+      `text ${wide.textW}px of ${wide.homeW}px section, gap ${wide.gap}`);
+    check(wide.overflow <= 0.5, 'no horizontal overflow at 1920px',
+      `scrollWidth exceeds the viewport by ${wide.overflow}px`);
+
     // A backdrop is easy to make responsive-hostile: gradients sized in rem scale
     // with the root font-size, which the breakpoints shrink from 60% to 35%, and
     // `html { overflow-x: hidden }` hides any overflow rather than letting it be
@@ -524,6 +643,7 @@ meas.grid = line.length
         taglineRight: +tr.right.toFixed(1),
         taglineClipped: tr.right > vw + 0.5,
         photoW: +img.getBoundingClientRect().width.toFixed(1),
+        photoH: +img.getBoundingClientRect().height.toFixed(1),
         layers: getComputedStyle(home).backgroundImage.split('gradient(').length - 1,
         worst: worst.over > 0.5 ? worst.tag + ' by ' + worst.over.toFixed(1) + 'px' : 'nothing',
       };
@@ -534,6 +654,13 @@ meas.grid = line.length
       'right edge at ' + narrow.taglineRight + 'px');
     check(narrow.layers === 3, 'backdrop survives the phone breakpoints',
       narrow.layers + ' layers, photo ' + narrow.photoW + 'px wide');
+    // The regression that motivated the whole photo rewrite: `width` was set per
+    // breakpoint and `height` never was, so the circle arrived at the phone as an
+    // ellipse. The width alone looked plausible, which is why it survived.
+    check(Math.abs(narrow.photoW - narrow.photoH) <= 1, 'the photo is still a circle at 375px',
+      `${narrow.photoW}x${narrow.photoH}px (was 300x120px)`);
+    check(narrow.photoW <= narrow.vw * 0.55, 'the photo is scaled down on a phone',
+      `${narrow.photoW}px = ${Math.round(narrow.photoW / narrow.vw * 100)}% of the viewport`);
     await cdp.send('Emulation.clearDeviceMetricsOverride');
 
     cdp.close();
