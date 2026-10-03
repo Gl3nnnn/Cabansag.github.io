@@ -21,7 +21,15 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
+      # fetch-depth 0 is not optional here. build_last_updated.js walks the
+      # history to find the commit that last changed the homepage, and skips the
+      # commits that only rewrote the stamp; at the default depth of 1 there is
+      # nothing to walk back to and the generator cannot tell a real edit from
+      # its own output. It fails loudly rather than guessing, but the fix is to
+      # give it the history it needs.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # No dependencies: every tool here uses only the Node standard library, so
       # there is no package.json to install and no lockfile to drift.
@@ -50,6 +58,14 @@ jobs:
           node tools/build_post.js tools/posts/accounting-laravel.js
           node tools/build_post.js tools/posts/it-support-shift.js
 
+      # Stamps the homepage's "Last updated" date from the last commit that
+      # changed a page source. Runs here rather than being trusted by hand for
+      # the same reason as the rest: if the homepage was edited and the stamp
+      # was not refreshed, this step reintroduces the difference and the gate
+      # below fails the push.
+      - name: Restamp the homepage's last-updated date
+        run: node tools/build_last_updated.js
+
       - name: Regenerate resume.html
         run: node tools/build_resume.js
 
@@ -62,8 +78,9 @@ jobs:
             echo
             echo "::error::A generated file is stale. Run the tools above, commit the"
             echo "::error::result and push again. Usual causes: an edit to a post spec,"
-            echo "::error::a certification card added or retitled, or a selector in a"
-            echo "::error::generator that no longer matches the markup."
+            echo "::error::a certification card added or retitled, a selector in a"
+            echo "::error::generator that no longer matches the markup, or an edit to"
+            echo "::error::the homepage without re-running build_last_updated.js."
             exit 1
           fi
           echo "generated files match their sources"
