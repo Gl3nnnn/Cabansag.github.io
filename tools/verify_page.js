@@ -451,12 +451,219 @@ meas.grid = line.length
           : `${joins[theme].length} boundaries, weakest ${Math.min(...joins[theme].map(j => j.r))}:1 (needs ${JOIN_MIN}:1; three joins were 1.0)`);
     }
 
+    // ---------- footer ----------
+    // Grouped and re-spaced, so the things worth asserting are: every URL that was
+    // there before is still there (this footer is the only route to resume.pdf and
+    // faq.html), the nav is one centred row on desktop and a clean column on a
+    // phone, tap targets are reachable, and nothing overflows. The href list is
+    // checked against the spec in order rather than as a set, so a link cannot be
+    // silently reordered or swapped for a near-identical wrong one.
+    console.log('\n=== footer ===');
+    const footerAt = async (w, h, mobile) => {
+      // Clear before setting. Applying setDeviceMetricsOverride repeatedly without
+      // a clear in between leaves a stale scrollbar in the emulation state: a third
+      // consecutive 375px pass reported innerWidth 391 while clientWidth and
+      // body.scrollWidth were both 375, i.e. documentElement.scrollWidth was
+      // 16px over on a page with nothing wider than the viewport. Same trap as the
+      // header's centring check - the number was real, the thing being measured
+      // was not.
+      await cdp.send('Emulation.clearDeviceMetricsOverride');
+      await cdp.send('Emulation.setDeviceMetricsOverride',
+        { width: w, height: h, deviceScaleFactor: 1, mobile: !!mobile });
+      await cdp.send('Page.navigate', { url: PAGE });
+      await sleep(2500);
+      return evaluate(`(() => {
+        const ft = document.querySelector('footer.footer');
+        const cs = getComputedStyle(ft);
+        const ftr = ft.getBoundingClientRect();
+        // The footer's own content box, for the same reason the header measures
+        // against its content box: the max-width container is narrower than a
+        // 1920px screen, so the viewport edge is the wrong reference.
+        const contentL = ftr.left + parseFloat(cs.paddingLeft);
+        const contentR = ftr.right - parseFloat(cs.paddingRight);
+        const socials = [...ft.querySelectorAll('.social a')];
+        const navLinks = [...ft.querySelectorAll('.footer-nav a')];
+        const nr = ft.querySelector('.footer-nav ul').getBoundingClientRect();
+        const ul = getComputedStyle(ft.querySelector('.footer-nav ul'));
+        // Tallest and shortest link, because the column layout gives every one of
+        // them the same box and a regression would show up as the minimum.
+        const linkBoxes = navLinks.map(a => a.getBoundingClientRect().height);
+        let worst = null;
+        for (const el of ft.querySelectorAll('*')) {
+          const r = el.getBoundingClientRect();
+          if (r.width === 0 && r.height === 0) continue;
+          if (!worst || r.right > worst.over) {
+            worst = { over: +(r.right - document.documentElement.clientWidth).toFixed(1),
+                      tag: el.tagName.toLowerCase() + (el.className && typeof el.className === 'string' ? '.' + el.className.split(' ')[0] : '') };
+          }
+        }
+        return {
+          vw: document.documentElement.clientWidth,
+          scrollW: document.documentElement.scrollWidth,
+          // overflow-x hidden plus max-width and width of 100vw on html, and 100vw
+          // includes the scrollbar while clientWidth does not - so on a page whose
+          // html is width-locked, documentElement.scrollWidth can report the
+          // scrollbar as overflow while no element is wider than the viewport. The
+          // body box is what actually holds the content, and the per-element scan
+          // below is the real evidence either way.
+          //
+          // (No backticks in this comment: it lives inside a template literal, and
+          // one would close the string early and take the whole evaluate() with it.)
+          bodyScrollW: document.body.scrollWidth,
+          totalH: +ftr.height.toFixed(1),
+          topEdge: parseFloat(cs.borderTopWidth),
+          topEdgeColour: cs.borderTopColor,
+          shadow: cs.boxShadow !== 'none',
+          socialCount: socials.length,
+          socialCentred: Math.abs(((socials[0].getBoundingClientRect().left + socials[socials.length - 1].getBoundingClientRect().right) / 2) - (ftr.left + ftr.right) / 2),
+          navCount: navLinks.length,
+          navLabels: navLinks.map(a => a.textContent.trim()),
+          navHrefs: navLinks.map(a => a.getAttribute('href')),
+          navDir: ul.flexDirection,
+          // Every link on the same line means one row; different first-line offsets
+          // means it wrapped. Read from the rendered boxes rather than inferred
+          // from the width, because the column layout is also "one per line".
+          navLines: new Set(navLinks.map(a => Math.round(a.getBoundingClientRect().top))).size,
+          navCentreOff: +(((nr.left + nr.right) / 2) - (contentL + contentR) / 2).toFixed(1),
+          minLinkH: +Math.min(...linkBoxes).toFixed(1),
+          nameText: (ft.querySelector('.footer-name') || {}).textContent || '',
+          taglineText: ((ft.querySelector('.footer-tagline') || {}).textContent || '').replace(/\\s+/g, ' ').trim(),
+          nameSize: ft.querySelector('.footer-name') ? parseFloat(getComputedStyle(ft.querySelector('.footer-name')).fontSize) : 0,
+          navSize: navLinks.length ? parseFloat(getComputedStyle(navLinks[0]).fontSize) : 0,
+          stampText: ((ft.querySelector('.last-updated') || {}).textContent || '').trim(),
+          yearText: (document.getElementById('year') || {}).textContent || '',
+          copyrightText: ((ft.querySelector('.copyright') || {}).textContent || '').replace(/\\s+/g, ' ').trim(),
+          metaGap: (() => {
+            const nav = ft.querySelector('.footer-nav').getBoundingClientRect();
+            const meta = ft.querySelector('.footer-meta').getBoundingClientRect();
+            return +(meta.top - nav.bottom).toFixed(1);
+          })(),
+          worst: worst.over > 0.5 ? worst.tag + ' by ' + worst.over + 'px' : 'nothing',
+        };
+      })()`);
+    };
+
+    const ftWide = await footerAt(1920, 1080, false);
+    const WANT_HREFS = ['resume-2026.pdf', 'faq.html', '#about', '#education', '#experience',
+      '#certifications', '#services', '#projects', '#testimonials', '#blog', '#contact'];
+    check(ftWide.navCount === 11 && JSON.stringify(ftWide.navHrefs) === JSON.stringify(WANT_HREFS),
+      'all 11 footer nav links are present, in order, pointing where they always did',
+      ftWide.navHrefs.length + ' links: ' + ftWide.navHrefs.join(', '));
+    check(ftWide.navLabels.join('|') === 'Resume|FAQ|About|Education|Experience|Certifications|Skills|Projects|Testimonials|Blog|Contact',
+      'the nav labels are the required set', ftWide.navLabels.join(', '));
+    check(ftWide.socialCount === 4, 'all four social icons survive',
+      ftWide.socialCount + ' icons');
+    check(ftWide.navLines === 1, 'the nav is one clean row on desktop',
+      `${ftWide.navLines} line(s) at 1920px`);
+    check(Math.abs(ftWide.navCentreOff) <= 2, 'the nav is centred in the footer container',
+      `${ftWide.navCentreOff}px off centre`);
+    check(Math.abs(ftWide.socialCentred) <= 2, 'the social row is centred',
+      `${ftWide.socialCentred.toFixed(1)}px off the bar centre`);
+    check(ftWide.topEdge >= 1 && !/rgba\(0, 0, 0, 0\)/.test(ftWide.topEdgeColour),
+      'the footer has a visible neon accent line on top',
+      `${ftWide.topEdge}px ${ftWide.topEdgeColour}`);
+    check(ftWide.shadow, 'the footer carries the navbar\'s mirrored depth cue');
+    check(ftWide.nameText.trim() === 'Glenn Patrick Cabansag', 'the brand name is present',
+      JSON.stringify(ftWide.nameText));
+    check(ftWide.taglineText === 'IT Professional • Cybersecurity • Web Development',
+      'the role tagline is present', JSON.stringify(ftWide.taglineText));
+    check(/All rights reserved\./.test(ftWide.copyrightText), 'the copyright line reads correctly',
+      JSON.stringify(ftWide.copyrightText));
+    check(ftWide.yearText === String(new Date().getFullYear()),
+      'the copyright year is still filled in by script.js',
+      `#year shows "${ftWide.yearText}"`);
+    check(/^Last updated: \d{4}-\d{2}-\d{2}$/.test(ftWide.stampText),
+      'the last-updated stamp keeps the shape tools/build_last_updated.js matches',
+      JSON.stringify(ftWide.stampText));
+    // The excess the redesign was asked to remove. It was 25px + 50px + the social
+    // row's own line box with nothing grouping the four elements; ~2rem between the
+    // nav and the caption is the new ceiling.
+    check(ftWide.metaGap <= 40, 'the copyright block is not marooned below the nav',
+      `${ftWide.metaGap}px between the nav and the meta block (was 50px of margin plus 40px of padding)`);
+
+    const ftPhone = await footerAt(375, 812, true);
+    check(ftPhone.navDir === 'column', 'the nav stacks on a phone',
+      `flex-direction ${ftPhone.navDir}`);
+    check(ftPhone.navLines === 11, 'each phone link is on its own row',
+      `${ftPhone.navLines} rows for 11 links`);
+    // WCAG 2.5.8 target size. With `html` at 40% here, this is only reachable
+    // because the padding is in rem - a px floor would have been wrong at every
+    // other breakpoint.
+    check(ftPhone.minLinkH >= 44, 'phone tap targets are at least 44px tall',
+      `shortest link ${ftPhone.minLinkH}px`);
+    check(ftPhone.navSize >= 13, 'phone nav text is actually readable',
+      `${ftPhone.navSize}px (the desktop 1.8rem renders as 11.5px at this breakpoint)`);
+    check(ftPhone.nameSize >= 16, 'the brand name is actually readable on a phone',
+      `${ftPhone.nameSize}px`);
+    check(Math.abs(ftPhone.socialCentred) <= 2, 'the social row stays centred on a phone',
+      `${ftPhone.socialCentred.toFixed(1)}px off centre`);
+    check(ftPhone.bodyScrollW <= ftPhone.vw + 0.5 && ftPhone.worst === 'nothing',
+      'the footer does not cause horizontal overflow at 375px',
+      `body scrollWidth ${ftPhone.bodyScrollW} vs viewport ${ftPhone.vw}; ` +
+      `widest element past the viewport: ${ftPhone.worst}`);
+
+    const ftNarrow = await footerAt(320, 700, true);
+    check(ftNarrow.bodyScrollW <= ftNarrow.vw + 0.5 && ftNarrow.worst === 'nothing',
+      'no horizontal overflow at 320px either',
+      `body scrollWidth ${ftNarrow.bodyScrollW} vs viewport ${ftNarrow.vw}; ` +
+      `widest element past the viewport: ${ftNarrow.worst}`);
+    // 320px is a separate breakpoint on this site - `html` drops to 35%, so every
+    // rem in the 480px block shrinks again. Without its own footer rules the nav
+    // text lands at 12.9px, under the floor asserted at 375px.
+    check(ftNarrow.navSize >= 13 && ftNarrow.minLinkH >= 44,
+      'the nav stays readable and tappable at 320px too',
+      `${ftNarrow.navSize}px text, shortest link ${ftNarrow.minLinkH}px ` +
+      `(the 480px block's 2.3rem renders as 12.9px here)`);
+    // The tap target has to clear 44px without turning into a long footer: the
+    // first attempt padded to 3.4rem, hit 69px a link and made the footer 993px
+    // tall on a 375px phone.
+    check(ftNarrow.totalH <= 900, 'the footer stays compact on a phone',
+      `${ftNarrow.totalH}px tall at 320px (was 993px at 375px with 69px links)`);
+
+    // The footer's hovers are the only motion it has, and they are now real
+    // transitions rather than the invalid `0.3 ease-in-out` that did nothing.
+    const ftHover = await evaluate(`(() => {
+      const ft = document.querySelector('footer.footer');
+      const a = ft.querySelector('.social a');
+      const l = ft.querySelector('.footer-nav a');
+      const sa = getComputedStyle(a), sl = getComputedStyle(l);
+      return { icon: sa.transitionProperty, iconDur: sa.transitionDuration,
+               link: sl.transitionProperty, linkDur: sl.transitionDuration,
+               iconTransform: sa.transform };
+    })()`);
+    check(/transform/.test(ftHover.icon) && /background-color|box-shadow/.test(ftHover.icon),
+      'the social icons have a real hover transition',
+      `${ftHover.icon} over ${ftHover.iconDur} (was an invalid unitless shorthand, so nothing animated)`);
+    check(/color/.test(ftHover.link) && ftHover.linkDur !== '0s',
+      'the nav links have a real hover transition',
+      `${ftHover.link} over ${ftHover.linkDur}`);
+
+    await cdp.send('Emulation.setEmulatedMedia',
+      { media: 'screen', features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+    const ftStill = await evaluate(`(() => {
+      const ft = document.querySelector('footer.footer');
+      const a = ft.querySelector('.social a');
+      return { dur: getComputedStyle(a).transitionDuration,
+               emulated: matchMedia('(prefers-reduced-motion: reduce)').matches };
+    })()`);
+    check(ftStill.emulated && ftStill.dur === '0s',
+      'footer hover motion stops under prefers-reduced-motion',
+      `transition-duration ${ftStill.dur}`);
+    await cdp.send('Emulation.setEmulatedMedia', { media: '', features: [] });
+
+    await cdp.send('Emulation.clearDeviceMetricsOverride');
+
     console.log('\n=== header / nav ===');
     // The header was 119px at 1920 - 38.4px of padding above and below a 37px logo,
     // on a fixed bar that never scrolls away - and at 1280 the logo wrapped to a
     // second line and took it to 150.8px. Neither is visible in the CSS text: both
     // only show up as a measured height, which is why these are numbers.
     const barAt = async (w, h, mobile) => {
+      // Cleared before set, for the same reason as the footer suite: back-to-back
+      // setDeviceMetricsOverride calls without a clear leave a stale scrollbar in
+      // the emulation state, and documentElement.scrollWidth then reports that
+      // scrollbar as horizontal overflow on a page with nothing wide in it.
+      await cdp.send('Emulation.clearDeviceMetricsOverride');
       await cdp.send('Emulation.setDeviceMetricsOverride',
         { width: w, height: h, deviceScaleFactor: 1, mobile: !!mobile });
       await cdp.send('Page.navigate', { url: PAGE });
@@ -499,7 +706,13 @@ meas.grid = line.length
           logoOffLeft: +(lr.left - contentL).toFixed(1),
           toggleOffRight: +(contentR - tog.right).toFixed(1),
           navShown: getComputedStyle(document.querySelector('.navbar')).display !== 'none',
-          overflow: +(document.documentElement.scrollWidth - document.documentElement.clientWidth).toFixed(1),
+          // body.scrollWidth rather than documentElement's, for the same reason as
+          // the footer and hero phone checks: the 390px media query width-locks
+          // html to 100vw, which counts the scrollbar clientWidth excludes, so
+          // documentElement.scrollWidth intermittently reports a 16px phantom.
+          bodyScrollW: document.body.scrollWidth,
+          innerW: window.innerWidth,
+          clientW: document.documentElement.clientWidth,
         };
       })()`);
     };
@@ -535,8 +748,8 @@ meas.grid = line.length
       `(bar spans ${barWide.contentL}-${barWide.contentR}, ${barWide.vw}px viewport less a 15px scrollbar)`);
     check(barWide.edge >= 1, 'the header has a defined bottom edge',
       `${barWide.edge}px border (was none - content just stopped at an arbitrary line)`);
-    check(barWide.overflow <= 0.5, 'the header does not cause horizontal overflow',
-      `scrollWidth exceeds the viewport by ${barWide.overflow}px`);
+    check(barWide.bodyScrollW <= barWide.clientW + 0.5, 'the header does not cause horizontal overflow',
+      `body scrollWidth ${barWide.bodyScrollW} vs viewport ${barWide.clientW}`);
 
     const barMid = await barAt(1280, 800, false);
     check(barMid.h <= 80 && barMid.logoLines < 2, 'the header stays thin at 1280px',
@@ -547,8 +760,9 @@ meas.grid = line.length
       `${barPhone.h}px tall (was 95.4px, stacked vertically by a column flex-direction)`);
     check(!barPhone.navShown, 'the nav collapses on a phone',
       `navbar display ${barPhone.navShown ? 'shown' : 'none'} at 375px`);
-    check(barPhone.overflow <= 0.5, 'no horizontal overflow at 375px',
-      `scrollWidth exceeds the viewport by ${barPhone.overflow}px`);
+    check(barPhone.bodyScrollW <= barPhone.clientW + 0.5, 'no horizontal overflow at 375px',
+      `body scrollWidth ${barPhone.bodyScrollW} vs viewport ${barPhone.clientW}` +
+      (barPhone.innerW !== barPhone.clientW ? ` (innerWidth ${barPhone.innerW}, stale emulation)` : ''));
 
     // The logo glow is a permanent animation in the always-visible header. The first
     // reduced-motion block sits mid-stylesheet while the light theme restates the
@@ -822,6 +1036,10 @@ meas.grid = line.length
     // other photo check runs at the 1280px window this harness launches with.
     // This is the only thing holding that number still true.
     console.log('\n=== hero photo at 1920px ===');
+    // Cleared first, like every other width change in this harness - see the note
+    // on barAt. The footer suite runs before this one and leaves an override in
+    // place, which is exactly the back-to-back case that goes stale.
+    await cdp.send('Emulation.clearDeviceMetricsOverride');
     await cdp.send('Emulation.setDeviceMetricsOverride',
       { width: 1920, height: 1080, deviceScaleFactor: 1, mobile: false });
     await cdp.send('Page.navigate', { url: PAGE });
@@ -855,6 +1073,7 @@ meas.grid = line.length
     // `html { overflow-x: hidden }` hides any overflow rather than letting it be
     // noticed. So measure the hero at phone width instead of trusting it.
     console.log('\n=== hero at phone width ===');
+    await cdp.send('Emulation.clearDeviceMetricsOverride');
     await cdp.send('Emulation.setDeviceMetricsOverride',
       { width: 375, height: 820, deviceScaleFactor: 2, mobile: true });
     await cdp.send('Page.navigate', { url: PAGE });
@@ -865,17 +1084,24 @@ meas.grid = line.length
       const ta = document.querySelector('.text-animation');
       const img = document.querySelector('.home-img img');
       const tr = ta.getBoundingClientRect();
+      // Whole document, not just .home. The hero is the section this check was
+      // written for, but "the page does not scroll sideways on a phone" is a
+      // property of the page - and a scan limited to the hero reports "nothing"
+      // for a footer or a blog card that is 16px too wide, which is exactly the
+      // regression this is meant to catch.
       let worst = null;
-      for (const el of document.querySelectorAll('.home *')) {
+      for (const el of document.querySelectorAll('body *')) {
         const r = el.getBoundingClientRect();
         if (r.width === 0 && r.height === 0) continue;
         if (!worst || r.right > worst.over) {
-          worst = { over: r.right - vw, tag: el.tagName.toLowerCase() + (el.className ? '.' + String(el.className).split(' ')[0] : '') };
+          worst = { over: r.right - vw, tag: el.tagName.toLowerCase() + (el.className && typeof el.className === 'string' ? '.' + String(el.className).trim().split(/\s+/)[0] : '') };
         }
       }
       return {
         vw,
+        innerW: window.innerWidth,
         scrollW: document.documentElement.scrollWidth,
+        bodyScrollW: document.body.scrollWidth,
         taglineRight: +tr.right.toFixed(1),
         taglineClipped: tr.right > vw + 0.5,
         photoW: +img.getBoundingClientRect().width.toFixed(1),
@@ -884,8 +1110,17 @@ meas.grid = line.length
         worst: worst.over > 0.5 ? worst.tag + ' by ' + worst.over.toFixed(1) + 'px' : 'nothing',
       };
     })()`);
-    check(narrow.scrollW <= narrow.vw + 0.5, 'no horizontal overflow at 375px',
-      `scrollWidth ${narrow.scrollW} vs viewport ${narrow.vw}; worst: ${narrow.worst}`);
+    // body.scrollWidth plus the per-element scan, not documentElement.scrollWidth.
+    // The 390px media query sets overflow-x hidden and 100vw widths on html, and
+    // 100vw counts the scrollbar that clientWidth excludes - so on this page
+    // documentElement.scrollWidth intermittently reports a 16px phantom overflow
+    // that no element accounts for. innerWidth is reported alongside so a stale
+    // emulation state stays visible in the failure text instead of hiding.
+    check(narrow.bodyScrollW <= narrow.vw + 0.5 && narrow.worst === 'nothing',
+      'no horizontal overflow at 375px',
+      `body scrollWidth ${narrow.bodyScrollW} vs viewport ${narrow.vw}; ` +
+      `widest element past the viewport: ${narrow.worst}` +
+      (narrow.innerW !== narrow.vw ? ` (innerWidth ${narrow.innerW}, stale emulation)` : ''));
     check(!narrow.taglineClipped, 'tagline is not clipped at 375px',
       'right edge at ' + narrow.taglineRight + 'px');
     check(narrow.layers === 3, 'backdrop survives the phone breakpoints',

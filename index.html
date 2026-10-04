@@ -1944,19 +1944,99 @@ top: 10px;
 margin-top: 2rem;
 
 }
+/* ---------- footer ----------
+ * Grouped as brand / social / nav / meta, spaced on one rhythm, and sharing the
+ * navbar's horizontal container so the two bars line up as a pair.
+ *
+ * The inline padding is the same `max(4%, calc((100% - 1440px) / 2))` the header
+ * uses, deliberately: every zone here - name, nav, copyright - hangs off one
+ * declaration, so the brand and the meta line start at exactly the same x as the
+ * logo and the theme toggle above. Three separate rules agreeing on an edge is
+ * three chances to be off by a few pixels.
+ *
+ * Vertical spacing is one scale, not the old ad-hoc mix of a 25px
+ * padding-bottom, a 50px copyright margin-top and 40px of block padding. Those
+ * were not a rhythm; they were the gaps that happened to exist between four
+ * elements with nothing grouping them. .footer-inner carries the gaps as a
+ * column gap, so the distance between groups is one declaration and the
+ * distance inside a group is zero.
+ *
+ * --band-bg-color, not --bg-color, and not a flat fill: this is the last band of
+ * the page's alternating sequence (contact is the page colour, the footer is a
+ * band), and the token is what verify_page.js measures the band floors against.
+ * Changing it to the page colour would break the alternation walk. */
 .footer{
     position: relative;
     bottom: 0;
     width: 100%;
-    padding: 40px 0;
+    /* Asymmetric on purpose: more above the brand than below the copyright, so
+     * the bar sits optically centred against the block of content above it
+     * instead of floating with a heavy gap under the meta line. */
+    padding: 3.2rem max(4%, calc((100% - 1440px) / 2)) 2.4rem;
     background-color: var(--band-bg-color);
+    /* The accent line, and the same hairline family the navbar uses. The navbar
+     * carries rgba(27,179,14,.18) because it sits over the darker page; here it
+     * is stepped up to .28 because the band behind it is already lifted, so at
+     * .18 the rule all but disappears - which is what made the footer read as a
+     * separate template rather than the end of the same component. 1px, not 2px:
+     * the navbar's rule is the precedent, and this is a seam, not an accent
+     * border. */
+    border-top: 1px solid rgba(27, 179, 14, 0.28);
+    /* Mirrored from the navbar's `0 8px 24px rgba(0,0,0,.28)`, negative Y, so the
+     * shadow falls inside the band above the rule instead of below the bar. Same
+     * component, same depth cue, opposite direction. */
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.28);
+}
+.footer-inner{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* The one rhythm: 2.2rem brand->social, 1.6rem social->nav, 2rem nav->meta.
+     * Tightest pair is the social row and the nav, which are both link lists and
+     * read as one navigation block; widest is brand->social, because the name is
+     * the thing being introduced. */
+    row-gap: 1.6rem;
+}
+/* Deliberately not a heading element. This is a footer identity line, not a
+ * section title, and an <h2> here would put it in the document outline as a
+ * peer of the eight real section headings and compete with them in a screen
+ * reader's heading list. */
+.footer-name{
+    margin: 0;
+    font-size: 2.2rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--text-color);
+    text-align: center;
+}
+.footer-tagline{
+    /* Pulled up into the brand block: 0.4rem against 1.6rem between groups makes
+     * the name and the line under it read as one unit with a normal leading gap,
+     * rather than as two separate centred lines that happen to be near each
+     * other. */
+    margin: 0.4rem 0 0;
+    font-size: 1.3rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    color: var(--muted-color);
+    text-align: center;
+}
+.footer-tagline span{
+    /* The bullets are the one place the accent is allowed to appear as text
+     * rather than as a rule. */
+    color: var(--main-color);
+    padding: 0 0.2rem;
 }
 .footer .social{
-    text-align: center;
-    padding-bottom: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    /* One gap instead of `margin: 0 10px` on each of four anchors, which put 20px
+     * between icons and 0px at either end of the row. */
+    gap: 1.4rem;
+    padding: 0;
     color: var(--main-color);
 }
-
 .footer .social a{
     font-size: 25px;
     color: var(--main-color);
@@ -1964,46 +2044,96 @@ margin-top: 2rem;
     width: 42px;
     height: 42px;
     line-height: 42px;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     border-radius: 50%;
-    margin: 0 10px;
-    transition: 0.3 ease-in-out;
+    /* Was `transition: 0.3 ease-in-out` - unitless, so invalid, and the icons
+     * snapped between states with no transition at all. Named properties only,
+     * matching the navbar's links: transform, background-color, color and
+     * box-shadow are the four things that actually change on hover. */
+    transition: transform 0.25s ease, background-color 0.25s ease,
+        color 0.25s ease, box-shadow 0.25s ease;
 }
-.footer .social a:hover{
-    transform: scale(1.2)translateY(-10px);
+.footer .social a:hover,
+.footer .social a:focus-visible{
+    /* Was `scale(1.2)translateY(-10px)`, which is invalid - two transform
+     * functions with no whitespace between them, so the whole declaration was
+     * dropped and the icons never moved. Repairing it as written would have
+     * introduced a 1.2x jump and a 10px lift, which is the opposite of the
+     * restraint the rest of the bar sets. A 2px lift and a 14px glow register on
+     * hover and cost nothing when the pointer leaves. */
+    transform: translateY(-2px);
     background-color: var(--main-color);
-    color: black;
-    box-shadow: 0 0 25px var(--main-color);
-
+    color: var(--bg-color);
+    /* Down from 25px. The glow is on four 42px circles sitting a background
+     * apart from each other; at 25px they bleed into one another on hover and the
+     * row stops reading as four separate controls. */
+    box-shadow: 0 0 14px rgba(27, 179, 14, 0.35);
 }
+/* Flex rather than the `display: inline-block` + per-item padding the old rule
+ * used. That put the spacing inside each anchor as 15px of padding, which meant
+ * the gap lived on the element instead of between elements, indented the run by
+ * half a gap on each side, and - the reason it is being changed rather than kept
+ * - left the wrapping ragged: an inline-block row breaks between items, so a
+ * two-line wrap puts the first item of the second line hard against the left
+ * edge while the first line is centred. A centred flex-wrap breaks the same way
+ * but the line box is the full width, so both lines centre identically. */
 .footer ul{
-    margin-top: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0;
     padding: 0;
-    font-size: 18px;
+    font-size: 1.8rem;
     line-height: 1.6;
-    margin-bottom: 0;
-    text-align: center;
-}
-.footer ul li a{
-color: white;
-border-bottom: 3px solid transparent;
-transition: 0.3 ease-in-out;
-}
-.footer ul li a:hover{
-border-bottom: 3px solid var(--main-color);
-
+    list-style: none;
+    /* Row gap is the space between links on a line, column gap covers the wrapped
+     * rows. 1.75rem against the old 30px effective (15px of padding on each side)
+     * is slightly wider, which is what makes 11 links read as evenly distributed
+     * rather than as a dense list. */
+    gap: 0.5rem 1.75rem;
 }
 .footer ul li{
     display: inline-block;
-    padding: 0 15px;
-
+    padding: 0;
+}
+.footer ul li a{
+    display: inline-block;
+    color: var(--text-color);
+    /* 2px to match the navbar's active and hover rules, not the old 3px. The
+     * transparent border reserves the space so nothing shifts when a link is
+     * hovered, exactly as it does in the navbar. */
+    border-bottom: 2px solid transparent;
+    /* Same invalid unitless shorthand as the social icons had. */
+    transition: color 0.25s ease, border-color 0.25s ease;
+}
+.footer ul li a:hover,
+.footer ul li a:focus-visible{
+    color: var(--main-color);
+    border-bottom-color: var(--main-color);
+}
+/* Copyright and the generated date, grouped. They are the same fact about the
+ * same thing and were previously separated by the footer's own bottom padding
+ * plus a 50px margin, which read as a stray line rather than as a caption. */
+.footer-meta{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* The meta block is a caption, so it steps back from the nav above it: 2rem
+     * against the 1.6rem between the other groups. */
+    margin-top: 0.4rem;
+    gap: 0.5rem;
+    text-align: center;
 }
 .footer .copyright{
-    margin-top: 50px;
+    /* margin-top: 50px removed - the gap is .footer-meta's job now, and 50px of
+     * hard margin is what produced the dead band of space above the copyright. */
+    margin: 0;
     text-align: center;
-    font-size: 16px;
-    color: white;
+    font-size: 1.6rem;
+    color: var(--text-color);
 }
 
 
@@ -2104,7 +2234,11 @@ padding-left:37px;
         margin: 0 2rem;
     }
     .footer{
-        padding: 2rem 3%;
+        /* The block padding comes down for tablet but the inline padding is NOT
+         * reduced to a flat 3%: that would break the alignment with the header
+         * above it, which keeps its max() container at every width. The header's
+         * own 991px rule reduces it, and this is deliberately kept identical. */
+        padding: 2.6rem max(4%, calc((100% - 1440px) / 2)) 2rem;
     }
 
 }
@@ -2287,6 +2421,70 @@ padding-left:37px;
     .contact form textarea {
         font-size: 1.5rem;
     }
+    /* ---------- footer on a phone ----------
+     * These breakpoints scale `html` down to 40% of 16px, so one rem is 6.4px
+     * here and every rem in the footer's desktop rules collapses by a third.
+     * The nav's 1.8rem would render at 11.5px and the name's 2.2rem at 14px -
+     * unreadable, and unreadable *differently* from the rest of the page, which
+     * is the failure mode the rem convention is supposed to prevent. Each size
+     * below is chosen as "the px I want, divided by 6.4", stated as a comment so
+     * the next edit does not have to re-derive it. */
+    .footer {
+        padding: 2.2rem 5% 1.8rem;
+    }
+    .footer-name {
+        font-size: 3rem; /* ~19px */
+    }
+    .footer-tagline {
+        /* The role line is the longest string in the footer. At 1.3rem it would
+         * be 8.3px and would also wrap to three ragged lines, so it is both
+         * bigger and allowed to wrap onto its own line - the separators keep it
+         * readable when it does. */
+        font-size: 1.9rem; /* ~12px, and it wraps to at most two lines */
+        letter-spacing: 0.04em;
+        /* Longest unbreakable token here is "Professional", so this is about the
+         * tagline not pushing the bar wide. */
+        max-width: 30rem;
+    }
+    .footer ul {
+        font-size: 2.3rem; /* ~14.7px */
+    }
+    /* Column, not wrapped rows. A wrapped row of 11 links at this width breaks
+     * into three or four ragged centred lines with a single orphan; stacked, each
+     * link is one full-width row and the whole list scans as a list. */
+    .footer ul {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.2rem;
+    }
+    .footer ul li a {
+        /* 44px is the WCAG 2.5.8 target size, and this lands on 49px rather than
+         * aiming at 44 exactly: with html at 40%, a 15px line needs 2rem of
+         * vertical padding per side to clear the bar. The first attempt used 3.4rem
+         * to be safely over, which measured 69px a link and made the footer 993px
+         * tall on a phone - a 25px overshoot per row is not "safely over", it is
+         * just a long footer. */
+        padding: 2rem 1rem;
+        width: 100%;
+        text-align: center;
+        /* The underline sat on the text with the old 0.4rem padding-bottom. With
+         * the anchor stretched to a full-width row it would draw a rule the
+         * width of the phone, so it is pinned to an inline-block instead. */
+        display: inline-block;
+        box-sizing: border-box;
+    }
+    .footer .social {
+        gap: 1.8rem;
+    }
+    .footer .social a {
+        /* 42px of icon plus 2px of border is just under the 44px target, so the
+         * hit area is grown with padding rather than by making the circle bigger -
+         * a larger circle would change the icon's proportions against the
+         * desktop bar it is meant to match. */
+        width: 44px;
+        height: 44px;
+        line-height: 44px;
+    }
 }
 
 @media (max-width: 360px) {
@@ -2325,6 +2523,28 @@ padding-left:37px;
         .contact form .input-box input,
     .contact form textarea {
         font-size: 1.3rem;
+    }
+    /* Footer again, one step further down. This block is later in the stylesheet so
+     * it wins on 320-360px phones, and it has to restate the sizes: `html` is 35%
+     * here, so the 480px block's 2.3rem nav is 12.9px - below the 13px floor the
+     * harness asserts at 375px, and unreadable in practice. Same rem-to-px
+     * arithmetic as above, at 5.6px per rem this time. */
+    .footer {
+        padding: 2rem 5% 1.6rem;
+    }
+    .footer-name {
+        font-size: 3.2rem; /* ~18px */
+    }
+    .footer-tagline {
+        font-size: 2.15rem; /* ~12px */
+    }
+    .footer ul {
+        font-size: 2.5rem; /* ~14px */
+    }
+    .footer ul li a {
+        /* 2rem of padding around a 14px line at 5.6px per rem: 22.4 + 22.4 = 44.8px,
+         * the same ~45px the 480px block produces at its own rem value. */
+        padding: 2rem 1rem;
     }
 }
 
@@ -2937,6 +3157,20 @@ section{
 [data-theme="light"] .navbar a{ color: #14161a; }
 [data-theme="light"] .blog-read-more:hover{ color: var(--main-color); }
 [data-theme="light"] .footer .copyright{ color: #5f6368; }
+/* Light-theme footer. Only the three things the dark-theme rules set with a
+ * literal rather than a token: the accent rule, the social hover, and the nav
+ * link colour. The band itself, the name and the tagline already come from
+ * --band-bg-color, --text-color and --muted-color, which the light theme
+ * redefines - so they needed nothing here. */
+[data-theme="light"] .footer{
+    /* The same green the navbar uses in light mode. --main-color is #166534
+     * there, a dark green, and 28% of it on the #e4e6ea band is a grey line. The
+     * navbar hardcodes this exact green for the same reason. */
+    border-top-color: rgba(22, 101, 52, 0.28);
+    /* Lighter than the dark theme's, or it reads as a smudge under a light bar -
+     * the same correction already made to the header's shadow. */
+    box-shadow: 0 -8px 24px rgba(22, 101, 52, 0.08);
+}
 [data-theme="light"] .project-card .project-meta,
 [data-theme="light"] .blog-footer,
 [data-theme="light"] .blog-post-meta,
@@ -3240,7 +3474,13 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 .contact form textarea.invalid:focus-visible{
     outline-color: var(--secondary-accent-color);
 }
-.last-updated{margin-top:1rem;opacity:.8;font-size:1.4rem;text-align:center;}
+/* Now a caption inside .footer-meta, so the spacing above it comes from that
+ * block's `gap` rather than from a margin that fought the footer's own padding.
+ * --muted-color rather than `opacity: .8`: the old value dimmed the generated
+ * date against the band by reducing the whole element's alpha, which also
+ * softened its already-muted grey into something close to the background. The
+ * token is the page's own dimmed-text colour and adapts to the light theme. */
+.last-updated{margin:0;font-size:1.4rem;color:var(--muted-color);text-align:center;}
 
 @media (max-width: 390px) {
   html, body { overflow-x: hidden; max-width: 100vw; width: 100vw; }
@@ -3263,7 +3503,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
  * would have kept pulsing forever for someone who asked for reduced motion, and
  * the opt-out in the earlier block would have silently covered only dark theme.
  * Placing this after the theme overrides fixes both themes with one rule. */
-@media (prefers-reduced-motion: reduce) {
+    @media (prefers-reduced-motion: reduce) {
     /* The glow is decoration on top of a word that is already legible, so holding
      * a fixed shadow loses nothing that the name was carrying. */
     .logo,
@@ -3276,6 +3516,20 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
     [data-theme="light"] .logo span {
         animation: none;
         text-shadow: 0 0 14px rgba(22, 101, 52, 0.28);
+    }
+    /* Footer hovers. These are 2px lifts and colour changes, not movement across
+     * the page, so this is a belt-and-braces opt-out rather than a fix for
+     * anything alarming - but the transitions are the only motion in the footer,
+     * and a visitor who asked for reduced motion should not get them. The end
+     * state is preserved deliberately: the icons still fill green and the links
+     * still take the underline, they just arrive instantly. */
+    .footer .social a,
+    .footer ul li a {
+        transition: none;
+    }
+    .footer .social a:hover,
+    .footer .social a:focus-visible {
+        transform: none;
     }
 }
 </style>
@@ -4455,31 +4709,57 @@ submitBtn.textContent = 'Send Message';
 </script>
 
 <footer class="footer">
-    <div class="social">
-        <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="me noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
-        <a href="https://github.com/Gl3nnnn" target="_blank" rel="me noopener noreferrer" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
-        <a href="https://www.facebook.com/Gl3nQt" target="_blank" rel="me noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
-        <a href="https://mail.google.com/mail/u/1/?view=cm&fs=1&to=patrickcabansag5@gmail.com&tf=1" target="_blank" rel="me noopener noreferrer" aria-label="Email"><i class="fa-regular fa-envelope"></i></a>
+    <div class="footer-inner">
+        <!-- The name and role line. Not an <h2>: this is a footer identity, not a
+             section title, and as a heading it would sit in the document outline
+             beside the eight real section headings. -->
+        <div class="footer-brand">
+            <p class="footer-name">Glenn Patrick Cabansag</p>
+            <p class="footer-tagline">IT Professional <span>&#8226;</span> Cybersecurity <span>&#8226;</span> Web Development</p>
+        </div>
 
+        <div class="social">
+            <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="me noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+            <a href="https://github.com/Gl3nnnn" target="_blank" rel="me noopener noreferrer" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+            <a href="https://www.facebook.com/Gl3nQt" target="_blank" rel="me noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+            <a href="https://mail.google.com/mail/u/1/?view=cm&fs=1&to=patrickcabansag5@gmail.com&tf=1" target="_blank" rel="me noopener noreferrer" aria-label="Email"><i class="fa-regular fa-envelope"></i></a>
+        </div>
+
+        <!-- A <nav> because this is a second, independent set of navigation
+             destinations, not a repeat of the header's. aria-label names it so a
+             screen reader announces "Footer navigation" rather than a second
+             unqualified "navigation" landmark. -->
+        <nav class="footer-nav" aria-label="Footer">
+            <ul class="list">
+                <li><a href="resume-2026.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" aria-label="Download resume (PDF)">Resume</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#education">Education</a></li>
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#certifications">Certifications</a></li>
+                <!-- Points at #services, which is the section whose heading is
+                     Skills. The navbar has linked it that way all along
+                     (index.html:3301); the section id predates the heading text
+                     and renaming it would touch the navbar, the alternation
+                     checks and any inbound #services links for no gain. -->
+                <li><a href="#services">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#blog">Blog</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+
+        <div class="footer-meta">
+            <p class="copyright">
+                &copy; <span id="year">2026</span> Glenn Patrick Cabansag. All rights reserved.
+            </p>
+            <!-- class and text shape preserved: tools/build_last_updated.js
+                 matches this element by class and rewrites the date in place. -->
+            <p class="last-updated">Last updated: 2026-10-03</p>
+        </div>
     </div>
-    <ul class="list">
-                <li> <a href="resume-2026.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" aria-label="Download resume (PDF)">Resume</a></li>
-        <li> <a href="faq.html">FAQ</a></li>
-        
-        <li> <a href="#about">About</a></li>
-        <li> <a href="#education">Education</a></li>
-        <li> <a href="#experience">Experience</a></li>
-        <li> <a href="#certifications">Certifications</a></li>
-        <li> <a href="#projects">Projects</a></li>
-        <li> <a href="#testimonials">Testimonials</a></li>
-        <li> <a href="#blog">Blog</a></li>
-        <li> <a href="#contact">Contact</a></li>
-    </ul>
-    <p class="copyright">
-        © <span id="year">2026</span> Glenn Patrick Cabansag | ALL RIGHTS RESERVED
-    </p>
-        <p class="last-updated">Last updated: 2026-10-03</p>
-    </footer>
+</footer>
 
    <script src="script.js?v=4.0" defer></script>
 </body>
