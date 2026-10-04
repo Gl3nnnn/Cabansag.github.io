@@ -1,0 +1,22 @@
+#!/bin/sh
+# Runs before every commit. See tools/stamp_precommit.js for what this does and
+# why it exists; this file is only the entry point, kept in sh so it works on
+# Windows git, WSL and a Mac without a runtime.
+#
+# The cheap test lives here rather than in node: `git commit` should not pay for a
+# node startup when nothing the homepage is built from is staged. A blog post or a
+# README edit exits here without launching anything.
+#
+# Installed by `git config core.hooksPath .githooks`, which is local config and so
+# does not travel with a clone - see the README.
+staged=$(git diff --cached --name-only) || exit 1
+for f in $staged; do
+  case "$f" in
+    index.html|script.js|profile.jpg)
+      # Exact matches, not substring globs, so a docs/index.html added later
+      # cannot trigger a stamp on the homepage's behalf.
+      exec node "$(git rev-parse --show-toplevel)/tools/stamp_precommit.js"
+      ;;
+  esac
+done
+exit 0

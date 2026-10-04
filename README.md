@@ -116,6 +116,27 @@ node tools/build_jsonld.js --check  # fail if index.html is out of date (what CI
 - The `Person` node's descriptive fields (name, job title, employer, location, social links) are transcribed in the tool rather than parsed, following the same convention as `build_resume.js`: prose is reviewed by hand, structured facts are derived.
 - After editing a certification card, a project list or the `Person` fields, run the tool and commit the result. After editing a post spec or anything `build_resume.js` reads, run that tool too — CI fails on a stale generated file.
 
+## The Last-Updated Stamp
+
+The homepage shows a `Last updated` date, and it is generated from git history rather than typed — a hand-written literal is stale from the moment it is written and looks correct the entire time.
+
+```
+node tools/build_last_updated.js   # restamp the homepage from the last content commit
+```
+
+- The date comes from the last commit that touched `index.html`, `script.js` or `profile.jpg` — the page's markup and CSS are inline in the first, the second carries the theme switch and project star counts, and the third is the portrait. A commit touching only a blog post or `resume.html` is not a change to the homepage and must not move the date.
+- Commits that did nothing but rewrite the stamp are skipped, so the generator cannot stamp itself. That test is deliberately strict: exactly one file, that file being `index.html`, and every changed line carrying the marker.
+- **Install the pre-commit hook once per clone.** `core.hooksPath` is local git config and does not travel with the repository, so this is not automatic:
+
+```
+git config core.hooksPath .githooks
+```
+
+- `.githooks/pre-commit` then runs `tools/stamp_precommit.js` on every commit, which writes today's date into `index.html` and stages it — so the stamp lands in the same commit as the edit that earned it. The generator above exists for the case where the hook was bypassed, and CI's drift gate is what actually enforces it. Without the hook, a content edit needs two commits: the edit, then the stamp.
+- The hook's date comes from `git var GIT_COMMITTER_IDENT` rather than the system clock, because CI later reads the *committed* timestamp; asking git for the value it is about to record removes a timezone or midnight-boundary disagreement between what the hook writes and what the gate checks.
+- It declines rather than guess. If `index.html` has staged and unstaged changes at once — the `git add -p` case — it refuses, because staging its output would also stage the hunks deliberately left out. `--no-verify` skips it entirely. Neither is blocked: the stamp is left alone and the drift gate fails the push, which is loud rather than wrong.
+- Run `node tools/stamp_precommit.js` by hand to see what it would do. Commits touching none of the three sources exit silently without starting node.
+
 ## Blog Authoring
 
 - `tools/posts/_chain.js` — single source of truth for the post timeline. It owns the order, derives each post's previous/next links and the set of category filters from the posts themselves, and rejects duplicate dates. Adding a post means adding it here; a spec cannot invent its own navigation.
