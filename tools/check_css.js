@@ -24,6 +24,14 @@
 // inside a <style> block - and a JSON.parse of every ld+json block, since
 // malformed structured data is dropped by search engines without an error.
 //
+// A third brace case has since turned up in this file, and it is the mirror image
+// of bug 1: a stray `{` at depth 0 with nothing in front of it. Same mechanism -
+// the parser consumes tokens until it finds a block, then swallows that block -
+// and here it deleted six rules in index.html while the braces still balanced and
+// check_css.js still passed, because it only tested one direction. So `strayOpen`
+// below reports a depth-0 `{` whose prelude is empty, which is the only way a
+// brace can be both at depth 0 and have no selector.
+//
 // No dependencies, matching the rest of tools/. Run: node tools/check_css.js
 'use strict';
 
@@ -66,14 +74,23 @@ function parseCss(css) {
 
   const atRules = [];
   const strayClose = [];
+  const strayOpen = [];
   let depth = 0;
   let unclosed = null;
   let i = 0;
+  // Start of the current top-level selector prelude, so a depth-0 `{` can be told
+  // apart from a legitimate rule's opening brace.
+  let preludeStart = 0;
 
   while (i < src.length) {
     const c = src[i];
 
     if (c === '{') {
+      if (depth === 0 && src.slice(preludeStart, i).trim() === '') {
+        // Depth 0 and nothing but whitespace since the last `}` or start of input
+        // means this brace opens a block with no selector in front of it.
+        strayOpen.push(lineOf(css, i));
+      }
       depth++;
       i++;
       continue;
@@ -83,6 +100,8 @@ function parseCss(css) {
       // depth === 0 here is the bug this tool exists to catch.
       if (depth === 0) strayClose.push(lineOf(css, i));
       else depth--;
+      // The next top-level `{` belongs to whatever prelude starts after this `}`.
+      preludeStart = i + 1;
       i++;
       continue;
     }
@@ -111,7 +130,7 @@ function parseCss(css) {
     unclosed = line;
   }
 
-  return { atRules, strayClose, unclosed };
+  return { atRules, strayClose, strayOpen, unclosed };
 }
 
 let failures = 0;
@@ -133,12 +152,16 @@ for (const file of htmlFiles()) {
       fail(label, 'contains JSON-LD text inside a <style> block');
     }
 
-    const { atRules, strayClose, unclosed } = parseCss(block.css);
+    const { atRules, strayClose, strayOpen, unclosed } = parseCss(block.css);
 
     const problems = [];
     if (strayClose.length) {
       problems.push('stray "}" at top level on CSS line(s) ' + strayClose.join(', ') +
         ' - this silently deletes the at-rule that follows it');
+    }
+    if (strayOpen.length) {
+      problems.push('stray "{" at top level on CSS line(s) ' + strayOpen.join(', ') +
+        ' - a brace with no selector swallows every rule up to its matching "}"');
     }
     if (unclosed !== null) {
       problems.push('unclosed "{" opened on CSS line ' + unclosed);

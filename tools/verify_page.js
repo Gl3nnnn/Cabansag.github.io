@@ -167,17 +167,65 @@ async function main() {
         cur += ch;
       }
       if (cur.trim()) layers.push(cur.trim());
-      return { layers, css: cs, img: document.querySelector('.home-img img') };
+      // The grid cell as the browser reports it, which is NOT how it is authored.
+      // Chrome expands the shorthand into four explicit stops and rewrites
+      // 'transparent' as 'rgba(0, 0, 0, 0)', so a regex written against the source
+      // form - /transparent 1px 36px/ - silently matches nothing and reports "no px
+      // cell found" on a backdrop that has one. It also adds 'px' after every bare
+      // zero, so the first offset reads '0px' where the source says '0'.
+      //
+      // So match the reported form: find the axis layers, take the SMALLEST repeat
+      // period on any of them (that is the minor cell - the majors are a multiple
+      // of it), and match the transparent stop's trailing length. Reading the
+      // smallest rather than filtering on a hardcoded 180px means adding or
+      // renaming a tier does not have to update this too.
+      const cellPx = (() => {
+        const periods = [];
+        for (const l of layers) {
+          if (!l.startsWith('repeating-linear-gradient')) continue;
+          // The repeat period is the last length in the declaration, so match to
+          // the end of the layer rather than trying to identify which stop is the
+          // transparent one - the reported form spells it rgba(0, 0, 0, 0), and
+          // there are four such stops once the shorthand is expanded.
+          const m = /([\\d.]+)px\\)$/.exec(l);
+          if (m) periods.push(parseFloat(m[1]));
+        }
+        return periods.length ? Math.min(...periods) : null;
+      })();
+      return {
+        layers,
+        cellPx,
+        css: cs,
+        img: document.querySelector('.home-img img'),
+        // Classified rather than counted. The layers used to be exactly 3 and the
+        // check below asserted that number, which reads as stricter than the
+        // strayClose check in check_css.js - but a count cannot tell a fade from a
+        // grid, so it passed just as happily if both grid axes had been replaced by
+        // two more copies of the fade. It also made adding the grid's major-line
+        // tier a test change: 3 -> 5 was a red build for a purely visual
+        // improvement, which is exactly the incentive that ends with the number
+        // being edited down to whatever the stylesheet currently says. Asserting the
+        // shape means a new tier is free and a deleted axis is not.
+        gridAxes: layers.filter(l => l.startsWith('repeating-linear-gradient')).length,
+        fades: layers.filter(l => l.startsWith('linear-gradient')).length,
+        // The minor grid cell, read off an axis. Pinned in px rather than rem: it
+        // used to be 4rem, which tracked the root font-size and so got denser as
+        // screens got smaller (38.4px desktop, 28.8px at 360px). Asserting it is
+        // rem-free so the property cannot quietly start tracking rem again.
+};
     })`;
 
     // The grid + fade are painted as `background` on .home rather than on a
     // pseudo-element, specifically so nothing needs `overflow: hidden`. If that
     // ever changes, this is the check that notices the photo getting sliced.
     const backdrop = await evaluate(`(() => {
-      const { layers, css, img } = ${SPLIT}();
+      const { layers, css, img, gridAxes, fades, cellPx } = ${SPLIT}();
       const h = document.querySelector('.home').getBoundingClientRect();
       const i = img.getBoundingClientRect();
       return {
+        gridAxes,
+        fades,
+        cellPx,
         image: css.backgroundImage,
         layers: layers.length,
         overflow: css.overflow,
@@ -186,8 +234,18 @@ async function main() {
       };
     })()`);
     check(backdrop.image !== 'none', '.home paints a backdrop', backdrop.layers + ' layers');
-    check(backdrop.layers === 3, 'all three declared layers survived parsing',
-      backdrop.layers + ' layers (1 fade, 2 grid axes)');
+    check(backdrop.fades >= 1, 'the fade down to the page colour survived parsing',
+      backdrop.fades + ' non-repeating gradient layer(s)');
+    check(backdrop.gridAxes >= 2, 'the grid still has both axes',
+      backdrop.gridAxes + ' repeating gradient layer(s), ' +
+      'one per axis so the backdrop is a grid rather than stripes');
+    check(backdrop.gridAxes % 2 === 0, 'the grid axes come in matched pairs',
+      backdrop.gridAxes + ' axis layer(s) - an odd count means one direction has a ' +
+      'different number of tiers from the other, which reads as a mistake');
+    check(backdrop.cellPx !== null && backdrop.cellPx >= 24 && backdrop.cellPx <= 48,
+      'the minor grid cell is a fixed px pitch, not a rem one',
+      backdrop.cellPx === null ? 'no px period found on any axis layer; reported image was ' + backdrop.image
+        : backdrop.cellPx + 'px (rem would scale 38.4px -> 28.8px as screens shrink)');
     check(backdrop.overflow === 'visible',
       '.home does not clip (overflow stays visible, so the photo cannot be sliced)',
       'overflow: ' + backdrop.overflow);
@@ -229,7 +287,15 @@ async function main() {
         return acc;
       };
       const home = document.querySelector('.home');
-      const SELS = ['.home-content h1', '.home-content p:not(.text-animation)', '.home-content .btn'];
+      // Named by class, not by position. The hero paragraph used to be the only
+      // non-tagline copy in .home-content, so a structural selector like
+      // p:not(.text-animation) covered its contrast by accident. Splitting it into
+      // .hero-role and .hero-bio leaves two elements to cover, and that selector
+      // would pick up only the first - so a third line added later would go
+      // unmeasured with nothing to say so. .hero-bio is the one that matters: it is
+      // the longest run of body copy over the backdrop, and not every accent colour
+      // is legal for it.
+      const SELS = ['.home-content h1', '.hero-role', '.hero-bio', '.btn-primary', '.btn-secondary'];
       const root = document.documentElement;
       const had = root.getAttribute('data-theme');
       const out = {};
@@ -784,6 +850,72 @@ meas.grid = line.length
     check(logoStill.dark === 'none' && logoStill.light === 'none',
       'the logo glow stops under prefers-reduced-motion in both themes',
       `dark ${logoStill.dark}, light ${logoStill.light} (light restates it later at equal specificity)`);
+    // The hero stat count-up, under reduced motion.
+    //
+    // Every other motion check above works by cancelling a CSS property and reading
+    // it back. That cannot reach this one: the count-up writes textContent from a
+    // requestAnimationFrame loop, so there is no property to cancel and the numbers
+    // swept 0 -> target for 1.5s whatever the setting said. It is also the only
+    // motion on the page with no reduced-motion branch at all - the rotator, the
+    // halo, the float, the pulse and the logo glow are all handled in CSS, and this
+    // was missed.
+    console.log('\n=== hero stats count-up ===');
+    await cdp.send('Emulation.setEmulatedMedia',
+      { media: 'screen', features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+    await cdp.send('Page.navigate', { url: PAGE });
+    await sleep(600);
+    // Count the frames the stats area schedules over a short window. Reduced means
+    // zero, and this measures the loop directly rather than inferring it from a
+    // final value - a 1.5s sweep sampled at 3s looks identical to an instant write.
+    const statMotion = await evaluate(`(async () => {
+      const els = [...document.querySelectorAll('.hero-stat-count')];
+      if (!els.length) return { n: 0 };
+      let frames = 0;
+      const real = window.requestAnimationFrame;
+      window.requestAnimationFrame = function (cb) { frames++; return real.call(window, cb); };
+      els[0].scrollIntoView();
+      await new Promise(r => real.call(window, () => setTimeout(r, 1200)));
+      window.requestAnimationFrame = real;
+      return {
+        n: els.length,
+        frames,
+        reduced: matchMedia('(prefers-reduced-motion: reduce)').matches,
+        states: els.map(e => e.dataset.statState || 'none'),
+        texts: els.map(e => e.textContent.trim()),
+        targets: els.map(e => (e.dataset.target || '?') + (e.dataset.suffix || '')),
+      };
+    })()`);
+    check(statMotion.reduced, 'the harness really is emulating reduced motion',
+      'matchMedia says reduce: ' + statMotion.reduced);
+    check(statMotion.n > 0, 'the hero stats are on the page', statMotion.n + ' found');
+    check(statMotion.frames === 0, 'the count-up starts no animation frames under reduced motion',
+      statMotion.frames + ' rAF calls in 1.2s after the stats were scrolled into view');
+    check(statMotion.states.every(s => s === 'final'),
+      'each stat takes the instant-write path, not the animated one',
+      'data-stat-state: ' + statMotion.states.join(', '));
+    check(statMotion.texts.join('|') === statMotion.targets.join('|'),
+      'the stats land on their target values immediately',
+      statMotion.texts.join(', ') + ' vs ' + statMotion.targets.join(', '));
+
+    // And the same stats still animate when the setting is off, or the branch above
+    // would pass on a page that never animated anything.
+    await cdp.send('Emulation.setEmulatedMedia', { media: '', features: [] });
+    await cdp.send('Page.navigate', { url: PAGE });
+    await sleep(600);
+    const statAnim = await evaluate(`(async () => {
+      const els = [...document.querySelectorAll('.hero-stat-count')];
+      if (!els.length) return { frames: -1, states: [], texts: [] };
+      let frames = 0;
+      const real = window.requestAnimationFrame;
+      window.requestAnimationFrame = function (cb) { frames++; return real.call(window, cb); };
+      els[0].scrollIntoView();
+      await new Promise(r => real.call(window, () => setTimeout(r, 400)));
+      window.requestAnimationFrame = real;
+      return { frames, states: els.map(e => e.dataset.statState || 'none'), texts: els.map(e => e.textContent.trim()) };
+    })()`);
+    check(statAnim.frames > 0 && statAnim.states.every(s => s === 'animated'),
+      'the count-up still animates when reduced motion is off',
+      `${statAnim.frames} rAF calls, data-stat-state: ${statAnim.states.join(', ')}`);
     await cdp.send('Emulation.setEmulatedMedia', { media: '', features: [] });
     // barAt leaves the viewport wherever it last measured, and the hero photo suite
     // below assumes the 1280x900 window the harness launched with - it inherited a
@@ -1106,8 +1238,51 @@ meas.grid = line.length
         taglineClipped: tr.right > vw + 0.5,
         photoW: +img.getBoundingClientRect().width.toFixed(1),
         photoH: +img.getBoundingClientRect().height.toFixed(1),
-        layers: getComputedStyle(home).backgroundImage.split('gradient(').length - 1,
+        // The shared splitter, not a bare split('gradient('). That naive form
+        // counted 3 before the grid gained its major-line tier and now counts 5,
+        // but it was never really a layer count: it counts the literal string
+        // 'gradient(' anywhere in the value, so it cannot distinguish the fade
+        // from the grid and would happily pass a stack of five copies of the fade.
+        // Reusing SPLIT keeps this check and the desktop one reading the same
+        // classification, which is the point of hoisting it into a function.
+        gridAxes: (() => {
+          const layers = [];
+          let depth = 0, cur = '';
+          for (const ch of getComputedStyle(home).backgroundImage) {
+            if (ch === '(') depth++;
+            else if (ch === ')') depth--;
+            if (ch === ',' && depth === 0) { layers.push(cur.trim()); cur = ''; continue; }
+            cur += ch;
+          }
+          if (cur.trim()) layers.push(cur.trim());
+          return layers.filter(l => l.startsWith('repeating-linear-gradient')).length;
+        })(),
         worst: worst.over > 0.5 ? worst.tag + ' by ' + worst.over.toFixed(1) + 'px' : 'nothing',
+        // Left edges of the hero's stacked children. This is what
+        // \`align-items: baseline\` broke, and separately a \`margin: 0 auto\` on each
+        // paragraph below 895px: in a column flex container the cross
+        // axis is horizontal, so baseline alignment put the h1, tagline and body
+        // copy each on their own first baseline, which for mixed font sizes is a
+        // ragged left edge. 3rem of margin-top then offset the whole column
+        // against the photo. One number for all of them, because the claim under
+        // test is that they share an edge.
+        leftEdges: [...document.querySelectorAll('.home-content > h1, .home-content > p, .home-content > .btn-group')]
+          .map(el => ({ tag: el.tagName.toLowerCase() + (typeof el.className === 'string' && el.className ? '.' + el.className.trim().split(/\s+/)[0] : ''), left: +el.getBoundingClientRect().left.toFixed(1) })),
+        // Same measurement at the desktop width this runs against elsewhere.
+        roleLeft: +document.querySelector('.hero-role').getBoundingClientRect().left.toFixed(1),
+        bioLeft: +document.querySelector('.hero-bio').getBoundingClientRect().left.toFixed(1),
+        heroLeft: +document.querySelector('.home-content h1').getBoundingClientRect().left.toFixed(1),
+        referenceLeft: +document.querySelector('.services h2').getBoundingClientRect().left.toFixed(1),
+        // The two hero CTAs. \`.btn-group a:nth-of-type(2)\` restated \`.btn\`
+        // exactly, so Resume and Contact rendered identically and neither read as
+        // the primary action. Comparing resolved backgrounds is the only check that
+        // actually distinguishes them; a selector change alone would not have.
+        ctas: [...document.querySelectorAll('.btn-group .btn')].map(el => ({
+          label: el.textContent.trim(),
+          primary: el.classList.contains('btn-primary'),
+          bg: getComputedStyle(el).backgroundColor,
+          color: getComputedStyle(el).color,
+        })),
       };
     })()`);
     // body.scrollWidth plus the per-element scan, not documentElement.scrollWidth.
@@ -1123,8 +1298,41 @@ meas.grid = line.length
       (narrow.innerW !== narrow.vw ? ` (innerWidth ${narrow.innerW}, stale emulation)` : ''));
     check(!narrow.taglineClipped, 'tagline is not clipped at 375px',
       'right edge at ' + narrow.taglineRight + 'px');
-    check(narrow.layers === 3, 'backdrop survives the phone breakpoints',
-      narrow.layers + ' layers, photo ' + narrow.photoW + 'px wide');
+    check(narrow.gridAxes >= 2, 'backdrop survives the phone breakpoints',
+      narrow.gridAxes + ' grid axis layer(s) still parsed, photo ' + narrow.photoW + 'px wide');
+    // Every child of .home-content should start at the same x. baseline alignment
+    // and the leftover 3rem margin each failed this independently.
+    const lefts = narrow.leftEdges.map(l => l.left);
+    const spread = Math.max(...lefts) - Math.min(...lefts);
+    check(narrow.leftEdges.length >= 4 && spread <= 1,
+      'the hero text column shares one left edge at 375px',
+      `${narrow.leftEdges.length} children, spread ${spread.toFixed(1)}px: ` +
+      narrow.leftEdges.map(l => `${l.tag} ${l.left}px`).join(', '));
+    check(Math.abs(narrow.roleLeft - lefts[0]) <= 1 && Math.abs(narrow.bioLeft - lefts[0]) <= 1,
+      'the role and bio lines align with the h1 above them',
+      `h1 ${lefts[0]}px, role ${narrow.roleLeft}px, bio ${narrow.bioLeft}px`);
+    // The hero against the rest of the page, which is the check that catches an
+    // indent. "The hero children share an edge" passes happily on a column that is
+    // uniformly 60px too far in, because a wrong edge is still a shared edge - that
+    // is exactly how the 4rem mobile margin survived: the column looked tidy in
+    // isolation and indented relative to every section heading on the page.
+    //
+    // So compare against a section outside the hero rather than against the hero
+    // itself. .services h2 is a plain section child with no margin of its own, so
+    // its left edge is the page gutter and nothing else.
+    const heroVsPage = narrow.heroLeft - narrow.referenceLeft;
+    check(Math.abs(heroVsPage) <= 1,
+      'the hero text shares the page gutter, not an indent of its own',
+      `hero h1 ${narrow.heroLeft}px vs .services h2 ${narrow.referenceLeft}px ` +
+      `(${heroVsPage > 0 ? '+' : ''}${heroVsPage}px); was +38.4px at 768 and +63px at 820 ` +
+      'from .home\'s own horizontal margin stacking on section padding');
+    // Distinct backgrounds is the actual requirement; the classes are only how the
+    // stylesheet expresses it.
+    check(narrow.ctas.length === 2, 'both hero CTAs are still there',
+      narrow.ctas.map(c => c.label).join(', '));
+    check(narrow.ctas.length === 2 && narrow.ctas[0].bg !== narrow.ctas[1].bg,
+      'Resume and Contact resolve to different backgrounds, so one reads as primary',
+      narrow.ctas.map(c => `${c.label} ${c.bg}`).join(' vs '));
     // The regression that motivated the whole photo rewrite: `width` was set per
     // breakpoint and `height` never was, so the circle arrived at the phone as an
     // ellipse. The width alone looked plausible, which is why it survived.

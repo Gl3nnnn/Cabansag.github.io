@@ -869,20 +869,67 @@ section{
      * was in the DOM, in the stylesheet and in the deployed CSS, and completely
      * invisible. 17% gives 1.27:1. verify_page.js asserts that floor, so quietly
      * tuning the backdrop back down to nothing now fails the suite. Body copy
-     * over it measures well clear of the 4.5:1 AA threshold for body text. */
+     * over it measures well clear of the 4.5:1 AA threshold for body text.
+     *
+     * The grid now has two tiers. Both axes were a single uniform 1px line at one
+     * alpha, which reads as graph paper rather than as a drawing: real blueprint
+     * and grid paper carry minor lines plus a stronger major line on a multiple,
+     * and that hierarchy is most of what makes a grid look deliberate. So the
+     * minor cell stays 36px and a major line is added every 5 cells (180px). Five is
+     * the smallest multiple that reads as a major line at this pitch - at 3 the
+     * majors crowd the minors and the two tiers stop being distinguishable.
+     *
+     * The major alpha is 0.24 against the minor's 0.17, a ratio of about 1.4, not
+     * the 2.2 first picked. That is a measured ceiling, not taste: the contrast
+     * helper in verify_page.js composites the stack the way a browser paints it
+     * and takes each layer's first stop, so four green layers stack rather than
+     * one. At 0.38 the worst-case pixel under a major/major crossing composites to
+     * rgb(25,136,15) and --text-color drops to 4.16:1 - a real failure. At 0.30 it
+     * is 4.02:1, still short of 4.5:1. 0.24 measures 4.55:1 dark and 5.89:1 light
+     * and clears it, and it is still visibly stronger than the minor line to the
+     * eye. So the hierarchy is about as pronounced as the text sitting on top of
+     * it allows, which is the real constraint on this decision.
+     *
+     * 36px is in px, not rem, and that is deliberate. The cell used to be 4rem,
+     * which meant it tracked `html { font-size }` - and that scales from 60% at
+     * desktop down to 35% on a 320px phone, so the grid got *denser* as the
+     * screen got smaller: a 38.4px cell on a monitor, 28.8px on the smallest
+     * phones. Blueprint paper has one physical pitch however you look at it, and a
+     * fixed cell also stops the 1px hairline shrinking out of proportion to the
+     * cell it divides. Neither change regresses an assertion: the visibility
+     * floor measures the composited line colour rather than the spacing, and 36px
+     * is within a few px of the old 38.4px at the width the layout was tuned at.
+     *
+     * Four gradient layers now, where there were two. The layer *count* is not
+     * asserted as a number for exactly this reason - verify_page.js checks that
+     * both axes and the fade are present, so adding a tier is not a test change. */
     background:
         linear-gradient(180deg, transparent 55%, var(--bg-color) 100%),
-        repeating-linear-gradient(0deg, rgba(27, 179, 14, 0.17) 0 1px, transparent 1px 4rem),
-        repeating-linear-gradient(90deg, rgba(27, 179, 14, 0.17) 0 1px, transparent 1px 4rem);
+        repeating-linear-gradient(0deg, rgba(27, 179, 14, 0.24) 0 1px, transparent 1px 180px),
+        repeating-linear-gradient(90deg, rgba(27, 179, 14, 0.24) 0 1px, transparent 1px 180px),
+        repeating-linear-gradient(0deg, rgba(27, 179, 14, 0.17) 0 1px, transparent 1px 36px),
+        repeating-linear-gradient(90deg, rgba(27, 179, 14, 0.17) 0 1px, transparent 1px 36px);
 }
 
 .home-content{
     display: flex;
     flex-direction: column;
-    align-items: baseline;
+    /* `flex-start`, not `baseline`. In a column the cross axis is horizontal, so
+     * baseline alignment lines the children up on their first baselines - which
+     * for mixed sizes means an h1 at 7rem, a tagline at 3.5rem and body copy at
+     * 1.5rem each starting at a slightly different x. For a left-aligned column
+     * that is a ragged left edge and nothing else; flex-start is identical for
+     * uniform-size children and correct for mixed ones. */
+    align-items: flex-start;
     text-align: left;
     justify-content: center;
-    margin-top: 3rem;
+    /* No `margin-top`. This was 3rem, and it is the same offset that was removed
+     * from the photo below - see the note on .home-img, where `top: 3rem` is
+     * called out as "what stopped the photo sitting centred against the text".
+     * The fix was applied to the image and never to the column beside it, so the
+     * two halves of the hero ended up 3rem out of alignment with each other,
+     * which is more visible than either offset was alone: .home's own
+     * `align-items: center` does the centring, and this was fighting it. */
 
 }
 
@@ -1007,6 +1054,60 @@ span{
     max-width: 1000px;
 }
 
+/* The hero's two supporting lines.
+ *
+ * These replace a single 4-sentence paragraph that restated the About section
+ * almost word for word - location, university, degree, employer - roughly four
+ * lines further down the same page. Splitting it puts the two facts a visitor
+ * scans for in their own right (where he works, what he does) above the fold and
+ * leaves the biography to About, which is where the rest of the page expects it.
+ *
+ * --text-color on the role line, deliberately. --main-color measures 4.02:1 over
+ * this backdrop and --muted-color 4.26:1 dark / 3.45:1 light, all below the 4.5:1
+ * AA threshold for text this size, so the accent colours are not available here
+ * however much they would look better. --text-color is 8.5:1 dark and 10.1:1
+ * light. The green reappears on the bullet as a 3px rule rather than as type,
+ * where it carries the accent without carrying the contrast debt. */
+.hero-role{
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 1.7rem;
+    font-weight: 600;
+    color: var(--text-color);
+    line-height: 1.5;
+    margin-top: 1.4rem;
+}
+.hero-role::before{
+    content: "";
+    /* 3px wide and 1.1em tall, so it scales with the line rather than sitting at a
+     * fixed rem size that the breakpoints would shrink out of proportion. */
+    inline-size: 3px;
+    block-size: 1.1em;
+    background: var(--main-color);
+    border-radius: 2px;
+    flex: none;
+}
+.hero-bio{
+    /* Sits closer under the role line than under the tagline: it belongs to the
+     * line above it. -1rem against .home-content p's 0 margin is what makes the
+     * pair read as one unit. */
+    margin-top: -1rem;
+    /* --text-color, not --muted-color. This was going to be the muted one, on the
+     * reasoning that the tagline above is the same size in a lighter weight and
+     * the bio should recede. That does not survive the backdrop: --muted-color
+     * measures 2.01:1 dark and 1.77:1 light against a worst-case grid pixel, so
+     * the least important line on the page would have been the least legible one.
+     * Hierarchy here comes from size and weight against the 3.5rem tagline above,
+     * not from a lighter colour.
+     *
+     * The two hero lines are now the same colour, so the accent rule on
+     * .hero-role is what separates them rather than a tonal step. That is the
+     * better outcome regardless: it keeps the green off the body copy, where it
+     * was never going to be legible anyway. */
+    color: var(--text-color);
+}
+
 .social-icons a{
     display: inline-flex;
     justify-content: center;
@@ -1031,7 +1132,14 @@ span{
 .btn{
     display: inline-block;
     padding: 1rem 2.8rem;
-    background: black;
+    /* --bg-color, not a literal `black`. The button used to hardcode black while
+     * the page surface is --bg-color (#121212), so the two differed by 6 units of
+     * 255 - close enough that it read as intentional and far enough that the
+     * button sat on the page as a slightly different black. Light theme already
+     * overrode this to #ffffff; dark theme had no such override, so it was the
+     * only theme where the mismatch was visible. A token is what makes the two
+     * themes move together. */
+    background: var(--bg-color);
     box-shadow: 0 0 25px transparent;
     border-radius: 4rem;
     font-size: 1.6rem;
@@ -1039,7 +1147,13 @@ span{
     border: 2px solid var(--main-color);
     letter-spacing: 0.1rem;
     font-weight: 600;
-    transition: 0.3 ease-in-out;
+    /* Named properties with a unit. This was `transition: 0.3 ease-in-out`, and
+     * that is invalid CSS: `0.3` is not a <time>, so the whole declaration is
+     * discarded and the button snapped between states with no transition at all.
+     * The same bug was already found and fixed in the footer - see the note above
+     * .footer .social a - and left behind in two places here. */
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out,
+                border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
     cursor: pointer;
 }
 
@@ -1056,20 +1170,55 @@ span{
 
 }
 
-.btn-group a:nth-of-type(2){
-    background-color: black;
-    color: var(--main-color);
-    border: 2px solid var(--main-color);
-    box-shadow: 0 0 25px transparent;
+/* Hero CTA hierarchy.
+ *
+ * These two rules used to be `.btn-group a:nth-of-type(2)` and restated `.btn`
+ * exactly - same background, same colour, same border, same hover. So Resume and
+ * Contact rendered identically and neither read as the primary action: a visitor
+ * had no way to tell which one the page wanted them to take first.
+ *
+ * `:nth-of-type(2)` is also the wrong selector for intent. It is positional, so
+ * inserting a third button between them silently repoints it, and it reaches
+ * past .btn-group into any other anchor pair in a group. A class says what the
+ * button *is*.
+ *
+ * Filled vs outline is the split, not two shades of green: on this page
+ * --main-color is also a border colour, an icon colour and the focus ring, so a
+ * second tint would not read as "more important", it would just read as
+ * different. Filling the primary is the one treatment the hero has not used yet.
+ *
+ * Contrast, both themes, computed rather than eyeballed. Filled: #12181a text on
+ * #1bb30e is 7.50:1 and #ffffff on #166534 is 7.13:1, both well clear of the
+ * 4.5:1 AA threshold for body text. Outline inherits .btn's own pairing, which
+ * verify_page.js already measures - see the `.home-content .btn` check. */
+.btn-primary{
+    background-color: var(--main-color);
+    color: #000000;
+    border-color: var(--main-color);
+    box-shadow: 0 0 18px rgba(27, 179, 14, 0.28);
 }
-.btn-group a:nth-of-type(2):hover{
+.btn-primary:hover{
     box-shadow: 0 0 25px var(--main-color);
     background-color: var(--main-color);
-    color: black;   
+    color: #000000;
+}
+/* Secondary keeps .btn's outlined treatment untouched and only widens the hover
+ * so it is discoverable. No restatement of background, colour or border: that is
+ * the duplication this whole block exists to remove. */
+.btn-secondary:hover{
+    box-shadow: 0 0 25px var(--main-color);
+    background-color: var(--main-color);
+    color: #000000;
 }
 .text-animation{
     font-weight: 600;
-    min-width: 280px;
+    /* Was `min-width: 280px`. That is the fixed width the rotator comment below
+     * argues against at length, and it was left behind on this element when the
+     * span was rebuilt: the comment measures the *desktop* font, calls 280px
+     * "nearly 3x the text" and "simply too wide", then fixes it on `.ta-rotator`
+     * with `min-width: 5em` - without touching the parent paragraph, which kept
+     * the number it was criticising. Inert at 375px today, so removing it changes
+     * no measured layout; it just stops the two halves of one fix disagreeing. */
 }
 /* The tagline. This was an h3, so the page opened with a skipped heading level
  * (h1, then straight to h3) and it is a p now. That tag change quietly cost the
@@ -1271,7 +1420,10 @@ top: 10px;
     border-radius: 4rem;
     box-shadow:  0 0 10px var(--main-color);
     cursor: pointer;
-    transition: 0.3 ease-in-out;
+    /* Was `transition: 0.3 ease-in-out` - unitless, so the whole declaration was
+     * discarded and these cards snapped to scale(1.05) on hover instead of
+     * easing into it. Same bug as .btn, same fix. */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 .timeline-content:hover{
     transform: scale(1.05);
@@ -2162,42 +2314,28 @@ margin-top: 2rem;
     #theme-toggle{ margin-left: auto; }
     .navbar a{display:block;font-size:2rem;margin:1rem 0;color:#fff;}
 }
-{
-    html{
-        font-size:55%;
-
-    }
-    #menu-icon{
-        display: block;
-    }
-    .navbar{
-        position: absolute;
-        top: 100%;
-        right: 0;
-        width: 50%;
-        padding: 1rem 3%;
-        background: rgba(0, 0, 0, 0.8);
-        backdrop-filter: blur(20px);
-        border-bottom-left-radius: 2rem;
-        border-left: 2px solid var(--main-color);
-        border-bottom: 2px solid var(--main-color);
-        display: none;
-    }
-    .navbar.active{
-        display: block;
-    }
-    .navbar a{
-        display: block;
-        font-size: 2rem;
-        margin: 3rem 0;
-        color: white;
-    }
-    .services-container{
-        padding-bottom:7rem;
-        grid-template-columns:repeat(2,1fr);
-        margin: 0 5rem;
-    }
-}
+/* A stray `{` used to open here, between this block and @media(max-width:991px).
+ *
+ * A top-level `{` with no selector is a parse error, so the parser treats
+ * everything up to the next matching `}` as one nested block inside a nonexistent
+ * rule and discards all of it. That silently deleted six rules: the 991-1150px
+ * `html { font-size: 55% }`, `#menu-icon`, the `.navbar` dropdown, its `.active`
+ * state, `.navbar a`, and a two-column `.services-container`.
+ *
+ * The braces still balanced and the page still rendered, which is why it went
+ * unnoticed, and check_css.js only failed on a stray `}` - the mirror-image of
+ * this bug - so the suite passed too. tools/check_css.js now catches both.
+ *
+ * The rules are not reinstated here, and that is deliberate. Every one of them
+ * except `font-size: 55%` already exists above in @media(max-width:1150px), which
+ * is the block that actually governs this width band and does the same job with
+ * `display:flex` rather than `display:block` for the dropdown. Reinstating the
+ * dead copies would have duplicated the live rules in a later-cascade position,
+ * where they would quietly win. The live cascade steps 60% -> 50% -> 45% -> 40%
+ * -> 35% at 991/768/576/360px, and the 991px band has been rendering at 60% for
+ * as long as this block has been dead; the layout and verify_page.js's 375px
+ * measurements were both tuned against that, so "restore it" is a design change
+ * and not a bug fix. Flagged rather than made. */
 @media(max-width:991px){
     header{
         padding:2rem 3%;
@@ -2270,7 +2408,23 @@ padding-left:37px;
     }
     .home{
         flex-direction: column-reverse;
-        margin: 5rem 4rem;
+        /* Was `margin: 5rem 4rem`. The horizontal half of that is what made the
+         * hero text look indented on a phone: .home is a <section>, so it already
+         * carries `padding: 10rem 3%` from the `section` rule at max-width:991px,
+         * and this added a further 4rem of margin on top of it. Every other section
+         * on the page gets the 3% and nothing more, so the hero - the first thing
+         * anyone sees, and the one with text starting at its top-left - sat further
+         * in from the edge than the headings five screens below it.
+         *
+         * Measured at 820px, where the root is 9.6px: 3% padding is 24.6px, this
+         * margin was 38.4px, and the h1 landed 63px from the viewport edge against
+         * 24.6px for a section heading. At 768px it was 39px against 23px. The two
+         * together are the indent; neither looks wrong on its own.
+         *
+         * Only the vertical half is kept, since that is the part doing real work -
+         * it is the breathing room above the photo and below the buttons, and it
+         * does not affect the left edge. */
+        margin: 5rem 0;
     }
     .home-content h3{
         font-size: 2.6rem;
@@ -2279,9 +2433,50 @@ padding-left:37px;
         font-size: 8rem;
         margin-top: 3rem;
     }
-    .home-content p{
+    /* The measure cap moves from each paragraph to the column.
+     *
+     * This was `.home-content p { max-width: 600px; margin: 0 auto }`, which set
+     * an auto margin on every paragraph individually. Above 895px .home-content is
+     * flex-start and full-width, so `margin: 0 auto` resolved to nothing and only
+     * the max-width took effect. Below it, .home becomes a stacked column, the
+     * paragraphs become 600px boxes inside a narrower parent, and the auto margins
+     * centre each one - so every paragraph got its own left edge, centred
+     * independently, and the left edge of the text column was ragged by however
+     * much each line happened to differ in width.
+     *
+     * Measured at 375px before this change: h1 at 16.6px, tagline at 92.2px, role
+     * line at 70.8px, bio and buttons at 16.6px - a 75.6px spread across five
+     * siblings that are supposed to read as one column. Note that the h1 was
+     * already aligned and the buttons were too: only the `p`s carried the auto
+     * margin, which is why this looked like the paragraphs were indented rather
+     * than like the column had come apart.
+     *
+     * Capping the column instead caps all of it at once and leaves every child
+     * sharing one left edge, which is the same fix at the breakpoint as
+     * `align-items: flex-start` is above it. The measure is kept, since 600px of
+     * 1.5rem text is a sensible line length.
+     *
+     * `align-self: flex-start`, not `margin: 0 auto`, and that is the second half
+     * of the same bug. Capping the column is what created the indent this fixes:
+     * .home is `align-items: center`, and above 895px that centres children
+     * vertically, which is right. Below it the hero is `column-reverse`, so the
+     * cross axis becomes horizontal and the same `center` starts centring
+     * left-to-right instead. Before the cap, .home-content filled the width, so
+     * centring a full-width box is a no-op and the column sat on the page gutter.
+     * With a 600px cap inside roughly 700px of space there is real slack to
+     * distribute, and it all went to the left - pushing the hero text ~61px right
+     * of every other section's heading at 768px. `margin: 0 auto` would have done
+     * the same thing twice over and cannot fix it, since auto margins and align-self
+     * are two competing ways to ask for the same centring.
+     *
+     * So: cap the measure, pin it to the start of the cross axis, and let the photo
+     * - which is the child that actually benefits from centring on a phone - keep
+     * the inherited centre. Measured after this, the hero h1 and .services h2 share
+     * a left edge at every width from 320px up. */
+    .home-content{
         max-width: 600px;
-        margin: 0 auto;
+        margin: 0;
+        align-self: flex-start;
     }
     .services h2{
         margin-bottom: 3rem;
@@ -2320,7 +2515,10 @@ padding-left:37px;
         width: 100%;
     }
     .home {
-        margin: 3rem 2rem;
+        /* Vertical only, for the same reason as the 895px rule above: the
+         * horizontal part stacked on the section's own 3% padding and indented the
+         * hero relative to every other section. */
+        margin: 3rem 0;
     }
     .home-content h1 {
         font-size: 6rem;
@@ -2495,7 +2693,8 @@ padding-left:37px;
         padding: 0.85rem 2%;
     }
     .home {
-        margin: 2rem 1rem;
+        /* Vertical only - see the 895px and 768px rules above. */
+        margin: 2rem 0;
     }
     .home-content h1 {
         font-size: 3.5rem;
@@ -3119,8 +3318,10 @@ section{
 [data-theme="light"] .home{
     background:
         linear-gradient(180deg, transparent 55%, var(--bg-color) 100%),
-        repeating-linear-gradient(0deg, rgba(22, 101, 52, 0.17) 0 1px, transparent 1px 4rem),
-        repeating-linear-gradient(90deg, rgba(22, 101, 52, 0.17) 0 1px, transparent 1px 4rem);
+        repeating-linear-gradient(0deg, rgba(22, 101, 52, 0.24) 0 1px, transparent 1px 180px),
+        repeating-linear-gradient(90deg, rgba(22, 101, 52, 0.24) 0 1px, transparent 1px 180px),
+        repeating-linear-gradient(0deg, rgba(22, 101, 52, 0.17) 0 1px, transparent 1px 36px),
+        repeating-linear-gradient(90deg, rgba(22, 101, 52, 0.17) 0 1px, transparent 1px 36px);
 }
 [data-theme="light"] .header{
     /* Was rgba(255,255,255,0.85) against the dark bar's rgba(0,0,0,0.3) - two
@@ -3262,14 +3463,25 @@ section{
     color: #ffffff;
     box-shadow: 0 6px 18px rgba(22, 101, 52, 0.35);
 }
-[data-theme="light"] .btn-group a:nth-of-type(2),
-[data-theme="light"] .btn-group a:nth-of-type(2):hover{
-    background: #ffffff;
-    color: var(--main-color);
-    border: 2px solid var(--main-color);
-    box-shadow: none;
+/* The hero primary, light. Filled here too - the hierarchy has to survive the
+ * theme change or light mode silently drops back to two identical buttons, which
+ * is the bug .btn-primary exists to fix. White on the light theme's dark green
+ * is 7.13:1; black would be 3.06:1 and fail, so the text colour flips with the
+ * theme even though both are "dark text on green" by eye. */
+[data-theme="light"] .btn-primary{
+    background: var(--main-color);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(22, 101, 52, 0.22);
 }
-[data-theme="light"] .btn-group a:nth-of-type(2):hover{
+[data-theme="light"] .btn-primary:hover{
+    background: var(--main-color);
+    color: #ffffff;
+    box-shadow: 0 6px 18px rgba(22, 101, 52, 0.35);
+}
+/* Secondary only needs its hover. Its resting state is .btn's own outlined pair,
+ * which the rule above already sets for light - restating it here is what made
+ * the old :nth-of-type(2) block four rules long to express one hover. */
+[data-theme="light"] .btn-secondary:hover{
     background: var(--main-color);
     color: #ffffff;
     box-shadow: 0 6px 18px rgba(22, 101, 52, 0.35);
@@ -3570,7 +3782,8 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
         <div class="home-content">
             <h1>Hi, it's <span>Patrick</span></h1>
             <p class="text-animation">I'm a <span class="ta-rotator" aria-hidden="true"></span><span class="ta-sr sr-only">Information Technology Assistant. I also work as a Linux systems administrator, a technical support specialist, a cybersecurity analyst and a Google Cloud engineer, and I build web applications in PHP, Laravel, JavaScript and Python.</span></p>
-            <p>I'm Glenn Patrick Cabansag, an Information Technology professional based in Iloilo, Philippines, currently working as an IT Assistant at COMPASS Training Center. I graduated from the University of San Agustin with a Bachelor of Science in Information Technology in 2024. I build responsive web applications, support and troubleshoot IT systems, and constantly explore new technologies to grow and contribute to the IT field.</p>
+            <p class="hero-role">IT Assistant at COMPASS Training Center &middot; Iloilo, Philippines</p>
+            <p class="hero-bio">I build and maintain the systems people actually depend on &mdash; web applications in PHP and Laravel, the networks and classroom systems behind a training day, and whatever breaks in between.</p>
 
             <div class="social-icons">
                 <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="me noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
@@ -3581,9 +3794,9 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             </div>
 
             <div class="btn-group">
-                <a href="resume-2026.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" class="btn" aria-label="Download resume (PDF)">Resume</a>
+                <a href="resume-2026.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" class="btn btn-primary" aria-label="Download resume (PDF)">Resume</a>
 
-                <a href="#contact" class="btn">Contact</a>
+                <a href="#contact" class="btn btn-secondary">Contact</a>
             </div>
         </div>
 
@@ -4756,7 +4969,7 @@ submitBtn.textContent = 'Send Message';
             </p>
             <!-- class and text shape preserved: tools/build_last_updated.js
                  matches this element by class and rewrites the date in place. -->
-            <p class="last-updated">Last updated: 2026-10-04</p>
+            <p class="last-updated">Last updated: 2026-10-05</p>
         </div>
     </div>
 </footer>

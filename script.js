@@ -491,10 +491,29 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
     });
 })();
 
-// Hero stats count-up animation when scrolled into view
+// Hero stats count-up animation when scrolled into view.
+//
+// Reduced motion is honoured here, in JS, and not only in the stylesheet. Every
+// other animation on this page is CSS, where the existing
+// `@media (prefers-reduced-motion: reduce)` blocks in index.html can cancel the
+// property and the effect stops. This one is not: it writes textContent from a
+// rAF loop, so there is no CSS property to cancel and the numbers still swept
+// from 0 to their target for 1.5s regardless of the setting. Cancelling
+// `animation` does nothing to a script. With the setting on, the observer still
+// runs - IntersectionObserver is not motion - but it paints the final value once
+// and never starts a frame loop.
+//
+// data-stat-state is what makes that testable from outside. `animated` marks the
+// loop path and `final` the reduced path, so verify_page.js can assert which of
+// the two actually ran instead of sampling textContent and hoping to catch it
+// mid-sweep. It also gives the reduced path something observable to compare
+// against, since "the number looks right immediately" and "the number arrived by
+// animating and happened to finish before the assertion" are otherwise
+// indistinguishable.
 if ('IntersectionObserver' in window) {
     const statEls = document.querySelectorAll('.hero-stat-count');
     if (statEls.length) {
+        const statReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const statObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (!entry.isIntersecting) return;
@@ -502,8 +521,14 @@ if ('IntersectionObserver' in window) {
                 statObserver.unobserve(el);
                 const target = parseInt(el.dataset.target || '0', 10);
                 const suffix = el.dataset.suffix || '';
+                if (statReduced) {
+                    el.textContent = target + suffix;
+                    el.dataset.statState = 'final';
+                    return;
+                }
                 const duration = 1500;
                 const start = performance.now();
+                el.dataset.statState = 'animated';
                 const tick = (now) => {
                     const p = Math.min((now - start) / duration, 1);
                     const eased = 1 - Math.pow(1 - p, 3);
