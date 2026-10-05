@@ -1273,6 +1273,37 @@ meas.grid = line.length
         bioLeft: +document.querySelector('.hero-bio').getBoundingClientRect().left.toFixed(1),
         heroLeft: +document.querySelector('.home-content h1').getBoundingClientRect().left.toFixed(1),
         referenceLeft: +document.querySelector('.services h2').getBoundingClientRect().left.toFixed(1),
+        // Ink gap and font sizes for the two hero lines. Measured from Range
+        // rects on the text nodes rather than element boxes: margin-top: -1rem
+        // moved the .hero-bio BOX up cleanly, so no box comparison saw the
+        // collision, while the glyphs it overlapped were 2.5-3.6px into each other
+        // at every width. Element geometry alone cannot detect this.
+        heroLines: (() => {
+          const ink = sel => {
+            const el = document.querySelector(sel);
+            const rects = [];
+            for (const node of el.childNodes) {
+              if (node.nodeType !== 3 || !node.textContent.trim()) continue;
+              const rg = document.createRange();
+              rg.selectNodeContents(node);
+              for (const r of rg.getClientRects()) rects.push(r);
+            }
+            const cs = getComputedStyle(el);
+            return {
+              top: Math.min(...rects.map(r => r.top)),
+              bottom: Math.max(...rects.map(r => r.bottom)),
+              size: parseFloat(cs.fontSize),
+              weight: cs.fontWeight,
+            };
+          };
+          const role = ink('.hero-role');
+          const bio = ink('.hero-bio');
+          return {
+            gap: +(bio.top - role.bottom).toFixed(1),
+            roleSize: +role.size.toFixed(1), roleWeight: role.weight,
+            bioSize: +bio.size.toFixed(1), bioWeight: bio.weight,
+          };
+        })(),
         // The two hero CTAs. \`.btn-group a:nth-of-type(2)\` restated \`.btn\`
         // exactly, so Resume and Contact rendered identically and neither read as
         // the primary action. Comparing resolved backgrounds is the only check that
@@ -1311,6 +1342,26 @@ meas.grid = line.length
     check(Math.abs(narrow.roleLeft - lefts[0]) <= 1 && Math.abs(narrow.bioLeft - lefts[0]) <= 1,
       'the role and bio lines align with the h1 above them',
       `h1 ${lefts[0]}px, role ${narrow.roleLeft}px, bio ${narrow.bioLeft}px`);
+    // The two hero lines must not overlap. `.hero-bio` used to carry
+    // `margin-top: -1rem` to bind it to the role line above, and that pull was
+    // larger than the intrinsic half-leading it had to give back on a 40% root:
+    // measured ink gap was -3.5px at 375px, -3.6px at 1280px. "Philippines"
+    // descenders sat inside the ascenders of "I build and maintain". The boxes
+    // never collided, so this is measured on text ink on purpose.
+    check(narrow.heroLines.gap > 0,
+      'the role and bio lines do not overlap at 375px',
+      `ink gap ${narrow.heroLines.gap}px (was -3.5px from margin-top: -1rem)`);
+    // And the role line must actually outrank the bio. `.hero-role` declared
+    // 1.7rem/600 but `.home-content p` carries 0,1,1 against 0,1,0, so the
+    // declaration lost at every width and both lines rendered at the same size
+    // and weight - the scannable line was interchangeable with its own
+    // paragraph. Same specificity trap already fixed for `.text-animation`.
+    check(narrow.heroLines.roleSize > narrow.heroLines.bioSize &&
+      Number(narrow.heroLines.roleWeight) >= 600,
+      'the role line is larger and heavier than the bio beneath it',
+      `role ${narrow.heroLines.roleSize}px/${narrow.heroLines.roleWeight} vs ` +
+      `bio ${narrow.heroLines.bioSize}px/${narrow.heroLines.bioWeight} ` +
+      '(both were rendering at the bio size and weight)');
     // The hero against the rest of the page, which is the check that catches an
     // indent. "The hero children share an edge" passes happily on a column that is
     // uniformly 60px too far in, because a wrong edge is still a shared edge - that

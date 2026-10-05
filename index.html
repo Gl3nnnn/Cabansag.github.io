@@ -1074,7 +1074,26 @@ span{
  * however much they would look better. --text-color is 8.5:1 dark and 10.1:1
  * light. The green reappears on the bullet as a 3px rule rather than as type,
  * where it carries the accent without carrying the contrast debt. */
-.hero-role{
+/* Selected as `.home-content p.hero-role`, not `.hero-role`, for the reason
+ * spelled out on `.home-content p.text-animation` above: `.home-content p`
+ * carries 0,1,1 and a bare class carries 0,1,0, so font-size, font-weight and
+ * line-height here were all losing - at every width, not just on phones.
+ *
+ * Measured before this fix, the role line rendered at 14.4px/500/1.8 on desktop
+ * and 7.68px on a phone, which is `.home-content p`'s 1.5rem and its 1.2rem
+ * override, not the 1.7rem/600/1.5 declared here. So the role line was the same
+ * size and weight as the bio directly beneath it: the one line on the page whose
+ * entire job is to be scannable was visually interchangeable with its own
+ * paragraph. Nothing in the markup changed to show for it, which is why this sat
+ * unnoticed - the element is <p class="hero-role">, and the rule plainly says
+ * 1.7rem.
+ *
+ * Bumping the specificity to 0,2,1 puts those three declarations back. It also
+ * puts the role line above the <=768px `font-size: 1.2rem` sweep, which is what
+ * is wanted: the sweep exists to stop small copy vanishing on a 35-40% root, and
+ * this line is 1.7rem -> 10.2px at 320px, still the largest copy in the hero
+ * after the 3.5rem tagline. */
+.home-content p.hero-role{
     display: flex;
     align-items: center;
     gap: 0.8rem;
@@ -1095,10 +1114,23 @@ span{
     flex: none;
 }
 .hero-bio{
-    /* Sits closer under the role line than under the tagline: it belongs to the
-     * line above it. -1rem against .home-content p's 0 margin is what makes the
-     * pair read as one unit. */
-    margin-top: -1rem;
+    /* Sits closer under the role line than the tagline sits above it, because it
+     * belongs to the line below: 0.5rem against the tagline's 2rem.
+     *
+     * This was -1rem, on the theory that pulling the bio up makes the role line
+     * and bio read as one unit. Measured, it does not - it collides with it. The
+     * ink gap (text line boxes, not element boxes) was NEGATIVE at every width:
+     * -2.5px at 320, -3.5px at 375 and 480, -3.4px at 768, -3.6px from 1024 up.
+     * "Philippines" descenders sat inside the ascenders of "I build and
+     * maintain". Element boxes never showed it, because the -1rem moved the bio
+     * box up cleanly; only the glyphs collided. At a 1.2rem/1.5rem pair on the
+     * 40% root that is 1rem of pull against ~1.7rem of intrinsic half-leading
+     * above and below - the pull is larger than the space it has to give back.
+     *
+     * The grouping the -1rem was after comes from the 0.5rem itself, not from the
+     * overlap: 0.5rem of box gap is ~1.2rem of ink gap, against ~2.9rem between
+     * the tagline and the role line. Same intent, no collision. */
+    margin-top: 0.5rem;
     /* --text-color, not --muted-color. This was going to be the muted one, on the
      * reasoning that the tagline above is the same size in a lighter weight and
      * the bio should recede. That does not survive the backdrop: --muted-color
