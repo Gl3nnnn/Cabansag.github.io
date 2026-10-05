@@ -1396,11 +1396,25 @@ meas.grid = line.length
             // hit requires real intersection area in the vertical direction too.
             const overlapX = Math.min(dot.right, date.right) - Math.max(dot.left, date.left);
             const overlapY = Math.min(dot.bottom, date.bottom) - Math.max(dot.top, date.top);
+            // The dot's 4px separation ring is drawn outside its border box and
+            // getBoundingClientRect does not include box-shadow, so the ring's
+            // outer edge is recovered from the computed spread. Against the card
+            // it is the thing that actually touches: the dot's own box can clear
+            // the card while its halo does not.
+            const ring = (getComputedStyle(it.querySelector('.timeline-dot')).boxShadow
+              .match(/(-?[\\d.]+)px/g) || []).map(parseFloat);
+            const spread = ring.length ? Math.max(...ring.map(Math.abs)) : 0;
             return {
               overlap: +(Math.max(0, overlapX) * Math.max(0, overlapY)).toFixed(1),
               dotCX: +(dot.left + dot.width / 2).toFixed(1),
               cardOverhang: +(Math.max(0, card.right - out.vw) + Math.max(0, 0 - card.left)).toFixed(1),
               dotLeft: +dot.left.toFixed(1),
+              // Negative means the dot's ring would sit inside the card.
+              ringToCard: +(card.left - (dot.right + spread)).toFixed(1),
+              // The dot has to read as belonging to the date line beside it, not
+              // to the card below it.
+              dotDateSkew: +Math.abs(
+                (dot.top + dot.height / 2) - (date.top + date.height / 2)).toFixed(1),
               cursor: getComputedStyle(it.querySelector('.timeline-content')).cursor,
               transform: getComputedStyle(it.querySelector('.timeline-content')).transform,
             };
@@ -1443,6 +1457,31 @@ meas.grid = line.length
 
       check(t.sections.every(s => s.railVisible), `the rail is visible at ${w}px`,
         t.sections.map(s => `${s.id} display=${s.railVisible}`).join(', '));
+
+      // The dot's 4px ring must clear the card on the single rail. An earlier
+      // revision of this fix used `padding-left: 3.6rem` for that gutter, which
+      // resolves to 25.9px at the 40% root - and the ring reaches 25px, so at
+      // 375px it landed 0.9px INSIDE the card, drawing a notch of band colour
+      // along the card's left border. A rem gutter cannot clear a px-sized dot
+      // at every root font-size, which is what this pins down.
+      //
+      // Only asserted below 991px, where the dot is the card's left-hand
+      // neighbour. On the desktop zigzag the dot sits on the centreline and the
+      // card is a half-track away on the other side, so "gap between them" is
+      // meaningless there and would read as a large negative.
+      if (w <= 991) {
+        const worstRingGap = Math.min(...t.sections.flatMap(s => s.items.map(i => i.ringToCard)));
+        check(worstRingGap >= 0, `the dot's ring clears the card at ${w}px`,
+          `tightest gap ${worstRingGap.toFixed(1)}px (negative means the ring draws inside the card)`);
+      }
+
+      // Vertical centring of the dot on the date's line box. A flat `top: 10px`
+      // only looked level against the old 2rem/800 date at the 60% root; at every
+      // smaller root it sat below the text, ~7px adrift on a 375px phone. The
+      // rule now derives its offset from the date's own metrics.
+      const worstSkew = Math.max(...t.sections.flatMap(s => s.items.map(i => i.dotDateSkew)));
+      check(worstSkew <= 1, `each dot is level with its date at ${w}px`,
+        `worst vertical skew ${worstSkew.toFixed(1)}px`);
 
       const worstOverhang = Math.max(...t.sections.flatMap(s => s.items.map(i => i.cardOverhang)));
       check(worstOverhang <= 1, `no timeline card hangs past the viewport at ${w}px`,

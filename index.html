@@ -1374,13 +1374,21 @@ span{
 .timeline-items{
     max-width: 1200px;
     margin: auto;
-    display: flex;
-    flex-wrap: wrap;
     position: relative;
+    /* An <ol>, so the chronology is conveyed by the markup and not only by the
+     * CSS. The markers are dropped because the rail and dots already say "a
+     * sequence"; a second set of numerals on top of that is noise. The universal
+     * `* { margin: 0; padding: 0 }` clears the UA's own ol indentation. */
+    list-style: none;
+    /* Was `display: flex; flex-wrap: wrap` with every .timeline-item at
+     * `width: 100%`. One 100%-wide item per flex line lays out identically to
+     * normal block flow, so the flex container bought nothing and only made the
+     * zigzag's nth-child padding rules look load-bearing. Block flow states the
+     * same thing: children stack, full width, in document order. */
 }
 .timeline-items::before{
     content: "";
-position: absolute;
+    position: absolute;
     width: 5px;
     height: 100%;
     background-color: var(--main-color);
@@ -1392,7 +1400,11 @@ position: absolute;
 
 }
 .timeline-item{
-    margin-bottom: 40px;
+    /* rem, so the gap between entries scales with the page the way every other
+     * vertical rhythm here does. 4rem is 38.4px at the 60% root and 25.6px on a
+     * phone - the old fixed 40px was over a quarter of a phone's line height
+     * taller than it needed to be between short entries. */
+    margin-bottom: 4rem;
     width: 100%;
     position: relative;
 }
@@ -1417,19 +1429,39 @@ position: absolute;
      * sitting on the rail needs to read as a node, not a light source, and a
      * 50px halo made the rail's own 5px weight irrelevant. */
     box-shadow: 0 0 0 4px var(--timeline-surface);
-position: absolute;
+    position: absolute;
     left: calc(50% - 10.5px);
     border-radius: 50%;
-    top: 10px;
+    /* Centres the dot on the date's line box: 1.6rem x line-height 1.5 is 2.4rem
+     * tall, so half of that is 1.2rem, less half the dot's own 21px. Was a flat
+     * `top: 10px`, which happened to look level against the old 2rem/800 date at
+     * desktop and drifted below it at every root font-size below 60% - on a
+     * 375px phone the dot sat ~7px lower than the text it belongs to. Derived
+     * from the date's own metrics so the two cannot drift apart again. */
+    top: calc(1.2rem - 10.5px);
 }
 .timeline-date{
     /* rem, not px: the root font-size scales 60% -> 45% -> 35% across the
      * breakpoints, so every other piece of body copy shrinks on a phone while
-     * this one stayed at its desktop size. 2rem is 20px at 60%. */
-    font-size: 2rem;
-    font-weight: 800;
-    color: white;
-    margin: 0.6rem 0 1.5rem;
+     * this one stayed at its desktop size.
+     *
+     * Also demoted from 2rem/800 to 1.6rem/700. At the old size the date was
+     * exactly as large as the stage heading and heavier than it, so the eye
+     * landed on the dates first and read the qualification second - the reverse
+     * of the intended hierarchy. Tabular figures keep "2019 - 2020" from
+     * shifting as it is compared against the entry above it. */
+    font-size: 1.6rem;
+    line-height: 1.5;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-color);
+    /* No top margin. A block's top margin collapses with its parent's, so the
+     * date's used to sit 0.6rem above .timeline-item's own box while the dot -
+     * positioned against that box - stayed put. Removing it puts the date's line
+     * box flush with the item's, which is what makes the dot's `top` above
+     * correct. */
+    margin: 0 0 1rem;
 
 }
 .timeline-content{
@@ -1446,33 +1478,57 @@ position: absolute;
      * near-full-width card outside its own track. */
 }
 .timeline-content h3{
-    font-size: 2rem;
-    color: white;
-    margin: 0 0 1rem;
-    font-weight: 500;
+    /* Promoted to be the entry's headline: 2.2rem at 600, above the date above
+     * it and above the institution inside it. At 2rem/500 it was the same size
+     * as the date that preceded it and lighter than the school name below, so
+     * three lines of one entry all competed at the same optical weight. */
+    font-size: 2.2rem;
+    color: var(--text-color);
+    margin: 0 0 0.6rem;
+    font-weight: 600;
+    line-height: 1.3;
 
 }
 .timeline-school{
     display: block;
-    font-size: 1.5rem;
+    /* 1.6rem, not 1.5rem. At 1.5rem the institution rendered a step BELOW the
+     * card's own body copy (14.4px against 15.4px), so the most important fact
+     * in an education entry - which school - was set smaller than the paragraph
+     * describing it. Equal size to the body with 600 against 300 reads as
+     * clearly stronger while keeping the institution out of the headline's way. */
+    font-size: 1.6rem;
     font-weight: 600;
     color: var(--main-color);
-    margin: -0.4rem 0 1rem;
+    /* Was -0.4rem, pulling itself up into the h3's 1rem bottom margin to reach a
+     * 0.6rem gap. Stating the gap directly is the same spacing with one fewer
+     * thing to keep in sync, and no negative margin whose real value depends on
+     * the line-height of the block above it. */
+    margin: 0 0 0.4rem;
+    line-height: 1.4;
 }
 /* the strand sits under the school name, so it must not repeat the school
    styling or it reads as a second institution */
 .timeline-strand{
     display: block;
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: 500;
     color: var(--muted-color);
-    margin: -0.6rem 0 1rem;
+    margin: 0 0 1.2rem;
+    line-height: 1.5;
 }
 .timeline-content p{
-    color: white;
+    /* --text-color rather than a literal, so the card body stops needing a
+     * per-theme override to be legible. Same value it resolves to in dark.
+     *
+     * line-height 2.6rem on a 1.6rem face is 1.625, which is the rest of the
+     * page's range for body copy (projects-intro and services sit at 1.6,
+     * about at 1.75, blog cards at 1.7). The 22px this used to declare was 1.375
+     * - the tightest leading anywhere on the site, on the one block that is
+     * genuinely long-form. */
+    color: var(--text-color);
     font-size: 1.6rem;
     font-weight: 300;
-    line-height: 2.2rem;
+    line-height: 2.6rem;
 
 }
 .experience{
@@ -2363,10 +2419,8 @@ margin-top: 2rem;
         padding:10rem 3% 2rem;
     }
     /* One left rail for every width below 991px, replacing the zigzag. The dot
-     * sits at left:0 and the item reserves 3.6rem of padding beside it, so the
-     * dot lands in that gutter and can never overlap the date - which is what
-     * happened once the <=576px block below also dropped the item's padding to
-     * 0 while leaving the dot in place. */
+     * sits at left:0 and the item reserves a gutter beside it, so the dot lands
+     * in that gutter rather than over the date. */
     .timeline-items::before{
         /* 8px, in px deliberately. The dot below is a fixed 21px, so the rail
          * has to centre on it in the same unit: 21/2 - 5/2 = 8. Using rem here
@@ -2377,7 +2431,12 @@ margin-top: 2rem;
     .timeline-item:nth-child(odd),
     .timeline-item:nth-child(even){
         padding-right: 0;
-        padding-left: 3.6rem;
+        /* 34px, in px for the same reason as the rail. The dot is 21px and its
+         * 4px separation ring reaches 25px, so a rem value scaled with the root
+         * font-size gave different clearance at every breakpoint - at 375px the
+         * ring's outer edge landed 2px INSIDE the card's border and the grey ring
+         * drew a notch along the card's left edge. 34px clears 25px by 9px. */
+        padding-left: 34px;
         text-align: left;
     }
     .timeline-dot{
@@ -3358,12 +3417,12 @@ section{
     border-bottom-color: rgba(22, 101, 52, 0.14);
     box-shadow: 0 8px 24px rgba(22, 101, 52, 0.08);
 }
-[data-theme="light"] .timeline-school{ color: var(--main-color); }
-[data-theme="light"] .timeline-date,
-/* .timeline-content h3 was missing from this list, leaving every education
-   stage heading white-on-white in light mode. */
-[data-theme="light"] .timeline-content h3,
-[data-theme="light"] .timeline-content p,
+/* .timeline-date, .timeline-content h3 and .timeline-content p used to need a
+   light-theme entry here - the h3 had been missed once, leaving every education
+   stage heading white-on-white. They are off this list because all three now
+   resolve through --text-color themselves, which the light theme redefines.
+   Same reason [data-theme="light"] .timeline-school is gone: it was pinning
+   --main-color to --main-color. */
 [data-theme="light"] .projects h2,
 [data-theme="light"] .project-card h3,
 [data-theme="light"] .testimonials h2,
@@ -3723,7 +3782,13 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 @media (max-width: 390px) {
   html, body { overflow-x: hidden; max-width: 100vw; width: 100vw; }
   * { max-width: 100vw; box-sizing: border-box; }
-  section, .container, .projects, .testimonials, .blog, .contact { padding-left: 0.6rem; padding-right: 0.6rem; }
+  /* Was 0.6rem, which at the 40% root this width band runs resolves to 3.84px -
+   * a gutter so small that bordered content (timeline cards, project cards,
+   * testimonial cards) sat 4px from the physical screen edge. 1.6rem gives
+   * 10.2px at the same root, close to the 3% the 991px block would have produced
+   * at 375px (11.25px) and to the header's own 3%. Page-wide, so all six
+   * selectors still agree with each other and with the bar above them. */
+  section, .container, .projects, .testimonials, .blog, .contact { padding-left: 1.6rem; padding-right: 1.6rem; }
   .testimonial-card { padding: 0.9rem 0.9rem; width: 100%; }
   .testimonial-card p { word-break: break-word; hyphens: auto; }
   .projects-grid, .blog-grid { grid-template-columns: 1fr; }
@@ -3906,9 +3971,9 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
     <section class="education" id="education" tabindex="-1">
         <h2 class="heading">Education</h2>
 
-        <div class="timeline-items">
-            <div class="timeline-item">
-                <div class="timeline-dot"> </div>
+        <ol class="timeline-items">
+            <li class="timeline-item">
+                <div class="timeline-dot" aria-hidden="true"></div>
                 <div class="timeline-date">Aug 2020 - Jun 2024</div>
                 <div class="timeline-content">
                     <h3>Bachelor's Degree</h3>
@@ -3919,10 +3984,10 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                         support and cybersecurity. This period was crucial in shaping my professional aspirations and
                         readiness to contribute to the IT field.</p>
                 </div>
-            </div>
+            </li>
 
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
+            <li class="timeline-item">
+                <div class="timeline-dot" aria-hidden="true"></div>
                 <div class="timeline-date">2019 - 2020</div>
                 <div class="timeline-content">
                     <h3>Senior High School</h3>
@@ -3934,10 +3999,10 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                         technical side of that strand is what pulled me toward IT, and the discipline of working
                         to strict procedures carried over into technical support work.</p>
                 </div>
-            </div>
+            </li>
 
-            <div class="timeline-item">
-                <div class="timeline-dot"> </div>
+            <li class="timeline-item">
+                <div class="timeline-dot" aria-hidden="true"></div>
                 <div class="timeline-date">2016 - 2017</div>
                 <div class="timeline-content">
                     <h3>Junior High School</h3>
@@ -3945,10 +4010,10 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                     <p>Here I built on my elementary education, gaining deeper knowledge across subjects and starting to
                         explore my interests in technology and problem-solving.</p>
                 </div>
-            </div>
+            </li>
 
-            <div class="timeline-item">
-                <div class="timeline-dot"> </div>
+            <li class="timeline-item">
+                <div class="timeline-dot" aria-hidden="true"></div>
                 <div class="timeline-date">2011 - 2012</div>
                 <div class="timeline-content">
                     <h3>Elementary</h3>
@@ -3956,35 +4021,35 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                     <p>Where I laid the foundation for my academic journey, developing essential skills and a love of
                         learning that carried me through the rest of my education.</p>
                 </div>
-            </div>
-        </div>
+            </li>
+        </ol>
     </section>
 
 <section class="experience" id="experience" tabindex="-1">
     <h2 class="heading">Work <span>Experience</span></h2>
 
-    <div class="timeline-items">
-<div class="timeline-item">
-    <div class="timeline-dot"> </div>
+    <ol class="timeline-items">
+<li class="timeline-item">
+    <div class="timeline-dot" aria-hidden="true"></div>
         <div class="timeline-date">Oct 2024 - Present</div>
         <div class="timeline-content">
             <h3>IT Assistant - COMPASS Training Center, Inc.</h3>
             <p>Providing day-to-day IT support at the Competent Maritime Professionals and Sea Staff (COMPASS) Training Center in Iloilo City, troubleshooting and resolving hardware and software issues for staff and trainees. I maintain the systems, devices, and network infrastructure the training center depends on, and keep classroom and administrative systems available throughout each training day. I also write small scripts and tools to automate routine tasks, and I built the registration-area queue system for the front counter, with an accounting web application in beta.</p>
         </div>
-   
-</div>
 
-<div class="timeline-item">
-    <div class="timeline-dot"> </div>
+</li>
+
+<li class="timeline-item">
+    <div class="timeline-dot" aria-hidden="true"></div>
         <div class="timeline-date">Jan 2024 - Apr 2024</div>
         <div class="timeline-content">
             <h3>IT Help Desk - Lead Generation and Donor Creation Inc.</h3>
             <p>Worked as an IT Help Desk associate in Iloilo City, responding to technical requests and incidents and troubleshooting hardware, software, and basic network issues for end users. I installed, configured, and maintained computers, peripherals, applications, and user workstations to support daily operations, and documented recurring problems so the same faults did not keep coming back. Incidents were tracked through to resolution, with timely escalation when a problem needed another team.</p>
         </div>
-   
-</div>
 
-    </div>
+</li>
+
+    </ol>
 </section>
 
 <section class="certifications" id="certifications" tabindex="-1">
