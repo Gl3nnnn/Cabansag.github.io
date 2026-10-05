@@ -700,6 +700,12 @@ font-family: "Poppins" , sans-serif;
     --accent-color: #03dac6; /* Teal */
     --secondary-accent-color: #cf6679; /* Soft red */
     --muted-color: #9aa0a6; /* Dimmed text for meta/secondary lines */
+    /* The surface a timeline rail and its dots sit on. The rail runs down the
+     * page background, so a dot's separation ring has to be the colour of
+     * whatever is behind it - and that differs per section: Education is a band,
+     * Experience is the plain page. One token per theme, overridden per section
+     * below, so a ring can never be drawn in the wrong shade. */
+    --timeline-surface: var(--band-bg-color);
 }
 
 
@@ -1356,7 +1362,10 @@ span{
 
 }
 .education{
-    padding: 100px 15px;
+    /* No padding: `section` already sets 12% on desktop and 3% below 991px, and
+     * a class selector outranks a type selector, so `padding: 100px 15px` here
+     * pinned this section to 15px at every width while its neighbours tracked
+     * the breakpoint. Deleting it re-joins the shared rhythm. */
     background: var(--band-bg-color);
 }
 .education h2{
@@ -1370,12 +1379,16 @@ span{
     position: relative;
 }
 .timeline-items::before{
-content: "";
+    content: "";
 position: absolute;
-width: 5px;
-height: 100%;
-background-color: var(--main-color);
-left: calc(50% - 1px);
+    width: 5px;
+    height: 100%;
+    background-color: var(--main-color);
+    /* -2.5px, not -1px: this is half the rail's own width, so `left` lands on the
+     * rail's centre instead of its left edge. With -1px the rail centred on
+     * 50% + 1.5px while .timeline-dot centred on 50% + 2.5px, and the light
+     * theme's 4px ring on the dot inherited the same 1px error. */
+    left: calc(50% - 2.5px);
 
 }
 .timeline-item{
@@ -1399,69 +1412,75 @@ left: calc(50% - 1px);
     height: 21px;
     width: 21px;
     background-color: var(--main-color);
-    box-shadow: 0 0 25px var(--main-color),
-                0 0 50px var(--main-color);
+    /* Half the dot's own width, so it centres on the rail rather than starting
+     * 2.5px before it. The ring is the surface colour rather than a glow: a dot
+     * sitting on the rail needs to read as a node, not a light source, and a
+     * 50px halo made the rail's own 5px weight irrelevant. */
+    box-shadow: 0 0 0 4px var(--timeline-surface);
 position: absolute;
-left: calc(50% - 8px);
-border-radius: 50%;
-top: 10px;
+    left: calc(50% - 10.5px);
+    border-radius: 50%;
+    top: 10px;
 }
 .timeline-date{
-    font-size: 20px;
+    /* rem, not px: the root font-size scales 60% -> 45% -> 35% across the
+     * breakpoints, so every other piece of body copy shrinks on a phone while
+     * this one stayed at its desktop size. 2rem is 20px at 60%. */
+    font-size: 2rem;
     font-weight: 800;
     color: white;
-    margin: 6px 0 15px;
+    margin: 0.6rem 0 1.5rem;
 
 }
 .timeline-content{
     background-color: var(--bg-color);
     border: 3px solid var(--main-color);
-    padding: 30px 50px;
-    border-radius: 4rem;
-    box-shadow:  0 0 10px var(--main-color);
-    cursor: pointer;
-    /* Was `transition: 0.3 ease-in-out` - unitless, so the whole declaration was
-     * discarded and these cards snapped to scale(1.05) on hover instead of
-     * easing into it. Same bug as .btn, same fix. */
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-.timeline-content:hover{
-    transform: scale(1.05);
-    box-shadow: 0 0 25px var(--main-color);
+    padding: 2rem 3rem;
+    /* Was 4rem, a 64px radius on a card this size - enough to turn the corners
+     * into a lozenge. 1rem reads as a card and still matches .cert-card. */
+    border-radius: 1rem;
+    /* The glow is gone, and with it `cursor: pointer` and the hover scale: these
+     * are plain divs with nothing to activate, so the pointer cursor and the
+     * 1.05 transform were advertising an interaction that does not exist. On
+     * touch the hover state also sticks after a tap, and the scale pushed a
+     * near-full-width card outside its own track. */
 }
 .timeline-content h3{
-    font-size: 20px;
+    font-size: 2rem;
     color: white;
-    margin: 0 0 10px;
+    margin: 0 0 1rem;
     font-weight: 500;
 
 }
 .timeline-school{
     display: block;
-    font-size: 15px;
+    font-size: 1.5rem;
     font-weight: 600;
     color: var(--main-color);
-    margin: -4px 0 10px;
+    margin: -0.4rem 0 1rem;
 }
 /* the strand sits under the school name, so it must not repeat the school
    styling or it reads as a second institution */
 .timeline-strand{
     display: block;
-    font-size: 14px;
+    font-size: 1.4rem;
     font-weight: 500;
     color: var(--muted-color);
-    margin: -6px 0 10px;
+    margin: -0.6rem 0 1rem;
 }
 .timeline-content p{
     color: white;
-    font-size: 16px;
+    font-size: 1.6rem;
     font-weight: 300;
-    line-height: 22px;
+    line-height: 2.2rem;
 
 }
 .experience{
-    padding: 100px 15px;
     background: var(--bg-color);
+    /* Same override the theme default already gives Education, stated here so
+     * each section owns the value it needs rather than relying on which one
+     * comes first in the stylesheet. */
+    --timeline-surface: var(--bg-color);
 }
 .experience h2{
     margin-bottom: 5rem;
@@ -2343,19 +2362,26 @@ margin-top: 2rem;
     section{
         padding:10rem 3% 2rem;
     }
+    /* One left rail for every width below 991px, replacing the zigzag. The dot
+     * sits at left:0 and the item reserves 3.6rem of padding beside it, so the
+     * dot lands in that gutter and can never overlap the date - which is what
+     * happened once the <=576px block below also dropped the item's padding to
+     * 0 while leaving the dot in place. */
     .timeline-items::before{
-        left:7px;
+        /* 8px, in px deliberately. The dot below is a fixed 21px, so the rail
+         * has to centre on it in the same unit: 21/2 - 5/2 = 8. Using rem here
+         * moved the rail's centre as the root font-size scaled at each
+         * breakpoint, which put it back out of alignment with its own dots. */
+        left: 8px;
     }
-    .timeline-item:nth-child(odd){
-        padding-right:0;
-        text-align:left;
-    }
-    .timeline-item:nth-child(even),
-    .timeline-item:nth-child(odd){
-padding-left:37px;
+    .timeline-item:nth-child(odd),
+    .timeline-item:nth-child(even){
+        padding-right: 0;
+        padding-left: 3.6rem;
+        text-align: left;
     }
     .timeline-dot{
-        left:0;
+        left: 0;
     }
     .services{
         padding-bottom:7rem;
@@ -2553,16 +2579,15 @@ padding-left:37px;
     .home-content h3 {
         font-size: 2.5rem;
     }
-    .timeline-items::before {
-        display: none;
-    }
-    .timeline-item {
-        padding: 0;
-        text-align: left;
-    }
-    .timeline-content {
-        padding: 20px 30px;
-    }
+    /* The four timeline rules that used to live here are gone, and one of them
+     * was the phone bug: this block hid the rail with `display: none` and reset
+     * the item to `padding: 0`, while .timeline-dot stayed absolutely
+     * positioned at left:0. Phones therefore showed four dots floating with no
+     * line to sit on, each wrapped in a 25px/50px glow. The dot did NOT reach
+     * the date, though it looked like it might - the 991px block's
+     * `.timeline-item:nth-child(odd)` padding-left is more specific than this
+     * block's `padding: 0`, so the 37px gutter survived at every phone width.
+     * The 991px block now owns the mobile rail for good. */
 }
 
 @media (max-width: 480px) {
@@ -3403,13 +3428,14 @@ section{
     0%, 100%{ text-shadow: 0 0 12px rgba(22, 101, 52, 0); }
     50%{ text-shadow: 0 0 18px rgba(22, 101, 52, 0.35); }
 }
-/* The 4px gap ring has to be the colour of the surface the dot is sitting on, or
- * it draws a halo of the wrong shade around it. The education timeline lives in
- * a band, not on a card, so this follows --band-bg-color - it was
- * --second-bg-color, which was correct only while sections and cards shared one
- * token. */
+/* The 4px separation ring has to be the colour of the surface the dot is sitting
+ * on, or it draws a halo of the wrong shade around it. It used to be restated per
+ * theme here, hard-coded to --band-bg-color, which was right for Education and
+ * wrong for Experience - that rail runs on --bg-color. Now it follows
+ * --timeline-surface, which each section sets for itself. Only the outer accent
+ * ring stays theme-specific. */
 [data-theme="light"] .timeline-dot{
-    box-shadow: 0 0 0 4px var(--band-bg-color), 0 0 0 6px rgba(22, 101, 52, 0.3);
+    box-shadow: 0 0 0 4px var(--timeline-surface), 0 0 0 6px rgba(22, 101, 52, 0.3);
 }
 /* Light: the photo's ring and halo. The dark theme's rgba(27,179,14,...) is a
  * saturated green on near-black, but on #f6f7f9 it reads as a smudge rather

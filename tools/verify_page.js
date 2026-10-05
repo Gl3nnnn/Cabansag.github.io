@@ -1342,6 +1342,142 @@ meas.grid = line.length
       `${narrow.photoW}px = ${Math.round(narrow.photoW / narrow.vw * 100)}% of the viewport`);
     await cdp.send('Emulation.clearDeviceMetricsOverride');
 
+    // ---------- education / experience timeline ----------
+    // Four defects lived here and every one of them was invisible to the source-
+    // level suites, because the CSS was well-formed the whole time:
+    //   - at <=576px the rail was hidden with `display: none` while .timeline-dot
+    //     was left in place, so phones showed four dots floating unconnected with
+    //     their glows and no line to sit on. (The dot did NOT reach the date: the
+    //     991px block's `.timeline-item:nth-child(odd)` padding-left outranks the
+    //     576px block's lower-specificity `padding: 0`, so the 37px gutter
+    //     survived. Verified by running this suite against the pre-change file -
+    //     `the rail is visible` fails there, `no dot overlaps a date` does not.)
+    //   - .education/.experience set `padding: 100px 15px`, a class selector that
+    //     outranks `section`, pinning both sections to 15px at every width while
+    //     Services and Projects tracked the breakpoint's 3%/12%;
+    //   - the rail and dot were each 1px off the shared centreline (rail centred
+    //     on 50% + 1.5px, dot on 50% + 2.5px), and the light theme's ring
+    //     inherited the error;
+    //   - .timeline-content was a plain div with cursor:pointer and a 1.05 hover
+    //     scale, which on touch sticks after a tap and pushed a near-full-width
+    //     card outside its own track.
+    // Every section that renders a .timeline-items is measured, not just
+    // Education, because the CSS is shared with Experience.
+    console.log('\n=== timeline: dot clears the date, rail and dot share a centre ===');
+    const timelineAt = async (w, h, mobile) => {
+      // The rail is a pseudo-element, so it has no rect of its own. Its box is
+      // rebuilt from computed `left` + `width` against the track's padding box,
+      // which is what `left` resolves against. Clear-then-set, for the reason at
+      // barAt.
+      await cdp.send('Emulation.clearDeviceMetricsOverride');
+      await cdp.send('Emulation.setDeviceMetricsOverride',
+        { width: w, height: h, deviceScaleFactor: 1, mobile: !!mobile });
+      await cdp.send('Page.navigate', { url: PAGE });
+      await sleep(3000);
+      return evaluate(`(() => {
+        const out = { sections: [], bodyScrollW: 0, vw: document.documentElement.clientWidth };
+        for (const sec of document.querySelectorAll('.education, .experience')) {
+          const track = sec.querySelector('.timeline-items');
+          const cs = getComputedStyle(track, '::before');
+          const trackR = track.getBoundingClientRect();
+          const pl = parseFloat(getComputedStyle(track).paddingLeft);
+          const pr = parseFloat(getComputedStyle(track).paddingRight);
+          // left on the pseudo resolves against the track's padding box.
+          const railLeft = trackR.left + pl +
+            (cs.left.endsWith('%')
+              ? (trackR.width - pl - pr) * parseFloat(cs.left) / 100
+              : parseFloat(cs.left));
+          const railW = parseFloat(cs.width) || 0;
+          const items = [...track.querySelectorAll('.timeline-item')].map(it => {
+            const dot = it.querySelector('.timeline-dot').getBoundingClientRect();
+            const date = it.querySelector('.timeline-date').getBoundingClientRect();
+            const card = it.querySelector('.timeline-content').getBoundingClientRect();
+            // Overlap on both axes. A 0-tall box would trivially pass, so a
+            // hit requires real intersection area in the vertical direction too.
+            const overlapX = Math.min(dot.right, date.right) - Math.max(dot.left, date.left);
+            const overlapY = Math.min(dot.bottom, date.bottom) - Math.max(dot.top, date.top);
+            return {
+              overlap: +(Math.max(0, overlapX) * Math.max(0, overlapY)).toFixed(1),
+              dotCX: +(dot.left + dot.width / 2).toFixed(1),
+              cardOverhang: +(Math.max(0, card.right - out.vw) + Math.max(0, 0 - card.left)).toFixed(1),
+              dotLeft: +dot.left.toFixed(1),
+              cursor: getComputedStyle(it.querySelector('.timeline-content')).cursor,
+              transform: getComputedStyle(it.querySelector('.timeline-content')).transform,
+            };
+          });
+          out.sections.push({
+            id: sec.id,
+            railCX: +(railLeft + railW / 2).toFixed(1),
+            railVisible: cs.display !== 'none',
+            padL: +pl.toFixed(1), padR: +pr.toFixed(1),
+            items,
+          });
+        }
+        out.bodyScrollW = document.documentElement.scrollWidth;
+        // Section gutters, for the shared-rhythm check below.
+        for (const id of ['education', 'experience', 'services', 'projects']) {
+          const s = getComputedStyle(document.getElementById(id));
+          out[id + 'Pad'] = +parseFloat(s.paddingLeft).toFixed(1);
+        }
+        return out;
+      })()`);
+    };
+
+    for (const [w, h, mobile] of [[375, 812, true], [768, 1024, false], [1280, 900, false]]) {
+      const t = await timelineAt(w, h, mobile);
+      const worstOverlap = Math.max(...t.sections.flatMap(s => s.items.map(i => i.overlap)));
+      check(worstOverlap <= 1, `no dot overlaps a date at ${w}px`,
+        `worst intersection area ${worstOverlap}px² (the dot must sit in the item's padding gutter)`);
+
+      // 0.5px of tolerance, not 1px. Both the rail and the dot are px-sized and
+      // the track is centred with `margin: auto`, so at a fractional viewport
+      // width the track's left edge is fractional while the dot's is a whole
+      // number - sub-pixel here is arithmetic, not layout. But the pre-fix
+      // geometry was out by a full 1px at every width, and a 1px tolerance would
+      // have passed it. 0.5px is tight enough to fail that and still leaves room
+      // for the rounding.
+      const worstDrift = Math.max(...t.sections.flatMap(
+        s => s.items.map(i => Math.abs(i.dotCX - s.railCX))));
+      check(worstDrift <= 0.5, `every dot is centred on the rail at ${w}px`,
+        `worst drift ${worstDrift.toFixed(1)}px (was 1px off in both themes)`);
+
+      check(t.sections.every(s => s.railVisible), `the rail is visible at ${w}px`,
+        t.sections.map(s => `${s.id} display=${s.railVisible}`).join(', '));
+
+      const worstOverhang = Math.max(...t.sections.flatMap(s => s.items.map(i => i.cardOverhang)));
+      check(worstOverhang <= 1, `no timeline card hangs past the viewport at ${w}px`,
+        `worst overhang ${worstOverhang.toFixed(1)}px at ${t.vw}px viewport`);
+
+      // cursor:pointer on a non-interactive div, plus the 1.05 scale. Asserted
+      // on the computed style rather than by simulating a hover, which would also
+      // need to model the sticky :hover state touch devices leave behind.
+      // `auto` is the CSS initial value and is what a non-interactive div
+      // resolves to - the assertion is that `pointer` is gone, not that a
+      // particular non-pointer keyword landed.
+      check(t.sections.every(s => s.items.every(i => i.cursor !== 'pointer')),
+        `timeline cards are not advertised as clickable at ${w}px`,
+        `cursor: ${[...new Set(t.sections.flatMap(s => s.items.map(i => i.cursor)))].join(', ')} (was explicitly pointer)`);
+      check(t.sections.every(s => s.items.every(i => i.transform === 'none')),
+        `timeline cards do not scale on hover at ${w}px`,
+        [...new Set(t.sections.flatMap(s => s.items.map(i => i.transform)))].join(', '));
+
+      check(t.bodyScrollW <= t.vw + 0.5, `no horizontal overflow at ${w}px`,
+        `scrollWidth ${t.bodyScrollW} vs viewport ${t.vw}`);
+    }
+
+    console.log('\n=== timeline: sections share one horizontal rhythm ===');
+    // The regression that made these two sections look misaligned against every
+    // other one: `padding: 100px 15px` on a class selector outranks `section`,
+    // so Education and Experience never saw the breakpoint's 3% or 12%.
+    for (const [w, h] of [[1280, 900], [375, 812]]) {
+      const t = await timelineAt(w, h, w < 500);
+      const pads = ['education', 'experience', 'services', 'projects'].map(k => t[k + 'Pad']);
+      check(pads.every(p => Math.abs(p - pads[0]) <= 0.5),
+        `education, experience, services and projects share a gutter at ${w}px`,
+        `education ${t.educationPad}, experience ${t.experiencePad}, services ${t.servicesPad}, projects ${t.projectsPad}px`);
+    }
+    await cdp.send('Emulation.clearDeviceMetricsOverride');
+
     cdp.close();
   } finally {
     proc.kill();
