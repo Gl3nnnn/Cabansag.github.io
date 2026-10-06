@@ -1377,6 +1377,444 @@ meas.grid = line.length
       `hero h1 ${narrow.heroLeft}px vs .services h2 ${narrow.referenceLeft}px ` +
       `(${heroVsPage > 0 ? '+' : ''}${heroVsPage}px); was +38.4px at 768 and +63px at 820 ` +
       'from .home\'s own horizontal margin stacking on section padding');
+    // The contact form, rebuilt as one column of label/control pairs.
+    //
+    // The invariant that matters most here is not visual: setFieldError() locates
+    // a field's error node with `input.parentNode.querySelector('.field-error')`
+    // and inserts it as `input.nextSibling`, so it silently assumes one input per
+    // parent. The markup used to put two inputs in each .input-box (name+email,
+    // phone+subject), so when both in a box failed, the second call found the
+    // first one's error element and overwrote its text - and validateForm() runs
+    // in key order, so submitting an empty form showed the email error in place of
+    // the name error instead of both. Asserted on each control's own parent, since
+    // the form legitimately holds all five plus the honeypot.
+    // Async because the per-theme contrast pass below awaits the theme swap to
+    // finish transitioning.
+    const contactForm = await evaluate(`(async () => {
+      const sec = document.getElementById('contact');
+      const form = sec.querySelector('.contact-form');
+      const rows = [...sec.querySelectorAll('.field')].map(f => {
+        const label = f.querySelector('.field-label');
+        const ctl = f.querySelector('input, textarea');
+        const cs = getComputedStyle(ctl);
+        const srOnly = el => {
+          const s = getComputedStyle(el);
+          return s.position === 'absolute' && (s.width === '1px' || s.clip !== 'auto');
+        };
+        const b = ctl.getBoundingClientRect();
+        return {
+          id: ctl.id,
+          label: label ? label.textContent.trim().replace(/\\s+/g, ' ') : null,
+          labelVisible: !!label && !srOnly(label),
+          labelFor: label ? label.getAttribute('for') : null,
+          controlsInParent: ctl.parentNode.querySelectorAll('input, textarea').length,
+          h: +b.height.toFixed(1),
+          left: +b.left.toFixed(1),
+          top: +b.top.toFixed(1),
+          fontSize: parseFloat(cs.fontSize),
+          color: cs.color,
+          bg: cs.backgroundColor,
+          // Kept so the contrast pass can re-read this control's styles per theme
+          // instead of reusing the values captured above.
+          el: ctl,
+        };
+      });
+      const hp = sec.querySelector('.hp-field');
+      const hpBox = hp.getBoundingClientRect();
+      const submit = sec.querySelector('#contact-submit').getBoundingClientRect();
+      const formCs = getComputedStyle(form);
+      const lum = ([r, g, b]) => {
+        const f = c => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); };
+        return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
+      };
+      const parse = s => (s.match(/[\\d.]+/g) || []).slice(0, 3).map(Number);
+      const ratio = (a, b) => { const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x); return +((hi + 0.05) / (lo + 0.05)).toFixed(2); };
+      const root = document.documentElement;
+      const had = root.getAttribute('data-theme');
+      const wait = ms => new Promise(r => setTimeout(r, ms));
+      const contrasts = {};
+      // Measured per theme by re-reading the live computed styles, NOT by reusing
+      // the rows captured above. Those rows hold the colours of whichever theme was
+      // active when the form was first measured, so contrasting them under both
+      // theme names reported the same number twice and never tested the light
+      // theme at all - the fields carry a different background and a different
+      // text colour there.
+      //
+      // The 450ms wait is because the theme swap is animated (the fields
+      // transition border/background over 0.16s), so a read in the same tick
+      // returns a mid-transition colour rather than the theme's.
+      for (const theme of ['dark', 'light']) {
+        root.setAttribute('data-theme', theme);
+        await wait(450);
+        contrasts[theme] = rows.map(r => {
+          const cs = getComputedStyle(r.el);
+          return { id: r.id, color: cs.color, bg: cs.backgroundColor,
+                   ratio: ratio(parse(cs.color), parse(cs.backgroundColor)) };
+        });
+      }
+      if (had === null) root.removeAttribute('data-theme'); else root.setAttribute('data-theme', had);
+      // Which theme are we actually measuring geometry in? Restore, then read.
+      return {
+        rows: rows.map(({ el, ...rest }) => rest),
+        contrasts,
+        formDisplay: formCs.display,
+        formGap: formCs.gap,
+        formWidth: +form.getBoundingClientRect().width.toFixed(1),
+        // one column means the second control starts below the first one ends
+        oneColumn: rows.length < 2 || rows[1].top > rows[0].top + rows[0].h - 1,
+        submitH: +submit.height.toFixed(1),
+        hpHidden: hpBox.width === 0 || hpBox.right < 0 || getComputedStyle(hp).opacity === '0',
+        hpTabindex: hp.getAttribute('tabindex'),
+        resumeBesideHeading: !!sec.querySelector('.contact-head a[download]'),
+        h2Color: getComputedStyle(sec.querySelector('h2.heading')).color,
+      };
+    })()`);
+
+    check(contactForm.rows.length === 5,
+      'the contact form has five label/control pairs',
+      `${contactForm.rows.length} .field wrappers`);
+    check(contactForm.rows.every(r => r.controlsInParent === 1),
+      'every contact control is alone in its parent, so each keeps its own error',
+      contactForm.rows.map(r => `${r.id}:${r.controlsInParent}`).join(' '));
+    check(contactForm.rows.every(r => r.labelVisible && r.labelFor === r.id),
+      'every contact field has a visible label wired to it',
+      contactForm.rows.map(r => `${r.id} "${r.label}" ${r.labelVisible ? 'visible' : 'SR-ONLY'}` +
+        ` for=${r.labelFor}`).join('; ') ||
+      'no labels found');
+    // The old padding was 2.5rem (24px), which put every field near 76px tall.
+    check(contactForm.rows.every(r => r.h >= 44 && r.h <= 62),
+      'contact fields are a usable height, not 24px of padding',
+      contactForm.rows.map(r => `${r.id} ${r.h}px`).join(', ') +
+      ' (need 44-62px; was ~76px from padding: 2.5rem)');
+    check(contactForm.submitH >= 44,
+      'the send button is at least 44px tall on a phone',
+      `${contactForm.submitH}px`);
+    check(contactForm.oneColumn && contactForm.formDisplay === 'grid',
+      'the contact form is one column, in reading order',
+      `display ${contactForm.formDisplay}, gap ${contactForm.formGap}, ` +
+      `${contactForm.formWidth}px wide` +
+      (contactForm.oneColumn ? '' : ' - a control is beside another'));
+    // The honeypot regressed once already during this work: `.contact-form input`
+    // is 0,1,1 and outranked `.hp-field`'s 0,1,0, so the hidden bot field came
+    // back as a full-width box. Scoping the field rules to .field fixed it.
+    check(contactForm.hpHidden && contactForm.hpTabindex === '-1',
+      'the honeypot is still hidden and out of the tab order',
+      `hidden=${contactForm.hpHidden}, tabindex=${contactForm.hpTabindex}`);
+    check(contactForm.resumeBesideHeading,
+      'the resume download sits with the heading, not among the contact methods',
+      contactForm.resumeBesideHeading ? 'in .contact-head' : 'still in the email row');
+
+    // Focus has to be emulated before any :focus rule can be measured at all.
+    //
+    // Emulation.setFocusEmulationEnabled is what makes the page behave as if its
+    // window had focus. Without it document.hasFocus() is false in headless, so
+    // `el.focus()` still sets document.activeElement but `:focus` never matches -
+    // getComputedStyle then reports the resting values for a rule that is present
+    // and correct, which looks exactly like a CSS bug. Verified against this file:
+    // before the switch, matches(':focus') was false and box-shadow read "none";
+    // after it, true, with the green border and both shadow layers.
+    //
+    // Enabled once here rather than inside each probe that needs it, and it is
+    // left on: nothing later in the suite depends on the page being unfocused.
+    await cdp.send('Emulation.setFocusEmulationEnabled', { enabled: true });
+    check(await evaluate(`(() => {
+      const e = document.getElementById('full-name');
+      e.focus();
+      return document.hasFocus() && e.matches(':focus');
+    })()`),
+      'focus can be emulated, so :focus rules are measurable at all',
+      await evaluate(`(() => {
+        const e = document.getElementById('full-name');
+        return 'document.hasFocus() ' + document.hasFocus() +
+               ", matches(':focus') " + e.matches(':focus');
+      })()`));
+    // Back to unfocused so no later measurement inherits a focused field.
+    await evaluate(`document.getElementById('full-name').blur()`);
+
+    // The design intent of the rewrite, asserted so it cannot quietly revert:
+    // green is an accent, not the resting state of the form. Previously every
+    // field carried `border: 2px solid var(--main-color)` and the button filled
+    // with it too, so six green surfaces at once and the focus state - the one
+    // place green should appear - had nothing to contrast against.
+    //
+    // Checked in both themes, and checked as "the resting border is NOT green"
+    // rather than as "it is some specific grey", so a deliberate change to the
+    // resting hairline does not fail this while the actual regression does.
+    const contactAccent = await evaluate(`(async () => {
+      const sec = document.getElementById('contact');
+      const root = document.documentElement;
+      const wait = ms => new Promise(r => setTimeout(r, ms));
+      const main = () => getComputedStyle(root).getPropertyValue('--main-color').trim();
+      const parse = s => (s.match(/[\\d.]+/g) || []).slice(0, 3).map(Number);
+      const eq = (a, b) => a.length === b.length && a.every((v, i) => Math.abs(v - b[i]) < 1);
+      const out = {};
+      const had = root.getAttribute('data-theme');
+      for (const theme of ['dark', 'light']) {
+        root.setAttribute('data-theme', theme);
+        const ctl = document.getElementById('full-name');
+        // Changing the theme is itself animated: .btn transitions
+        // background-color over 0.3s and the fields over 0.16s, so every colour
+        // read straight after the swap is a mid-transition value, not the theme's.
+        // That is why the light pass measured the button as rgb(23, 109, 48) -
+        // between the dark green and the light one - and compared unequal to
+        // --main-color. 450ms is past the longest transition in play here.
+        await wait(450);
+        // Blur runs validateField, which marks the empty field .invalid and turns
+        // its border red. That is the correct behaviour of the form and the wrong
+        // thing to measure here, so the class is cleared before each read -
+        // otherwise the second theme is measured on an invalid field and reports
+        // the error colour. Verified: without this, reading border before shadow
+        // on the second pass returns the accent-red border.
+        ctl.classList.remove('invalid');
+        ctl.removeAttribute('aria-invalid');
+        const green = parse(main());
+        const resting = ctl.getBoundingClientRect().width > 0 &&
+          getComputedStyle(ctl).borderTopWidth;
+        out[theme] = {
+          restingBorderIsGreen: eq(parse(getComputedStyle(ctl).borderTopColor), green),
+          hasBorder: !!resting,
+        };
+        // Focus is a transition (0.16s on border-color and box-shadow), so reading
+        // getComputedStyle in the same tick as focus() returns the value the
+        // transition is animating FROM - two transparent shadows and the resting
+        // border. Measured: read immediately, shadow is
+        // rgba(0, 0, 0, 0) 0px 0px 0px 0px twice; 250ms later it is the two green
+        // layers and the green border. Hence the wait before reading, which is
+        // also past the transition's duration rather than guessed at.
+        ctl.focus();
+        await wait(250);
+        const cs = getComputedStyle(ctl);
+        out[theme].focusShadow = { shadow: cs.boxShadow, border: cs.borderTopColor };
+        ctl.blur();
+        // Back to a clean resting field before the next theme's measurements.
+        ctl.classList.remove('invalid');
+        ctl.removeAttribute('aria-invalid');
+        out[theme].statusDot = (() => {
+            const st = sec.querySelector('.contact-status');
+          return st ? getComputedStyle(st, '::before').backgroundColor : null;
+        })();
+        out[theme].submitBg = getComputedStyle(sec.querySelector('#contact-submit')).backgroundColor;
+        // The token's value as rgb(), so the focused border can be compared to it
+        // without this file having to know a hex per theme.
+        out[theme].mainRgb = (() => {
+          const probe = document.createElement('span');
+          probe.style.color = 'var(--main-color)';
+          sec.appendChild(probe);
+          const v = getComputedStyle(probe).color;
+          probe.remove();
+          return v;
+        })();
+        // The dot's own size, so a 1px dot cannot pass as a status indicator.
+        out[theme].statusDotSize = (() => {
+          const st = sec.querySelector('.contact-status');
+          if (!st) return null;
+          const b = getComputedStyle(st, '::before');
+          return b.width + ' x ' + b.height + ' radius ' + b.borderTopLeftRadius;
+        })();
+      }
+      if (had === null) root.removeAttribute('data-theme'); else root.setAttribute('data-theme', had);
+      return out;
+    })()`);
+
+    for (const theme of ['dark', 'light']) {
+      const a = contactAccent[theme];
+      check(a.hasBorder && !a.restingBorderIsGreen,
+        `the resting field border is not green (${theme}), so green stays an accent`,
+        `resting border ${a.restingBorderIsGreen ? 'IS --main-color' : 'is a neutral hairline'} ` +
+        `(was border: 2px solid var(--main-color) on all six controls)`);
+      // Two layers: the 3px ring that satisfies WCAG 2.4.11 focus appearance, and
+      // the 18px bloom that makes it read as this site's green. Asserted on the
+      // layer count and on the ring's spread, not on the exact string, so a
+      // deliberate colour change does not fail this but losing a layer does.
+      const layers = (a.focusShadow.shadow.match(/rgba?\([^)]*\)/g) || []).length;
+      check(layers >= 2 && /\b3px\b/.test(a.focusShadow.shadow),
+        `the field's focus state is where the green arrives (${theme})`,
+        `${layers} shadow layers on :focus, ring spread ` +
+        `${(a.focusShadow.shadow.match(/0px 0px 0px ([^,]+)/) || [])[1] || 'none'}; ` +
+        `border resolves to ${a.focusShadow.border}`);
+      check(a.focusShadow.border === a.mainRgb,
+        `the focused border is the accent (${theme})`,
+        `focused border ${a.focusShadow.border}, --main-color ${a.mainRgb}`);
+      // 0.7rem at the 60% root is 6.7px. Asserted as a floor rather than a
+      // range: a dot too small to see is not a status indicator, and a dot grown
+      // into a disc would be a design change rather than a regression.
+      const dotPx = parseFloat(a.statusDotSize);
+      check(a.statusDot !== null && dotPx >= 5,
+        `the availability indicator has a visible dot (${theme})`,
+        `::before ${a.statusDotSize}, background ${a.statusDot}`);
+      // Send is the one filled surface, so green is on it at rest - which is what
+      // makes the green focus ring on the fields mean "you are here" rather than
+      // "this form is the green thing".
+      check(a.submitBg === a.mainRgb,
+        `send is the filled accent surface (${theme})`,
+        `submit background ${a.submitBg}, --main-color ${a.mainRgb}`);
+    }
+    for (const theme of ['dark', 'light']) {
+      const worst = contactForm.contrasts[theme].reduce((a, b) => (a.ratio <= b.ratio ? a : b));
+      check(worst.ratio >= 4.5,
+        `contact field text is legible (${theme})`,
+        `worst is ${worst.id} at ${worst.ratio}:1 on its own background (needs 4.5:1)`);
+    }
+    // The section as a composition, not just a stack of correct fields.
+    //
+    // It was three centred strips on one axis - heading, then a centred email row,
+    // then a form that was itself centred but left-aligned inside - so each band
+    // had a different width and nothing tied them together. Asserted here as
+    // geometry, because "looks like one composition" is not something a DOM
+    // assertion can see: the rail and the form have to share a top edge, sit on
+    // opposite sides of the section, and both start at the section's own left
+    // padding. If any of those drift apart the section falls back into strips.
+    const contactLayout = await evaluate(`(() => {
+      const sec = document.getElementById('contact');
+      const rail = sec.querySelector('.contact-rail');
+      const form = sec.querySelector('.contact-form');
+      const box = el => { const b = el.getBoundingClientRect();
+        return { x: +b.left.toFixed(1), y: +b.top.toFixed(1),
+                 w: +b.width.toFixed(1), h: +b.height.toFixed(1) }; };
+      const cs = getComputedStyle(sec);
+      return {
+        display: cs.display,
+        columns: cs.gridTemplateColumns,
+        gap: cs.gap,
+        sec: box(sec),
+        rail: box(rail),
+        form: box(form),
+        head: box(sec.querySelector('.contact-head')),
+        direct: box(sec.querySelector('.contact-direct')),
+        // DOM order, which is what tab order and screen reader order follow.
+        domOrder: [...sec.children].map(c => c.className.split(' ')[0] || c.tagName.toLowerCase()),
+        railChildren: [...rail.children].map(c => c.className.split(' ')[0] || c.tagName.toLowerCase()),
+        firstFieldLabel: (() => {
+          const l = sec.querySelector('.field-label');
+          return l ? box(l).x : null;
+        })(),
+      };
+    })()`);
+
+    check(contactLayout.domOrder.join(' ') === 'contact-rail contact-form',
+      'the rail comes before the form in the DOM, so tab order matches reading order',
+      contactLayout.domOrder.join(' > '));
+    // The rail is heading+intro+resume, then the status line, then the address.
+    // Asserted as the full list rather than as a subset: this caught the status
+    // line being appended after the email block, which is still in the right
+    // column and still passes any "does a status exist" check, but reads as a
+    // footnote to the address instead of as a statement about the person.
+    check(contactLayout.railChildren.join(' ') ===
+        'contact-head contact-status contact-direct',
+      'the rail reads heading, then status, then the address',
+      contactLayout.railChildren.join(' > '));
+
+    // The geometry, at every width that matters. Only one branch can be true at a
+    // time - the section is two columns above the 895px breakpoint and one below -
+    // so asserting the side-by-side case from the suite's default 375px viewport
+    // would never run it. Measured per width instead, for the reason barAt and
+    // timelineAt give: clear the override before setting it, or a stale scrollbar
+    // in the emulation state makes clientWidth disagree with the real layout.
+    const contactLayoutAt = async (w, h, mobile) => {
+      await cdp.send('Emulation.clearDeviceMetricsOverride');
+      await cdp.send('Emulation.setDeviceMetricsOverride',
+        { width: w, height: h, deviceScaleFactor: 1, mobile: !!mobile });
+      await cdp.send('Page.navigate', { url: PAGE });
+      await sleep(2500);
+      return evaluate(`(() => {
+        const sec = document.getElementById('contact');
+        const rail = sec.querySelector('.contact-rail');
+        const form = sec.querySelector('.contact-form');
+        const box = el => { const b = el.getBoundingClientRect();
+          return { x: +b.left.toFixed(1), y: +b.top.toFixed(1),
+                   w: +b.width.toFixed(1), h: +b.height.toFixed(1) }; };
+        const cs = getComputedStyle(sec);
+        const label = sec.querySelector('.field-label');
+        // Widest element past the viewport, for the overflow check. Same scan as
+        // the footer's, and the same reason: documentElement.scrollWidth reports
+        // the scrollbar as overflow on a width-locked page, so the body box plus
+        // the per-element scan is the real evidence.
+        let worst = null;
+        for (const el of sec.querySelectorAll('*')) {
+          const r = el.getBoundingClientRect();
+          if (r.width === 0 && r.height === 0) continue;
+          if (!worst || r.right > worst.over) {
+            worst = { over: +(r.right - document.documentElement.clientWidth).toFixed(1),
+                      tag: el.tagName.toLowerCase() + (typeof el.className === 'string' && el.className
+                        ? '.' + el.className.split(' ')[0] : '') };
+          }
+        }
+        return {
+          display: cs.display,
+          tracks: cs.gridTemplateColumns.split(' ').filter(Boolean).length,
+          gap: cs.gap,
+          sec: box(sec),
+          rail: box(rail),
+          form: box(form),
+          head: box(sec.querySelector('.contact-head')),
+          direct: box(sec.querySelector('.contact-direct')),
+          label: label ? box(label) : null,
+          vw: document.documentElement.clientWidth,
+          bodyScrollW: document.body.scrollWidth,
+          worst,
+        };
+      })()`);
+    };
+
+    for (const [w, h, mobile] of [[1440, 900, false], [1024, 900, false], [375, 812, true], [320, 700, true]]) {
+      const c = await contactLayoutAt(w, h, mobile);
+      check(c.display === 'grid',
+        `the contact section is one grid at ${w}px, not stacked strips`,
+        `display ${c.display}, tracks "${c.gap ? c.tracks + ' at gap ' + c.gap : c.tracks}"`);
+      if (c.tracks === 1) {
+        // Narrow, and correct to be one column: a rail beside a form needs the
+        // width. The rail is the reference for the left edge, not the section -
+        // `section` carries `padding: 10rem 12%`, so the section's own border box
+        // starts at x 0 while both columns start at its content edge.
+        check(c.form.x === c.rail.x,
+          `stacked contact: the form shares the rail left edge at ${w}px`,
+          `form x ${c.form.x} vs rail x ${c.rail.x}`);
+        check(c.form.y > c.rail.y,
+          `stacked contact: the form reads after the heading at ${w}px`,
+          `rail y ${c.rail.y}, form y ${c.form.y}`);
+        // Stacked, all three still share one edge - which is the property that
+        // actually survived the rewrite, and the reason the section reads as one
+        // block on a phone rather than as four bands.
+        const edges = new Set([c.head.x, c.direct.x, c.label && c.label.x].filter(v => v !== null));
+        check(edges.size === 1,
+          `heading, address and first field share one left edge at ${w}px`,
+          `head x ${c.head.x}, address x ${c.direct.x}, field label x ${c.label && c.label.x}`);
+      } else {
+        check(Math.abs(c.rail.y - c.form.y) <= 1,
+          `the contact rail and form share a top edge at ${w}px`,
+          `rail y ${c.rail.y}, form y ${c.form.y}`);
+        check(c.form.x > c.rail.x,
+          `the contact form sits to the right of the rail at ${w}px`,
+          `rail x ${c.rail.x}, form x ${c.form.x}`);
+        // Shared edges are a within-column property. In two columns the rail's
+        // left edge and the form's left edge are meant to differ - that is the
+        // gutter - so asserting they match here would be asserting the layout
+        // fails. What has to hold is that the rail is internally flush (heading
+        // against address) and the form is internally flush (label against its
+        // own track), which is what stops each column from drifting apart.
+        check(Math.abs(c.head.x - c.direct.x) <= 1,
+          `heading and address share a left edge at ${w}px`,
+          `head x ${c.head.x}, address x ${c.direct.x}`);
+        check(Math.abs(c.label.x - c.form.x) <= 1,
+          `the form's fields are flush with its own column at ${w}px`,
+          `field label x ${c.label && c.label.x}, form column x ${c.form.x}`);
+        const gutter = c.form.x - (c.rail.x + c.rail.w);
+        check(gutter > 24,
+          `the two contact columns have a visible gutter at ${w}px`,
+          `${gutter}px between them (declared gap ${c.gap})`);
+        // A form needs room for a label and a readable measure of message text.
+        // 360px is the floor below which the textarea starts to feel like a slot,
+        // and the rail must not be so wide that it starves it.
+        check(c.form.w >= 360,
+          `the form column is wide enough to be a form at ${w}px`,
+          `${c.form.w}px wide, rail ${c.rail.w}px, split ${(100 * c.form.w / (c.form.w + c.rail.w)).toFixed(0)}/${(100 * c.rail.w / (c.form.w + c.rail.w)).toFixed(0)}`);
+      }
+      check(c.bodyScrollW <= c.vw + 0.5 && c.worst.over <= 0.5,
+        `no contact content overflows at ${w}px`,
+        `body scrollWidth ${c.bodyScrollW} vs viewport ${c.vw}; ` +
+        `widest past the viewport: ${c.worst.over}px (${c.worst.tag})`);
+    }
+
     // Distinct backgrounds is the actual requirement; the classes are only how the
     // stylesheet expresses it.
     check(narrow.ctas.length === 2, 'both hero CTAs are still there',

@@ -706,6 +706,28 @@ font-family: "Poppins" , sans-serif;
      * Experience is the plain page. One token per theme, overridden per section
      * below, so a ring can never be drawn in the wrong shade. */
     --timeline-surface: var(--band-bg-color);
+
+    /* Contact form: one token for the "quiet at rest, green on focus" treatment.
+     *
+     * The fields used to sit at `background: var(--second-bg-color)` with a 2px
+     * solid `--main-color` border - so five permanently-green boxes and a sixth
+     * green button, all at once. Green on every surface stops being an accent and
+     * becomes the background; the eye has nothing left to follow to the thing you
+     * are meant to do. The accent works when it arrives.
+     *
+     * Two tokens, both overridable per theme, so the resting field and the focused
+     * field are separately expressible:
+     *   --field-bg       the surface a field sits on at rest
+     *   --field-border   its hairline at rest
+     * --main-color then comes in only on focus, on the invalid state, and on the
+     * send button. */
+    --field-bg: #1a1c1f;      /* 1.20:1 on --bg-color; a raised well, not a card */
+    --field-border: #2e3238;  /* 1.51:1 on --bg-color, 1.26:1 on --field-bg */
+    /* The resting hairline has to clear 3:1 against the surface it sits on to
+     * read as a boundary at all. #2e3238 on #1a1c1f is 1.26:1, which is a visible
+     * edge and nothing more - deliberate. Green is the focus state, not the
+     * resting state, and a permanent 2px green border put the accent on all six
+     * surfaces at once. */
 }
 
 
@@ -2166,42 +2188,383 @@ span{
     margin:auto;
 }
 
+/* Two columns: what to expect on the left, the form on the right.
+ *
+ * This section was three centred strips stacked on one axis - heading, then a
+ * centred email row, then a 720px form that was itself centred but left-aligned
+ * inside. So three different widths, two different alignments, and nothing
+ * grouping them: the heading floated above a row of text above a form, and the
+ * form's 720px was narrower than its own section, leaving dead space on both
+ * sides of it. Every band had to be read on its own.
+ *
+ * A grid makes it one composition. The left rail carries the heading, the resume
+ * and the direct address; the form keeps the full height of the row beside it.
+ * Both columns start at the same top edge and share the same left-to-right
+ * rhythm, which is what makes it read as one section instead of three.
+ *
+ * `minmax(0, ...)` on the form column is load-bearing: without it a grid track
+ * is `auto`, which is `minmax(auto, ...)` under the hood, and the track cannot
+ * shrink below the form's min-content width - so the textarea and the address
+ * together would refuse to wrap and push the page sideways at narrow widths.
+ * With it, both columns can shrink and their contents wrap instead. */
 .contact{
     background-color: var(--bg-color);
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(4rem, 7vw, 9rem);
+    align-items: start;
+    text-align: left;
 }
-  
-.contact h2{
-    margin-bottom: 3rem;
-    color: white;
+
+/* ---------- left rail ---------- */
+
+/* The rail is a plain wrapper so the two columns can be told apart in the
+ * markup. Its own spacing is the gap between its children. */
+.contact-rail{
+    display: grid;
+    gap: 2.4rem;
+    align-content: center;
+    /* A reading measure for the intro paragraph. The rail's track is wider than a
+     * paragraph wants at 1440px, and an intro set at 700px across reads as a wall
+     * rather than as a sentence. */
+    max-width: 46rem;
 }
-.contact form{
+/* Heading, resume and the intro, as one block with one left edge.
+ *
+ * The resume moved out of the email row earlier, then out of the flex row beside
+ * the heading and onto its own line under the intro. A 8rem heading is 76px tall;
+ * a button beside it is 44px, and centred against it the button reads as a
+ * footnote to the word "Contact" rather than as a destination. On its own line,
+ * full width of the column, it reads as the second thing to do after reading
+ * what this person does. */
+.contact-head{
+    display: grid;
+    gap: 1.8rem;
+    justify-items: start;
+}
+.contact-head h2{
+    /* Was `margin: 5rem 0` from `.heading` and `margin-bottom: 0` here. With the
+     * rail carrying the vertical rhythm as a `gap`, a 5rem top margin put the
+     * heading 5rem below where the grid said it should start, and `margin-bottom:
+     * 0` had to override it. Zero margins both ways; the grid owns the spacing. */
+    margin: 0;
+    /* 8rem is the page-wide `.heading`, and at the 60% root that is 76.8px -
+     * correct for a full-width section heading centred over a whole section, and
+     * too large here. In a 480px rail it was also the widest thing on the page
+     * and the thing the eye landed on before the intro that explains the section.
+     * 5.6rem keeps it the biggest text in the section while leaving room for the
+     * paragraph under it. The other sections are untouched. */
+    font-size: 5.6rem;
+    /* The heading is the one centred line left in this section: everything else
+     * in the rail is left-aligned against it, and the resume sits under it. A
+     * centred heading over a left-aligned block above it looked like a header
+     * belonging to nothing, so this is left too - the shared left edge is what
+     * makes the rail read as one column. */
+    text-align: left;
+    line-height: 1.1;
+    color: var(--text-color);
+}
+/* The intro. New, and the reason the section works as a section: without it the
+ * rail is a heading, a button and an address - three objects with no sentence
+ * explaining what any of them is for, which is what made the old centred layout
+ * read as three unrelated strips. */
+.contact-intro{
+    margin: 0;
+    max-width: 38rem;
+    font-size: 1.7rem;
+    line-height: 1.7;
+    color: var(--muted-color);
+}
+/* Resume: filled, and the only filled control in the rail.
+ *
+ * `.btn-primary` fills with --main-color and is already the hero's primary, so
+ * reusing the class keeps one definition of "the filled button" across the page.
+ * Its width is `fit-content` rather than the column's: a full-width button here
+ * would be the largest object in the rail, which is not what a download link
+ * competes with - the heading is. */
+.contact-resume{
+    font-size: 1.5rem;
+    padding: 1rem 2.6rem;
+}
+/* A live status line, and the one decorative element in the section.
+ *
+ * A 7px dot with a soft halo, green, beside one line of text. It answers the
+ * question a contact section always raises - is it worth writing? - without a
+ * second paragraph or another card. The dot is a pseudo-element, so it is
+ * `aria-hidden` by construction and costs nothing in the accessibility tree.
+ *
+ * The halo is a box-shadow rather than a border because the dot is 8px across:
+ * a 2px border on that diameter would be 25% of its width and read as a ring
+ * around a ring. */
+.contact-status{
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 3rem;
-    margin: 5rem auto;
-    text-align: center;
+    gap: 1rem;
+    font-size: 1.4rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--main-color);
 }
-.contact form .input-box{
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+.contact-status::before{
+    content: "";
+    flex: 0 0 auto;
+    /* Pixels, not rem. This dot's job is to be seen, and rem made it scale with
+     * the root: at the 320px viewport the root is 6px, so 0.7rem came out 4.2px
+     * across - smaller than the glow it was meant to cast, and small enough that
+     * the status read as bare text. Same reasoning as the 44px min-height on the
+     * controls: a size that has to be perceived should not depend on the root. */
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--main-color);
+    box-shadow: 0 0 0 4px rgba(27, 179, 14, 0.15), 0 0 12px rgba(27, 179, 14, 0.45);
+    /* Slow. This is a status light, not an alert; 3s is slow enough to read as
+     * steady and quick enough that it registers as alive if you watch it. */
+    animation: contact-status-pulse 3s ease-in-out infinite;
 }
-.contact form .input-box input,
-.contact form textarea{
+@keyframes contact-status-pulse{
+    0%, 100%{ box-shadow: 0 0 0 4px rgba(27, 179, 14, 0.15), 0 0 12px rgba(27, 179, 14, 0.45); }
+    50%{ box-shadow: 0 0 0 6px rgba(27, 179, 14, 0.07), 0 0 16px rgba(27, 179, 14, 0.6); }
+}
+/* Under prefers-reduced-motion this stops entirely. The page's other rules in
+ * that block "hold a fixed strength" rather than disabling, but a pulsing dot is
+ * a decorative loop with no information in its motion - the green already says
+ * what it means - so `none` is the honest value here. */
+@media (prefers-reduced-motion: reduce){
+    .contact-status::before{ animation: none; }
+}
+/* The address, as a labelled block rather than a centred row.
+ *
+ * It was `display: flex; justify-content: center` with the copy button inline,
+ * which only worked while the section was one centred axis. In the rail it is a
+ * vertical stack so the address can wrap at any width without the button being
+ * pushed off the end, and it shares the left edge with the heading above it. */
+/* The address block, set apart from the intro above it by a rule rather than by
+ * more space.
+ *
+ * A top border is the cheapest way to say "this is a different kind of thing" -
+ * the intro is prose, this is an address and a button - and it costs no vertical
+ * space, which matters because the rail is the taller column at 1024px and the
+ * extra gap would push the form's top out of alignment with the heading's. The
+ * border is at 18% green, matching the navbar's own hairline. */
+.contact-direct{
+    display: grid;
+    justify-items: start;
+    gap: 1rem;
+    padding-top: 2.4rem;
+    border-top: 1px solid rgba(27, 179, 14, 0.18);
+}
+/* A label above the address, so the row reads as "here is how to reach me
+ * directly" rather than as a loose line of text. Was a bare <span> sitting
+ * inline with the link. */
+.contact-direct span{
+    font-size: 1.3rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted-color);
+}
+/* ---------- form column ---------- */
+
+/* One column, filling its grid track.
+ *
+ * No `max-width: 720px` and no `margin: auto`: the form is the right-hand track of
+ * the section grid, so the layout already sizes it, and capping it again left a
+ * dead gutter between it and the rail. Measured, the track gives it 615px at a
+ * 1440px viewport and 368px at 1024px - the same 1.15/0.85 split the old fixed
+ * 720px was reaching for, but it now shares the width with the rail instead of
+ * leaving it empty. */
+.contact-form{
+    max-width: 100%;
+    margin: 0;
+    display: grid;
+    /* 1.5rem between fields, 0.5rem between a label and its control. The ratio is
+     * what makes five stacked boxes read as five things rather than one long form;
+     * see the note on .field. */
+    gap: 1.5rem;
+    text-align: left;
+}
+/* One .field per control, label then input then nowhere else. This is not
+ * tidiness: setFieldError() finds the error node with
+ * `input.parentNode.querySelector('.field-error')` and inserts it as
+ * `input.nextSibling`, so it silently assumes one input per parent. The old
+ * .input-box held two each - name+email, phone+subject - so when both fields in
+ * a box failed, the second call found the first one's error element and
+ * overwrote its text. validateForm() runs in key order, so an email error
+ * replaced the name error outright and a visitor submitting an empty form was
+ * shown one message, not two. */
+/* The gap between a label and its control is 0.5rem; the gap between one field
+ * and the next is 1.5rem. Three times the gap, so the eye reads five fields
+ * rather than one field and four continuations of it. `.field` is the inner
+ * spacing and `.contact-form` is the outer, and they are different values on
+ * purpose - at the old shared 0.6rem the labels sat as close to the field below
+ * them as to the field they belong to. */
+.field{
+    display: grid;
+    gap: 0.5rem;
+}
+/* A visible label per field. All five were `sr-only`, which left the placeholder
+ * as the only thing naming each box - and a placeholder disappears the moment
+ * anyone types, so on a phone the only way to tell the fields apart was to have
+ * read them before filling any in. It also made the optional phone number
+ * explain itself only through placeholder text. */
+.field-label{
+    font-size: 1.3rem;
+    font-weight: 600;
+    /* --muted-color rather than --text-color. Five labels in full-contrast grey
+     * directly above five boxes is six levels of text competing; the labels are
+     * the navigation of this form and the values inside them are the content, so
+     * the labels step back one level. Measured both themes at the label size:
+     * #9aa0a6 on #121212 is 6.72:1 and #5f6368 on #f6f7f9 is 5.61:1, both clear
+     * of 4.5:1 for the 12.5px they render at. */
+    color: var(--muted-color);
+    line-height: 1.4;
+}
+.field-optional{
+    font-weight: 400;
+    color: var(--muted-color);
+    /* Below the label it belongs to, and lighter than it. `(optional)` is an
+     * annotation on "Phone Number", not a second field label, and it was
+     * competing with it at the same weight and size. */
+    font-size: 1.2rem;
+}
+/* Scoped to .field, not to `.contact-form input`.
+ *
+ * `.contact-form input` is 0,1,1 and `.hp-field` is 0,1,0, so a selector this
+ * broad overrides the honeypot's own `width: 0` and the hidden bot field comes
+ * back as a 1280px-wide box. The old rules were `.contact form .input-box input`,
+ * which never matched the honeypot because it sits outside `.input-box` - so
+ * scoping to `.field` preserves that by structure rather than by luck, and .field
+ * is only ever a label/control pair. */
+.field input,
+.field textarea{
     width: 100%;
-    padding: 2.5rem;
-    font-size: 1.8rem;
+    /* Was 2.5rem of padding, i.e. 24px, on a 1.8rem face: every field came out
+     * around 76px tall, and five of them plus the message box meant a long scroll
+     * to reach Send. */
+    padding: 1.1rem 1.4rem;
+    font-size: 1.6rem;
+    font-family: inherit;
     color: var(--text-color);
-    background: var(--second-bg-color);
-    border-radius: 2rem;
-    border: 2px solid var(--main-color);
-    margin: 1.5rem 0;
-    resize: none;
+    /* --field-bg, not --second-bg-color: a form well is its own surface level,
+     * and on a raised surface the green border was the only thing separating the
+     * field from the section behind it. */
+    background: var(--field-bg);
+    /* 8px on the 60% root, against the old 6px. The fields sit on a well that is
+     * 1.20:1 off the page, so the corners need to be visibly softer than the
+     * hero's 32px pill without rounding to nothing - 8px is the size that reads as
+     * "input" at this scale rather than as a chip. */
+    border-radius: 0.8rem;
+    /* 1px, not 2px, and not green. This is the single biggest change to the
+     * section's character: six 2px green borders meant green was the resting
+     * state of the form rather than its accent, and the eye had no signal left to
+     * follow. At rest the fields are a well with a hairline edge; green arrives on
+     * focus, where it means "you are here". */
+    border: 1px solid var(--field-border);
+    margin: 0;
+    /* Transition the properties the focus state actually changes. Not `all`:
+     * `all` would animate `width` on any future layout change and `border-color`
+     * is the only border property in play, so naming them keeps the transition to
+     * what is visible. 160ms rather than .btn's 300ms - this is a keyboard-driven
+     * state that has to feel immediate on tab-through. */
+    transition: border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
+}
+/* The focus state, and where the accent lives.
+ *
+ * Two shadows: a tight 3px ring at 30% and a wider 18px bloom at 18%. The ring is
+ * the part that satisfies WCAG 2.4.11 focus appearance; the bloom is what makes it
+ * read as this site's green rather than as a generic focus ring. It replaces the
+ * `:focus-visible` outline rather than stacking with it - `outline: none` here,
+ * because a teal 3px outline plus a green border plus a green bloom is three focus
+ * indicators, and the page's global `:focus-visible` rule cannot be overridden
+ * without this.
+ *
+ * `:focus`, not `:focus-visible`: for a text field, focus and visible focus are
+ * the same event. Tabbing in should light the field, and clicking into it should
+ * too. This is the deliberate exception to how the rest of the page treats it, and
+ * it is limited to `.field input, .field textarea` rather than to buttons. */
+.field input:focus,
+.field textarea:focus{
+    outline: none;
+    border-color: var(--main-color);
+    box-shadow: 0 0 0 3px rgba(27, 179, 14, 0.30), 0 0 18px rgba(27, 179, 14, 0.18);
+}
+/* Hover, weaker than focus and on the well rather than the border. A field is not
+ * a link, so it should not glow because the pointer is over it - but it should
+ * acknowledge the pointer, and a 1px border step is enough. */
+.field input:hover:not(:focus),
+.field textarea:hover:not(:focus){
+    border-color: #454b52;
+}
+[data-theme="light"] .field input:hover:not(:focus),
+[data-theme="light"] .field textarea:hover:not(:focus){
+    border-color: #b9bfc6;
+}
+/* The invalid state has to outrank both the resting border and the focus ring, or
+ * a field that is both invalid and focused shows a green bloom over a red border.
+ * `.invalid` is added by setFieldError(), and these selectors are
+ * 0,3,1 - above `.field input:focus` at 0,2,1 - so specificity alone settles it
+ * and no !important is needed. The old rule needed `!important` only because it
+ * was `0,2,1` fighting a `0,2,1` border from a later rule. */
+.field input.invalid,
+.field textarea.invalid{
+    border-color: var(--secondary-accent-color);
+    box-shadow: 0 0 0 3px rgba(207, 102, 121, 0.28);
+}
+.field input.invalid:focus,
+.field textarea.invalid:focus{
+    box-shadow: 0 0 0 3px rgba(207, 102, 121, 0.45), 0 0 18px rgba(207, 102, 121, 0.22);
+}
+/* Placeholders at --muted-color rather than the UA default.
+ *
+ * The default in Chrome is a mid grey that happens to be legible but is unrelated
+ * to anything else on the page; in the light theme it is the same value the labels
+ * use, so placeholder and label were indistinguishable at a glance. Now the
+ * placeholder is one step further back than the label, which is the relationship
+ * between them. Note the labels are always visible, so this is a hint, not the
+ * only label - which is what made the old `sr-only` labels worth fixing. */
+.field input::placeholder,
+.field textarea::placeholder{
+    color: var(--muted-color);
+    opacity: 0.72;
+}
+/* 10rem rather than 16rem, and a resizable handle.
+ *
+ * 16rem is 153.6px at the desktop root: taller than the four fields above it
+ * stacked together with their gaps, so the message box read as the section and the
+ * other four as a preamble. 10rem is 96px - still the largest control on the form,
+ * still about six lines of text, and it puts Send within one screen of the first
+ * field instead of three. The user can drag it, and `min-height` rather than
+ * `rows="10"` means no breakpoint has to revisit a fixed height. */
+.field textarea{
+    min-height: 10rem;
+    resize: vertical;
+}
+/* Send: the one filled control in the form, and the only place the accent is
+ * solid at rest. `.btn-primary` already fills with --main-color for the hero, so
+ * the class is reused rather than re-declared - one definition of "filled" on the
+ * page. The min-height keeps it above the 44px tap target at every root the
+ * responsive blocks produce. */
+#contact-submit{
+    min-height: 44px;
+}
+/* Full width of the form column: it is the form's one action, there is nothing to
+ * put beside it, and a 180px pill at the end of a 615px column reads as an
+ * afterthought. `width: 100%` with the padding on `.btn` keeps the label centred
+ * because .btn is inline-block and its content box is the full width here. */
+.form-actions{
+    margin-top: 0.4rem;
 }
 .contact form .btn{
-margin-top: 2rem;
-
+    margin-top: 0;
+}
+#contact-submit{
+    width: 100%;
+    font-size: 1.6rem;
+    padding: 1.2rem 2.8rem;
+    /* Rounded like the fields, not like the page's 32px pill. The button sits
+     * directly under a 8px-radius field, and a pill under a rounded rectangle
+     * reads as a different component. */
+    border-radius: 0.8rem;
 }
 /* ---------- footer ----------
  * Grouped as brand / social / nav / meta, spaced on one rhythm, and sharing the
@@ -2477,8 +2840,12 @@ margin-top: 2rem;
     .services{
         padding-bottom:7rem;
     }
-    .contact form{
-        flex-direction: column;
+    /* Contact collapses to one column here: the rail and the form stack, in
+     * source order, so the heading still comes before the form and the address
+     * still comes before the fields. */
+    .contact{
+        grid-template-columns: minmax(0, 1fr);
+        gap: 3.2rem;
     }
     .testimonials-grid{
         grid-template-columns: repeat(2, 1fr);
@@ -2731,10 +3098,43 @@ margin-top: 2rem;
     .services-box .services-info p {
         font-size: 1.4rem;
     }
-    .contact form .input-box input,
-    .contact form textarea {
-        font-size: 1.5rem;
+    /* Contact form on a phone.
+     *
+     * Was `.contact form .input-box input, .contact form textarea { font-size:
+     * 1.3rem }`, i.e. 8.3px at this 40% root. Now 1.75rem = 11.2px, closer to the
+     * 1.6rem desktop value it steps down from. Nothing in the form clears 16px, so
+     * iOS Safari will still zoom the viewport on focus - that is the page-wide
+     * 35-40% root rather than this block, and fixing it here alone would make the
+     * contact fields the only 16px text on the site. */
+    .field input,
+    .field textarea {
+        font-size: 1.75rem;
     }
+    /* Tap targets, and why the floor is px rather than rem.
+     *
+     * Measured at 375px after the field padding came down from 2.5rem to 1.2rem:
+     * every field came out 36.3px tall and Send 32.8px, against the 44px minimum
+     * (WCAG 2.5.8, and the height every mobile browser's own controls use). 1.2rem
+     * of padding is right on a 60% root and far too little on a 40% one - the same
+     * rem-versus-px problem the footer sizes note below.
+     *
+     * So the floor is px, because 44px is an absolute. It does not scale with the
+     * page, and rem at this root could not reach it at all - 2.75rem of padding
+     * would be needed. The padding itself stays rem so it keeps tracking the type.
+     *
+     * This block is the phone breakpoint deliberately. Measured at 768px the
+     * fields are 41.2px tall and 50px on desktop, so a floor there would pad out
+     * a layout that is not cramped. */
+    .field input,
+    .field textarea{
+        min-height: 44px;
+    }
+    /* Send needs no floor here: it is full width, so its own padding (1.2rem, i.e.
+     * 7.7px at this root) already puts it at 44px. A `.form-actions .btn` min-height
+     * was covering one button that did not need it, so it is gone; the base
+     * `#contact-submit { min-height: 44px }` is the backstop if that padding is
+     * ever reduced. */
+
     /* ---------- footer on a phone ----------
      * These breakpoints scale `html` down to 40% of 16px, so one rem is 6.4px
      * here and every rem in the footer's desktop rules collapses by a third.
@@ -2835,9 +3235,26 @@ margin-top: 2rem;
     .services-box .services-info p {
         font-size: 1.2rem;
     }
-        .contact form .input-box input,
-    .contact form textarea {
-        font-size: 1.3rem;
+    /* 35% root here, so 1.75rem from the 480px block is 9.8px - too small to
+     * read. Step the contact fields up rather than leave them shrinking past the
+     * point where they are legible. Same rem-to-px arithmetic one breakpoint
+     * further up, at 5.6px per rem: 2rem is 11.2px.
+     *
+     * Note for whoever picks this up next: nothing in the form clears 16px, so iOS
+     * Safari zooms the viewport on focus. That is the page-wide 35-40% root, not
+     * this block - fixing it here alone would make the contact fields the only
+     * 16px text on the site. */
+    .field input,
+    .field textarea {
+        font-size: 2rem;
+    }
+    /* No 44px tap-target floor here: the 480px block above already sets one and
+     * this width is below it, so it is still in force. Only the font needed
+     * restating. */
+    /* 320px is narrower again, and the contact row wraps the address onto its own
+     * line at this width with the Copy button beside it. */
+    .contact-email{
+        font-size: 1.5rem;
     }
     /* Footer again, one step further down. This block is later in the stylesheet so
      * it wins on 320-360px phones, and it has to restate the sizes: `html` is 35%
@@ -3212,24 +3629,36 @@ section{
     height: 0;
     width: 0;
 }
-/* Contact: direct email row */
-.contact-direct{
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 1.5rem;
-    margin: 2rem 0 0;
-    text-align: center;
+/* Contact: direct email block, in the left rail. Layout is declared with the
+ * rest of the rail above; this block is the address and its copy button. */
+/* The address is a link, and looks like one.
+ *
+ * It used to be an `<a class="btn">` - the same pill, border and hover glow as
+ * every other button on the page - so the row read as three identical calls to
+ * action rather than one address with two ways to act on it. That also put the
+ * longest string on the page in the element with the widest padding, which is
+ * what made the row wrap awkwardly at phone widths.
+ *
+ * --main-color rather than --accent-color, so the address and the Copy button
+ * that acts on it are visibly the same idea. */
+.contact-email{
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--main-color);
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+    overflow-wrap: anywhere;
 }
-.contact-direct span{
-    font-size: 1.8rem;
-    color: var(--text-color);
+.contact-email:hover{
+    text-decoration-thickness: 2px;
 }
+/* Ghost button: quiet next to the address, which is the primary thing here. */
 .contact-direct .btn-copy{
     background: transparent;
     color: var(--accent-color);
     border-color: var(--accent-color);
+    font-size: 1.4rem;
+    padding: 0.6rem 1.6rem;
 }
 .contact-direct .btn-copy:hover{
     background: var(--accent-color);
@@ -3421,6 +3850,19 @@ section{
     --accent-color: #115e59;
     --secondary-accent-color: #b03a4e;
     --muted-color: #5f6368;
+
+    /* The contact field tokens, inverted for light. See the :root note for why
+     * these are separate from --second-bg-color: a form well is a third surface
+     * level - page, then the well, then the page again inside it - and reusing the
+     * card token makes the inputs indistinguishable from any card on the page.
+     *
+     * In light theme the well is white on the #f6f7f9 page (1.11:1, the same quiet
+     * lift the dark theme's 1.20:1 gives) and the hairline is #d3d7dc, which is
+     * 1.32:1 against the well. Deliberately still not 3:1: this is a resting
+     * boundary, not a control state, and the green focus border is what carries
+     * the accent. */
+    --field-bg: #ffffff;
+    --field-border: #d3d7dc;
 }
 /* Hero backdrop, light theme. The alpha comes down but the grid is tinted toward the
  * light theme's dark green (#166534): the dark theme's rgba(27,179,14,.05) is a
@@ -3464,7 +3906,6 @@ section{
 [data-theme="light"] .blog-post-title,
 [data-theme="light"] .blog-post-content h2,
 [data-theme="light"] .services h2,
-[data-theme="light"] .contact h2,
 [data-theme="light"] .certifications h2,
 [data-theme="light"] .about h2,
 [data-theme="light"] .cert-category-heading h3,
@@ -3505,9 +3946,12 @@ section{
     box-shadow: 0 2px 10px rgba(22, 101, 52, .28);
 }
 [data-theme="light"] .project-card .project-updated{ color: var(--muted-color); }
-[data-theme="light"] .timeline-content,
-[data-theme="light"] .contact form .input-box input,
-[data-theme="light"] .contact form textarea{ background: #ffffff; }
+/* .timeline-content keeps an explicit white here. The two form fields do not: they
+ * were listed in this rule only to re-declare what --second-bg-color already gave
+ * them in light theme, and now that the fields use --field-bg (which the light
+ * token block sets to #ffffff) an override here would be a second place to keep in
+ * step for no gain. */
+[data-theme="light"] .timeline-content{ background: #ffffff; }
 [data-theme="light"] .blog-post-content code{ color: var(--accent-color); }
 [data-theme="light"] .blog-post-article blockquote{ color: #3c4043; }
 [data-theme="light"] .navbar{ background: rgba(255, 255, 255, 0.95); }
@@ -3789,20 +4233,22 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
     font-weight: 500;
     width: 100%;
     text-align: left;
-    margin: -0.5rem 0 0.5rem;
+    /* Was -0.5rem, pulling the message up over the field's bottom border. The
+     * negative margin was compensating for the 1.5rem of bottom margin the input
+     * itself used to carry; .field now sets the spacing with `gap: 0.6rem` and
+     * the input has no margin, so a pull here would overlap the border again. */
+    margin: 0;
 }
 .field-error.show{
     display: block;
 }
-.contact form input.invalid,
-.contact form textarea.invalid{
-    border-color: var(--secondary-accent-color) !important;
-    box-shadow: 0 0 10px rgba(207, 102, 121, 0.45);
-}
-.contact form input.invalid:focus-visible,
-.contact form textarea.invalid:focus-visible{
-    outline-color: var(--secondary-accent-color);
-}
+/* The invalid state used to be here as well, with `!important` on the border and
+ * a 10px red glow. The rewrite moved it up beside the focus ring it has to
+ * outrank (see `.field input.invalid` earlier), where specificity settles the
+ * conflict without `!important` and where the invalid+focused case is one rule
+ * instead of two half-matching ones. Keeping this copy would put the weaker
+ * `!important` border back on top of the stronger one, so it is deleted rather
+ * than left to be overridden. */
 /* Now a caption inside .footer-meta, so the spacing above it comes from that
  * block's `gap` rather than from a margin that fought the footer's own padding.
  * --muted-color rather than `opacity: .8`: the old value dimmed the generated
@@ -4795,33 +5241,84 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 
 
 <section class="contact" id="contact" tabindex="-1">
-    <h2 class="heading">Contact <span>Me</span></h2>
-    <div class="contact-direct">
-        <span>Prefer email?</span>
-        <a href="mailto:patrickcabansag5@gmail.com" class="btn">patrickcabansag5@gmail.com</a>
-        <button type="button" class="btn btn-copy" id="copy-email">Copy Email</button>
-                <a href="resume-2026.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" class="btn btn-resume" aria-label="Download resume (PDF)">Resume</a>
-    </div>
-    <form id="contact-form" novalidate>
-        <div class="input-group">
-            <div class="input-box">
-                <label class="sr-only" for="full-name">Full Name</label>
-                <input type="text" id="full-name" name="from_name" placeholder="Full Name" autocomplete="name" required>
-                <label class="sr-only" for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="Email" autocomplete="email" required>
-            </div>
-            <div class="input-box">
-                <label class="sr-only" for="phone-number">Phone Number</label>
-                <input type="tel" id="phone-number" name="phone_number" placeholder="Phone Number (optional)" autocomplete="tel">
-                <label class="sr-only" for="subject">Subject</label>
-                <input type="text" id="subject" name="subject" placeholder="Subject" autocomplete="off" required>
-            </div>
+    <!-- Two columns: a left rail with the heading, the resume and the direct
+         address, and the form on the right.
+
+         This section was three centred strips on one axis, so each band had a
+         different width and the form was left-aligned inside a centred box. The
+         grid makes the left edge of the heading, the address and the first field
+         the same line, which is what makes it read as one composition.
+
+         Source order is still heading, address, form - which is the order they
+         are read in, and the order they are tabbed through. The grid places the
+         form beside the rail rather than after it, and CSS placement does not
+         touch DOM order, so nothing about the tab sequence or the screen reader
+         order moved. -->
+    <div class="contact-rail">
+        <div class="contact-head">
+            <h2 class="heading">Contact <span>Me</span></h2>
+            <!-- The intro. Added because the rail was otherwise a heading, a
+                 button and an address: three objects with no sentence saying what
+                 any of them were for, which is why the old centred version read as
+                 three unrelated strips. Deliberately plain about what each kind of
+                 message leads to, so a visitor can tell whether the form is worth
+                 filling in before they start. -->
+            <p class="contact-intro">Have a project in mind, an opportunity to fill, or something you would rather just ask about? Send a message below and I will get back to you. If you would rather not fill in a form, the email address below reaches me directly.</p>
+            <!-- Filled, because this is the rail's one action and it is the second
+                 thing a visitor is meant to do. It was `btn-secondary` sitting in a
+                 flex row beside an 8rem heading, where a 44px button centred against
+                 76px of type reads as a footnote to the word "Contact". -->
+            <a href="resume-2026.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" class="btn btn-primary contact-resume" aria-label="Download resume (PDF)">Resume</a>
         </div>
-        <div class="input-group-2">
-            <label class="sr-only" for="message">Your Message</label>
-            <textarea id="message" name="message" cols="30" rows="10" placeholder="Your Message" required></textarea>
-            <input type="text" id="website" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
-            <button type="submit" class="btn" id="contact-submit">Send Message</button>
+        <!-- A status line, and the only decorative element in the section. The dot
+             is a pseudo-element, so it is absent from the accessibility tree and
+             the text carries the meaning on its own. -->
+        <p class="contact-status">Available for opportunities</p>
+        <div class="contact-direct">
+            <span>Prefer email?</span>
+            <a href="mailto:patrickcabansag5@gmail.com" class="contact-email">patrickcabansag5@gmail.com</a>
+            <button type="button" class="btn btn-copy" id="copy-email">Copy Email</button>
+        </div>
+    </div>
+    <form id="contact-form" class="contact-form" novalidate>
+        <!-- One .field per control, label then input then nowhere else.
+             This is not tidiness: setFieldError() finds the error node with
+             `input.parentNode.querySelector('.field-error')` and inserts it as
+             `input.nextSibling`, so it silently assumes one input per parent.
+             The old .input-box held two each - name+email, phone+subject - so
+             when both fields in a box failed, the second call found the first
+             one's error element and overwrote its text. validateForm() runs in
+             key order, so an email error replaced the name error outright and a
+             visitor submitting an empty form was shown one message, not two. -->
+        <div class="field">
+            <label class="field-label" for="full-name">Full Name</label>
+            <input type="text" id="full-name" name="from_name" placeholder="Full Name" autocomplete="name" required>
+        </div>
+        <div class="field">
+            <label class="field-label" for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+        </div>
+        <div class="field">
+            <label class="field-label" for="phone-number">Phone Number <span class="field-optional">(optional)</span></label>
+            <!-- (optional) moved to the label, which stays visible. It used to
+                 live only in the placeholder, and a placeholder disappears as
+                 soon as anyone types - so the one field that may be left blank
+                 was the one field whose rule could not be read back. -->
+            <input type="tel" id="phone-number" name="phone_number" placeholder="Phone Number" autocomplete="tel">
+        </div>
+        <div class="field">
+            <label class="field-label" for="subject">Subject</label>
+            <input type="text" id="subject" name="subject" placeholder="What is this about?" autocomplete="off" required>
+        </div>
+        <div class="field">
+            <label class="field-label" for="message">Your Message</label>
+            <textarea id="message" name="message" cols="30" placeholder="Your Message" required></textarea>
+        </div>
+        <!-- Honeypot. Kept out of .field: it must not be announced, sized or
+             focused, and .hp-field already takes it off-screen. -->
+        <input type="text" id="website" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="contact-submit">Send Message</button>
         </div>
         <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
 </form>
@@ -5092,7 +5589,7 @@ submitBtn.textContent = 'Send Message';
             </p>
             <!-- class and text shape preserved: tools/build_last_updated.js
                  matches this element by class and rewrites the date in place. -->
-            <p class="last-updated">Last updated: 2026-10-05</p>
+            <p class="last-updated">Last updated: 2026-10-06</p>
         </div>
     </div>
 </footer>
