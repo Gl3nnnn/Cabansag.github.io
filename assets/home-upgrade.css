@@ -1,0 +1,160 @@
+/* Home hero upgrade: badge, calmer photo, bigger tap targets, scroll cue.
+ * Lives here (not inline) so future tweaks touch one cached file.
+ * Inline .home rules still win where they overlap - this only adds. */
+
+.home-badge{
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-color);
+  border: 1px solid var(--main-color);
+  border-radius: 999px;
+  padding: 0.6rem 1.4rem;
+  margin-bottom: 1.2rem;
+  background: transparent;
+}
+.home-badge-dot{
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  background: var(--main-color);
+  box-shadow: 0 0 10px var(--main-color);
+  animation: home-dot-pulse 2s ease-in-out infinite;
+}
+@keyframes home-dot-pulse{
+  0%,100%{ transform: scale(1); opacity: 1; }
+  50%{ transform: scale(1.35); opacity: 0.7; }
+}
+
+.home-content h1{
+  font-size: clamp(4.2rem, 6vw, 7rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+.hero-role{
+  font-size: 1.5rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+.hero-bio{
+  max-width: 52ch;
+  line-height: 1.7;
+}
+
+/* Buttons: 44px minimum, wrap nicely, full-width secondary on phones. */
+.btn-group{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin-top: 0.6rem;
+}
+.btn-group .btn{
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Small copy-email chip under buttons. Reuses contact copy logic. */
+.home-email-chip{
+  margin-top: 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-family: inherit;
+  font-size: 1.3rem;
+  color: var(--text-color);
+  background: transparent;
+  border: 1px dashed var(--main-color);
+  border-radius: 999px;
+  padding: 0.7rem 1.4rem;
+  cursor: pointer;
+}
+.home-email-chip:hover,.home-email-chip:active,.home-email-chip:focus-visible,.home-email-chip.is-copied{
+  background: var(--main-color);
+  color: #000;
+}
+.home-email-chip:hover *,.home-email-chip:active *,.home-email-chip.is-copied *{color:#000;}
+
+/* Calmer photo: smaller soft glow, no heavy zoom on hover. */
+.home-img img{
+  box-shadow: 0 0 25px rgba(27,179,14,0.35);
+}
+.home-img:hover img{
+  transform: scale(1.02);
+}
+
+/* Pause the rotating words on hover so people can read them. */
+.text-animation:hover .ta-rotator::before,
+.text-animation:hover .ta-rotator::after{
+  animation-play-state: paused;
+}
+
+/* Gentle fade-up on load, once. Off when user prefers less motion. */
+.home-content,
+.home-img{
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+body.home-loaded .home-content,
+body.home-loaded .home-img{
+  opacity: 1;
+  transform: none;
+}
+
+/* Scroll cue at bottom of hero. */
+.home-scroll{
+  position: absolute;
+  left: 50%;
+  bottom: 1.6rem;
+  transform: translateX(-50%);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 1.2rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-color);
+  opacity: 0.75;
+  text-decoration: none;
+}
+.home-scroll i{
+  color: var(--main-color);
+  animation: home-scroll-bounce 1.8s ease-in-out infinite;
+}
+@keyframes home-scroll-bounce{
+  0%,100%{ transform: translateY(0); }
+  50%{ transform: translateY(6px); }
+}
+.home-scroll:hover{
+  opacity: 1;
+}
+
+@media (max-width: 895px){
+  .home{
+    gap: 3rem;
+  }
+  .btn-group .btn{
+    flex: 1 1 100%;
+  }
+  .home-scroll{
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce){
+  .home-content,
+  .home-img{
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .home-badge-dot,
+  .home-scroll i{
+    animation: none;
+  }
+}

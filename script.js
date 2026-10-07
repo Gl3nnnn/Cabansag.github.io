@@ -469,7 +469,8 @@ if (copyEmailBtn) {
         const email = 'patrickcabansag5@gmail.com';
         const done = () => {
             copyEmailBtn.textContent = 'Copied!';
-            setTimeout(() => { copyEmailBtn.textContent = 'Copy Email'; }, 2000);
+            try{copyEmailBtn.classList.add('is-copied');}catch(e){}
+            setTimeout(() => { copyEmailBtn.textContent = 'Copy Email'; try{copyEmailBtn.classList.remove('is-copied');}catch(e){} }, 2000);
         };
         const fallbackCopy = () => {
             const textarea = document.createElement('textarea');
@@ -964,6 +965,8 @@ document.querySelectorAll('.cert-card').forEach(card => {
   @keyframes cm-fall{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(240px) rotate(540deg)}}
   .cm-actions{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
   .cm-btn{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:inherit;border-radius:12px;padding:1rem 1.6rem;font-size:1.35rem;cursor:pointer}
+  .cm-btn:hover,.cm-btn:active{border-color:rgba(27,179,14,.6);background:rgba(27,179,14,.18);color:inherit}
+  .cm-btn.primary:hover,.cm-btn.primary:active{background:linear-gradient(135deg,#1bb30e,#00c46a);color:#04140a}
   .cm-btn.primary{background:linear-gradient(135deg,#1bb30e,#00c46a);border-color:transparent;color:#04140a;font-weight:700}
   html[data-theme="light"] .contact-modal{background:#fff;color:#0f1a12;border-color:rgba(22,101,52,.3)}
   html[data-theme="light"] .cm-bar{background:rgba(0,0,0,.1)}
@@ -1023,7 +1026,8 @@ document.querySelectorAll('.cert-card').forEach(card => {
         const em='patrickcabansag5@gmail.com';
         if(navigator.clipboard) navigator.clipboard.writeText(em);
         mailBtn.textContent='Copied!';
-        setTimeout(()=>{ mailBtn.textContent='Copy email'; },1800);
+        try{mailBtn.classList.add('is-copied');}catch(e){}
+        setTimeout(()=>{ mailBtn.textContent='Copy email'; try{mailBtn.classList.remove('is-copied');}catch(e){} },1800);
       }catch(e){}
     });
   }
@@ -1100,3 +1104,5 @@ document.querySelectorAll('.cert-card').forEach(card => {
   window.hideContactModal=hide;
 })();
 
+// Home hero: fade-up once + second copy-email chip
+(function(){var b=document.body;if(b){requestAnimationFrame(function(){requestAnimationFrame(function(){b.classList.add('home-loaded');});});}var btn=document.getElementById('copy-email-home');if(btn){btn.addEventListener('click',function(){var email='patrickcabansag5@gmail.com';var done=function(){try{btn.classList.add('is-copied');}catch(e){}var sp=btn.querySelector('span');if(sp){sp.textContent='Copied!';setTimeout(function(){sp.textContent=email;try{btn.classList.remove('is-copied');}catch(e){}},2000);}};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(email).then(done).catch(function(){done();});}else{done();}});}})();

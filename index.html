@@ -27,6 +27,7 @@
     <link rel="canonical" href="https://gl3nnnn.github.io/Cabansag.github.io/">
     <link rel="alternate" type="application/rss+xml" title="Glenn Patrick Cabansag - Technical Blog" href="https://gl3nnnn.github.io/Cabansag.github.io/feed.xml">
     <link rel="stylesheet" href="assets/shared.css">
+    <link rel="stylesheet" href="assets/home-upgrade.css">
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1270,12 +1271,12 @@ span{
     cursor: pointer;
 }
 
-.btn:hover{
+.btn:hover,.btn:active,.btn:focus-visible{
     box-shadow: 0 0 25px var(--main-color);
     background-color: var(--main-color);
-    color: black;
-   
+    color: #000;
 }
+.btn:hover *,.btn:active *{color:#000;}
 .btn-group{
     display: flex;
     align-items: center;
@@ -2619,6 +2620,16 @@ span{
      * reads as a different component. */
     border-radius: 0.8rem;
 }
+/* Resume buttons match Send Message button: same fill, radius, padding. */
+.btn-resume{
+    border-radius: 0.8rem !important;
+    padding: 1.2rem 2.8rem !important;
+    font-size: 1.6rem !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+}
 /* ---------- footer ----------
  * Grouped as brand / social / nav / meta, spaced on one rhythm, and sharing the
  * navbar's horizontal container so the two bars line up as a pair.
@@ -3739,11 +3750,12 @@ section{
     font-size: 1.4rem;
     padding: 0.6rem 1.6rem;
 }
-.contact-direct .btn-copy:hover{
+.contact-direct .btn-copy:hover,.contact-direct .btn-copy:active,.contact-direct .btn-copy:focus-visible,.contact-direct .btn-copy.is-copied{
     background: var(--accent-color);
-    color: black;
+    color: #000;
     box-shadow: 0 0 25px var(--accent-color);
 }
+.contact-direct .btn-copy:hover *,.contact-direct .btn-copy:active *,.contact-direct .btn-copy.is-copied *{color:#000;}
 /* Certifications: verification link */
 .cert-verify{
     display: block;
@@ -4104,7 +4116,7 @@ section{
     border: 2px solid var(--main-color);
     box-shadow: 0 2px 8px rgba(23, 24, 28, 0.08);
 }
-[data-theme="light"] .btn:hover{
+[data-theme="light"] .btn:hover,[data-theme="light"] .btn:active,[data-theme="light"] .btn:focus-visible{
     background: var(--main-color);
     color: #ffffff;
     box-shadow: 0 6px 18px rgba(22, 101, 52, 0.35);
@@ -4119,7 +4131,7 @@ section{
     color: #ffffff;
     box-shadow: 0 2px 8px rgba(22, 101, 52, 0.22);
 }
-[data-theme="light"] .btn-primary:hover{
+[data-theme="light"] .btn-primary:hover,[data-theme="light"] .btn-primary:active{
     background: var(--main-color);
     color: #ffffff;
     box-shadow: 0 6px 18px rgba(22, 101, 52, 0.35);
@@ -4498,10 +4510,11 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 <main id="main">
 <section class="home" id="home" tabindex="-1">
         <div class="home-content">
+            <p class="home-badge"><span class="home-badge-dot" aria-hidden="true"></span>Available for work &middot; Iloilo, PH</p>
             <h1>Hi, it's <span>Patrick</span></h1>
             <p class="text-animation">I'm a <span class="ta-rotator" aria-hidden="true"></span><span class="ta-sr sr-only">Information Technology Assistant. I also work as a Linux systems administrator, a technical support specialist, a cybersecurity analyst and a Google Cloud engineer, and I build web applications in PHP, Laravel, JavaScript and Python.</span></p>
             <p class="hero-role">IT Assistant at COMPASS Training Center &middot; Iloilo, Philippines</p>
-            <p class="hero-bio">I build and maintain the systems people actually depend on &mdash; web applications in PHP and Laravel, the networks and classroom systems behind a training day. I also help with any hardware or software concern that comes up.</p>
+            <p class="hero-bio">I build and maintain systems people depend on &mdash; web apps in PHP/Laravel, classroom networks, and day-to-day IT support that just works.</p>
 
             <div class="social-icons">
                 <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="me noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
@@ -4512,15 +4525,18 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             </div>
 
             <div class="btn-group">
-                <a href="resume-2026.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" data-force-download class="btn btn-primary" aria-label="Download resume (PDF)">Resume</a>
+                <a href="resume-2026.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" data-force-download class="btn btn-secondary" aria-label="Download resume (PDF)">Resume</a>
 
                 <a href="#contact" class="btn btn-secondary">Contact</a>
             </div>
+            
         </div>
 
         <div class="home-img">
             <img src="profile.jpg" alt="Glenn Patrick Cabansag" fetchpriority="high" loading="eager" width="400" height="533">
         </div>
+    
+        <a class="home-scroll" href="#about" aria-label="Scroll to about section"><span>Scroll</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></a>
     </section>
 
     <div class="hero-stats" aria-label="Key figures">
@@ -5437,7 +5453,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                  thing a visitor is meant to do. It was `btn-secondary` sitting in a
                  flex row beside an 8rem heading, where a 44px button centred against
                  76px of type reads as a footnote to the word "Contact". -->
-            <a href="resume-2026.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" data-force-download class="btn btn-primary contact-resume" aria-label="Download resume (PDF)">Resume</a>
+            <a href="resume-2026.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" data-force-download class="btn btn-primary contact-resume btn-resume" aria-label="Download resume (PDF)">Resume</a>
         </div>
         <!-- A status line, and the only decorative element in the section. The dot
              is a pseudo-element, so it is absent from the accessibility tree and
