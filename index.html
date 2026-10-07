@@ -25,6 +25,8 @@
     <title>Glenn Patrick Cabansag | IT Professional</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="canonical" href="https://gl3nnnn.github.io/Cabansag.github.io/">
+    <link rel="alternate" type="application/rss+xml" title="Glenn Patrick Cabansag - Technical Blog" href="https://gl3nnnn.github.io/Cabansag.github.io/feed.xml">
+    <link rel="stylesheet" href="assets/shared.css">
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -862,6 +864,11 @@ z-index: 5;
     font-size: 3.6rem;
     color: var(--main-color);
     display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
 }
 
 section{
@@ -4404,13 +4411,13 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
         <a href="#home" class="logo">Glenn Patrick
             <span>Cabansag</span>
         </a>
-        <nav class="navbar">
+        <nav class="navbar" id="primary-navigation" aria-label="Primary">
             <a href="#home" class="active">Home</a>
             <a href="#about">About</a>
             <a href="#education">Education</a>
             <a href="#experience">Experience</a>
             <a href="#certifications">Certifications</a>
-            <a href="#services">Skills</a>
+            <a href="#services" aria-label="Skills and services">Skills</a>
             <a href="#projects">Projects</a>
             <a href="#testimonials">Testimonials</a>
             <a href="#blog">Blog</a>
@@ -4420,7 +4427,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
              toggle landed in the middle of the bar; here the nav's margin-left: auto
              pushes this group to the right edge, where a theme switch belongs. -->
         <button id="theme-toggle" aria-label="Toggle light and dark mode" title="Toggle light/dark mode"><i class="fa-solid fa-moon"></i></button>
-        <i class="fa-solid fa-bars" id="menu-icon" aria-hidden="true"></i>
+        <button id="menu-icon" aria-label="Open menu" aria-expanded="false" aria-controls="primary-navigation"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
 </header>
 
 <main id="main">
@@ -4435,7 +4442,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                 <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="me noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
                 <a href="https://github.com/Gl3nnnn" target="_blank" rel="me noopener noreferrer" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
                 <a href="https://www.facebook.com/Gl3nQt" target="_blank" rel="me noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
-                <a href="https://mail.google.com/mail/u/1/?view=cm&fs=1&to=patrickcabansag5@gmail.com&tf=1" target="_blank" rel="me noopener noreferrer" aria-label="Email"><i class="fa-regular fa-envelope"></i></a>
+                <a href="mailto:patrickcabansag5@gmail.com" rel="me" aria-label="Email"><i class="fa-regular fa-envelope"></i></a>
 
             </div>
 
@@ -5632,7 +5639,7 @@ submitBtn.textContent = 'Send Message';
             <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="me noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
             <a href="https://github.com/Gl3nnnn" target="_blank" rel="me noopener noreferrer" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
             <a href="https://www.facebook.com/Gl3nQt" target="_blank" rel="me noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
-            <a href="https://mail.google.com/mail/u/1/?view=cm&fs=1&to=patrickcabansag5@gmail.com&tf=1" target="_blank" rel="me noopener noreferrer" aria-label="Email"><i class="fa-regular fa-envelope"></i></a>
+            <a href="mailto:patrickcabansag5@gmail.com" rel="me" aria-label="Email"><i class="fa-regular fa-envelope"></i></a>
         </div>
 
         <!-- A <nav> because this is a second, independent set of navigation
@@ -5652,7 +5659,7 @@ submitBtn.textContent = 'Send Message';
                      (index.html:3301); the section id predates the heading text
                      and renaming it would touch the navbar, the alternation
                      checks and any inbound #services links for no gain. -->
-                <li><a href="#services">Skills</a></li>
+                <li><a href="#services" aria-label="Skills and services">Skills</a></li>
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#testimonials">Testimonials</a></li>
                 <li><a href="#blog">Blog</a></li>

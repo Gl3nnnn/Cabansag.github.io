@@ -25,6 +25,8 @@
     <meta name="twitter:image:alt" content="Glenn Patrick Cabansag - IT Professional portfolio">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="canonical" href="https://gl3nnnn.github.io/Cabansag.github.io/faq.html">
+    <link rel="alternate" type="application/rss+xml" title="Glenn Patrick Cabansag - Technical Blog" href="https://gl3nnnn.github.io/Cabansag.github.io/feed.xml">
+    <link rel="stylesheet" href="assets/shared.css">
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -154,6 +156,7 @@
             .q-btn{font-size:.97rem;padding:1.1rem 1.2rem;}
         }
         @media(max-width:400px){.stats{grid-template-columns:1fr;}}
+        @media (prefers-reduced-motion: reduce){.answer{transition:none;}.q-btn .chev{transition:none;}.faq-item.open{box-shadow:none;}}
 
         /* A11y: skip link, focus ring, back to top */
         .skip-link{position:absolute;left:-9999px;top:0;z-index:999;background:var(--main);color:#000;font-weight:700;padding:.7rem 1.4rem;border-radius:0 0 1rem 0;text-decoration:none;}
@@ -452,7 +455,19 @@
     </footer>
 
     <script>
-        // Accordion (one open at a time)
+        // Accordion (one open at a time) with screen-reader wiring:
+        // every answer gets an id + region role, every button points at it.
+        document.querySelectorAll('.faq-item').forEach((item, index) => {
+            const qBtn = item.querySelector('.q-btn');
+            const answer = item.querySelector('.answer');
+            if (qBtn && answer) {
+                const answerId = 'faq-answer-' + (index + 1);
+                answer.id = answerId;
+                answer.setAttribute('role', 'region');
+                answer.setAttribute('aria-label', qBtn.textContent.trim());
+                qBtn.setAttribute('aria-controls', answerId);
+            }
+        });
         document.querySelectorAll('.q-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const item = btn.closest('.faq-item');

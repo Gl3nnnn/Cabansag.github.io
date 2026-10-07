@@ -7,6 +7,7 @@ let menuIcon = document.querySelector('#menu-icon');
 
 // Active navigation link on scroll (scroll-spy)
 function updateActiveLink() {
+    if (!sections.length || !navLinks.length) return;
     let scrollY = window.scrollY;
     let currentId = '';
 
@@ -20,7 +21,7 @@ function updateActiveLink() {
         }
     });
 
-    if (!currentId && scrollY < sections[0].offsetTop) {
+    if (!currentId && sections[0] && scrollY < sections[0].offsetTop) {
         currentId = 'home';
     }
 
@@ -32,29 +33,50 @@ function updateActiveLink() {
     });
 }
 
-window.onscroll = () => {
+// One passive scroll listener, throttled with rAF so scroll-spy +
+// progress bar + back-to-top run once per frame instead of per event.
+let scrollTicking = false;
+function handleScroll() {
     updateActiveLink();
     updateScrollProgress();
     toggleBackToTop();
-};
+    scrollTicking = false;
+}
+window.addEventListener('scroll', () => {
+    if (!scrollTicking) {
+        scrollTicking = true;
+        requestAnimationFrame(handleScroll);
+    }
+}, { passive: true });
 
-// Mobile menu toggle
-menuIcon.onclick = () => {
-    menuIcon.classList.toggle('fa-xmark');
-    navbar.classList.toggle('active');
-};
+// Mobile menu toggle (works with the <button> and the legacy <i>)
+function setMenuOpen(open) {
+    if (!menuIcon || !navbar) return;
+    navbar.classList.toggle('active', open);
+    const icon = (menuIcon.tagName === 'BUTTON' ? menuIcon.querySelector('i') : menuIcon) || menuIcon;
+    icon.classList.toggle('fa-xmark', open);
+    if (menuIcon.tagName === 'BUTTON') {
+        menuIcon.setAttribute('aria-expanded', String(open));
+    }
+}
+
+if (menuIcon) {
+    menuIcon.addEventListener('click', () => {
+        setMenuOpen(!navbar || !navbar.classList.contains('active'));
+    });
+}
 
 // Close mobile menu when a link is clicked
 navLinks.forEach(link => {
     link.addEventListener('click', () => {
-        menuIcon.classList.remove('fa-xmark');
-        navbar.classList.remove('active');
+        setMenuOpen(false);
     });
 });
 
 // Scroll progress bar (top of page)
 function updateScrollProgress() {
     const progress = document.getElementById('scroll-progress');
+    if (!progress) return;
     const scrollTop = window.scrollY;
     const docHeight = document.documentElement.scrollHeight - window.innerHeight;
     const percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
@@ -65,6 +87,7 @@ function updateScrollProgress() {
 const backToTop = document.getElementById('back-to-top');
 
 function toggleBackToTop() {
+    if (!backToTop) return;
     if (window.scrollY > 400) {
         backToTop.classList.add('show');
     } else {
@@ -72,7 +95,7 @@ function toggleBackToTop() {
     }
 }
 
-backToTop.addEventListener('click', () => {
+if (backToTop) backToTop.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
@@ -196,26 +219,41 @@ function formatPushed(iso) {
     return d.toLocaleDateString('en-GB', { year: 'numeric', month: 'short' });
 }
 
+// Escape text before it reaches innerHTML. Card content mixes curated
+// strings with live GitHub API data (repo names, homepage URLs), so every
+// interpolated value goes through here.
+function escapeHtml(value) {
+    return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 function buildProjectCard(repo) {
-    const name = repo.name;
-    const description = (repo.description || '').slice(0, 160);
+    const rawName = repo.name || '';
+    const name = escapeHtml(rawName);
+    const description = escapeHtml((repo.description || '').slice(0, 160));
     // Optional, and deliberately not truncated: the outcome is a single
     // hand-written sentence, so clipping it would cut the point off. A card
     // without one just omits the row.
-    const outcome = (repo.outcome || '').trim();
-    const language = repo.language || 'N/A';
-    const stars = repo.stargazers_count || 0;
-    const url = repo.html_url || `https://github.com/${GITHUB_USER}/${name}`;
+    const outcome = escapeHtml((repo.outcome || '').trim());
+    const language = escapeHtml(repo.language || 'N/A');
+    const stars = Number(repo.stargazers_count) || 0;
+    const fallbackUrl = `https://github.com/${GITHUB_USER}/${rawName}`;
+    const rawUrl = repo.html_url || fallbackUrl;
+    const url = escapeHtml(/^https:\/\//i.test(rawUrl) ? rawUrl : fallbackUrl);
     const hasDemo = Boolean(repo.homepage);
     const ctaLabel = hasDemo ? 'Live Demo' : 'View Project';
     const ctaIcon = hasDemo ? 'fa-solid fa-rocket' : 'fa-solid fa-arrow-right';
-    const pushed = formatPushed(repo.pushed_at);
+    const pushed = escapeHtml(formatPushed(repo.pushed_at));
     const tags = (repo.tags || [])
-        .map(tag => `<span class="project-tag">${tag}</span>`)
+        .map(tag => `<span class="project-tag">${escapeHtml(tag)}</span>`)
         .join('');
 
     return `
-        <a class="project-card" href="${url}" target="_blank" rel="noopener">
+        <a class="project-card" href="${url}" target="_blank" rel="noopener noreferrer">
             <div class="project-top">
                 <h3>${name}</h3>
                 <span class="project-star"><i class="fa-solid fa-star"></i> ${stars}</span>
@@ -264,6 +302,7 @@ function renderProjectFilters() {
 }
 
 function renderProjectGrid() {
+    if (!projectsGrid) return;
     const list = activeLang === 'All'
         ? activeProjects
         : activeProjects.filter(repo => (repo.language || 'N/A') === activeLang);
@@ -285,6 +324,7 @@ function renderProjectGrid() {
 }
 
 function renderProjects(projects) {
+    if (!projectsGrid) return;
     // The curated list is already in deliberate display order, so it is not
     // re-sorted here. Re-sorting by stars (all currently 0) made the order
     // depend on API response order.

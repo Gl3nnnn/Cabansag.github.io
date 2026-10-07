@@ -155,9 +155,8 @@ function buildMetaTags({ slug, title, description, ogDescription, date }) {
     `<meta property="article:published_time" content="${date}">`,
     `<meta name="twitter:card" content="summary_large_image">`,
     `<meta name="twitter:creator" content="@glenpatrick">`,
-    // Reproduced as-is: every existing post carries the site tagline here
-    // rather than the post title.
-    `<meta name="twitter:title" content="Glenn Patrick Cabansag | IT Professional">`,
+    // Share cards use the post title, matching og:title above.
+    `<meta name="twitter:title" content="${title} | Glenn Patrick Cabansag">`,
     `<meta name="twitter:image" content="${S}/og-cover.jpg">`,
     `<meta name="twitter:image:alt" content="Glenn Patrick Cabansag - IT Professional portfolio">`,
     `<link rel="icon" type="image/svg+xml" href="favicon.svg">`,

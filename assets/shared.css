@@ -1,0 +1,51 @@
+/* Shared design tokens for the portfolio.
+ *
+ * First step of the shared-CSS migration (audit item 10): every page still
+ * carries its own inline <style> block, which wins over this file because it
+ * comes later in the document. Nothing below changes how the site looks
+ * today. New styles should go here first, and the per-page blocks should
+ * shrink toward it over time instead of growing their own copies.
+ *
+ * Canonical palette: dark theme by default, light theme under
+ * [data-theme="light"]. Variable names follow index.html (--*-color);
+ * pages that use shorter names (--main, --text) should adopt these. */
+
+:root {
+  --bg-color: #121212;
+  --band-bg-color: #232323;
+  --second-bg-color: #2a2a2a;
+  --text-color: #e0e0e0;
+  --main-color: #1bb30e;
+  --accent-color: #03dac6;
+  --secondary-accent-color: #cf6679;
+  --muted-color: #9aa0a6;
+}
+
+[data-theme="light"] {
+  --bg-color: #f6f7f9;
+  --band-bg-color: #e4e6ea;
+  --second-bg-color: #ffffff;
+  --text-color: #17181c;
+  --main-color: #166534;
+  --accent-color: #115e59;
+  --secondary-accent-color: #b03a4e;
+  --muted-color: #5f6368;
+}
+
+/* Visible keyboard focus everywhere. */
+:focus-visible {
+  outline: 3px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+/* Motion-sensitive visitors: kill transitions and smooth scrolling. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
