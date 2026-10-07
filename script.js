@@ -627,11 +627,285 @@ document.querySelectorAll('.cert-card').forEach(card => {
   }catch(e){}
 })();
 
-// Force resume PDF to download instead of opening in browser.
-// The `download` attribute is only a hint and browsers with a built-in
-// PDF viewer (or Safari on iPhone) still open it. Fetching as a blob
-// and saving via object URL forces a real download on same-origin.
-document.addEventListener('click', async (e) => {
+/* Resume download modal with progress + success animation.
+   Clicking any a[data-force-download] opens the modal, downloads the
+   PDF as a blob (so it saves instead of opening), shows live progress,
+   then flips to a "Download complete" state with an animated check. */
+(function resumeModalSetup() {
+  const CSS = `
+  .resume-modal-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(3,8,6,.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .28s ease}
+  .resume-modal-overlay.show{opacity:1;pointer-events:auto}
+  .resume-modal{width:min(380px,94vw);border-radius:22px;padding:28px 24px 22px;text-align:center;position:relative;overflow:hidden;background:var(--bg-color,#101410);color:var(--text-color,#eef3ee);border:1px solid rgba(27,179,14,.35);box-shadow:0 24px 80px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.04) inset;transform:translateY(18px) scale(.96);transition:transform .38s cubic-bezier(.21,1.02,.55,1)}
+  .resume-modal-overlay.show .resume-modal{transform:none}
+  .resume-modal::before{content:"";position:absolute;inset:-2px;border-radius:24px;padding:2px;background:conic-gradient(from var(--rm-ang,0deg),transparent 0 70%,rgba(27,179,14,.7) 82%,rgba(0,238,137,.9) 88%,transparent 96%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;animation:rm-spin 2.6s linear infinite}
+  @property --rm-ang { syntax:'<angle>'; initial-value:0deg; inherits:false; }
+  @keyframes rm-spin{to{--rm-ang:360deg}}
+  .rm-badge{width:74px;height:74px;margin:2px auto 12px;border-radius:22px;display:grid;place-items:center;font-size:30px;color:#04140a;background:linear-gradient(135deg,#2bea2b,#00ee89);box-shadow:0 10px 30px rgba(27,179,14,.45);animation:rm-float 2.2s ease-in-out infinite}
+  @keyframes rm-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .rm-title{font-size:2rem;font-weight:700;margin:0 0 4px}
+  .rm-sub{font-size:1.35rem;opacity:.75;margin:0 0 16px;min-height:2em}
+  .rm-ring-wrap{position:relative;width:132px;height:132px;margin:0 auto 10px}
+  .rm-ring{transform:rotate(-90deg)}
+  .rm-ring .bg{stroke:rgba(255,255,255,.12)}
+  .rm-ring .fg{stroke:url(#rmGrad);stroke-linecap:round;transition:stroke-dashoffset .18s linear;filter:drop-shadow(0 0 8px rgba(27,179,14,.6))}
+  .rm-pct{position:absolute;inset:0;display:grid;place-items:center;font-size:2.2rem;font-weight:800;font-variant-numeric:tabular-nums}
+  .rm-bar{height:8px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin:12px 4px 8px}
+  .rm-bar > span{display:block;height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,var(--main-color,#1bb30e),#00ee89);box-shadow:0 0 14px rgba(27,179,14,.7);transition:width .18s linear;position:relative}
+  .rm-bar > span::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);transform:translateX(-100%);animation:rm-shimmer 1.3s infinite}
+  @keyframes rm-shimmer{to{transform:translateX(100%)}}
+  .rm-dots::after{content:"";animation:rm-dots 1.2s steps(4) infinite}
+  @keyframes rm-dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+  .rm-meta{font-size:1.25rem;opacity:.65;font-variant-numeric:tabular-nums}
+  .rm-check{width:92px;height:92px;margin:4px auto 10px;border-radius:50%;display:grid;place-items:center;background:rgba(27,179,14,.14);border:2px solid rgba(27,179,14,.5);animation:rm-pop .45s cubic-bezier(.21,1.4,.55,1)}
+  @keyframes rm-pop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+  .rm-check svg{width:52px;height:52px}
+  .rm-check path{stroke:#2bea2b;stroke-width:6;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60;stroke-dashoffset:60;animation:rm-draw .55s .15s ease forwards}
+  @keyframes rm-draw{to{stroke-dashoffset:0}}
+  .rm-confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .rm-confetti i{position:absolute;top:-12px;width:8px;height:14px;border-radius:2px;opacity:0;animation:rm-fall 1.6s ease-in forwards}
+  @keyframes rm-fall{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(240px) rotate(540deg)}}
+  .rm-actions{display:flex;gap:10px;justify-content:center;margin-top:16px}
+  .rm-btn{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:inherit;border-radius:12px;padding:1rem 1.6rem;font-size:1.35rem;cursor:pointer;transition:transform .15s,background .15s}
+  .rm-btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.1)}
+  .rm-btn.primary{background:linear-gradient(135deg,#1bb30e,#00c46a);border-color:transparent;color:#04140a;font-weight:700;box-shadow:0 8px 24px rgba(27,179,14,.4)}
+  .rm-close-x{position:absolute;top:10px;right:12px;border:0;background:transparent;color:inherit;font-size:2rem;cursor:pointer;opacity:.6;line-height:1;padding:.4rem}
+  .rm-close-x:hover{opacity:1}
+  .resume-modal[data-state="done"] .rm-down-only{display:none}
+  .resume-modal[data-state="busy"] .rm-done-only{display:none}
+  html[data-theme="light"] .resume-modal{background:#fff;color:#0f1a12;border-color:rgba(22,101,52,.3)}
+  html[data-theme="light"] .rm-sub,html[data-theme="light"] .rm-meta{opacity:.7}
+  html[data-theme="light"] .rm-ring .bg{stroke:rgba(0,0,0,.12)}
+  html[data-theme="light"] .rm-bar{background:rgba(0,0,0,.1)}
+  @media (prefers-reduced-motion: reduce){.resume-modal-overlay,.resume-modal,.rm-bar>span,.rm-ring .fg{transition:none!important}.resume-modal::before,.rm-badge,.rm-bar>span::after,.rm-confetti{display:none!important}.rm-check path{animation-duration:.01s}}`;
+
+  function ensureCSS() {
+    if (document.getElementById('resume-modal-css')) return;
+    const s = document.createElement('style');
+    s.id = 'resume-modal-css';
+    s.textContent = CSS;
+    document.head.appendChild(s);
+  }
+
+  let overlay, modal, titleEl, subEl, pctEl, fgEl, barEl, metaEl, cancelBtn, closeBtn, openBtn;
+  let aborter = null;
+  let autoCloseT = null;
+  let lastFocus = null;
+  const CIRC = 2 * Math.PI * 54;
+
+  function ensureModal() {
+    ensureCSS();
+    overlay = document.getElementById('resume-modal-overlay');
+    if (overlay) {
+      modal = overlay.querySelector('.resume-modal');
+      titleEl = overlay.querySelector('.rm-title');
+      subEl = overlay.querySelector('.rm-sub');
+      pctEl = overlay.querySelector('.rm-pct');
+      fgEl = overlay.querySelector('.rm-ring .fg');
+      barEl = overlay.querySelector('.rm-bar > span');
+      metaEl = overlay.querySelector('.rm-meta');
+      cancelBtn = overlay.querySelector('[data-rm="cancel"]');
+      closeBtn = overlay.querySelector('[data-rm="close"]');
+      openBtn = overlay.querySelector('[data-rm="open"]');
+      return overlay;
+    }
+    overlay = document.createElement('div');
+    overlay.id = 'resume-modal-overlay';
+    overlay.className = 'resume-modal-overlay';
+    overlay.innerHTML =
+      '<div class="resume-modal" data-state="busy" role="dialog" aria-modal="true" aria-labelledby="rmTitle" aria-describedby="rmSub">' +
+      '<button class="rm-close-x" data-rm="close" aria-label="Close">&times;</button>' +
+      '<div class="rm-confetti" aria-hidden="true"></div>' +
+      '<div class="rm-down-only"><div class="rm-badge"><i class="fa-solid fa-file-pdf"></i></div></div>' +
+      '<div class="rm-done-only"><div class="rm-check"><svg viewBox="0 0 52 52"><path d="M10 28 L22 40 L42 14"/></svg></div></div>' +
+      '<h3 class="rm-title" id="rmTitle">Downloading resume</h3>' +
+      '<p class="rm-sub rm-dots" id="rmSub" aria-live="polite">Preparing</p>' +
+      '<div class="rm-ring-wrap rm-down-only"><svg class="rm-ring" width="132" height="132" viewBox="0 0 132 132">' +
+      '<defs><linearGradient id="rmGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2bea2b"/><stop offset="1" stop-color="#00ee89"/></linearGradient></defs>' +
+      '<circle class="bg" cx="66" cy="66" r="54" fill="none" stroke-width="12"/>' +
+      '<circle class="fg" cx="66" cy="66" r="54" fill="none" stroke-width="12" stroke-dasharray="' + CIRC.toFixed(1) + '" stroke-dashoffset="' + CIRC.toFixed(1) + '"/>' +
+      '</svg><div class="rm-pct">0%</div></div>' +
+      '<div class="rm-bar rm-down-only" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>' +
+      '<div class="rm-meta rm-down-only">resume-2026.pdf</div>' +
+      '<div class="rm-actions"><button class="rm-btn rm-down-only" data-rm="cancel">Cancel</button>' +
+      '<button class="rm-btn rm-done-only" data-rm="open">Open file</button>' +
+      '<button class="rm-btn primary" data-rm="close">Done</button></div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+    modal = overlay.querySelector('.resume-modal');
+    titleEl = overlay.querySelector('.rm-title');
+    subEl = overlay.querySelector('.rm-sub');
+    pctEl = overlay.querySelector('.rm-pct');
+    fgEl = overlay.querySelector('.rm-ring .fg');
+    barEl = overlay.querySelector('.rm-bar > span');
+    metaEl = overlay.querySelector('.rm-meta');
+    cancelBtn = overlay.querySelector('[data-rm="cancel"]');
+    closeBtn = overlay.querySelectorAll('[data-rm="close"]');
+    openBtn = overlay.querySelector('[data-rm="open"]');
+    overlay.addEventListener('click', (ev) => { if (ev.target === overlay) closeModal(); });
+    overlay.querySelectorAll('[data-rm="cancel"]').forEach(b => b.addEventListener('click', () => { if (aborter) aborter.abort(); }));
+    overlay.querySelectorAll('[data-rm="close"]').forEach(b => b.addEventListener('click', closeModal));
+    document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && overlay.classList.contains('show')) closeModal(); });
+    return overlay;
+  }
+
+  function fmtKB(n) {
+    if (!n || n <= 0) return '';
+    if (n < 1024) return n + ' B';
+    if (n < 1048576) return (n / 1024).toFixed(0) + ' KB';
+    return (n / 1048576).toFixed(1) + ' MB';
+  }
+
+  function setProgress(pct, loaded, total) {
+    pct = Math.max(0, Math.min(100, pct));
+    if (pctEl) pctEl.textContent = Math.round(pct) + '%';
+    if (fgEl) fgEl.style.strokeDashoffset = (CIRC * (1 - pct / 100)).toFixed(1);
+    if (barEl) {
+      barEl.style.width = pct + '%';
+      const bar = barEl.parentElement;
+      if (bar) bar.setAttribute('aria-valuenow', String(Math.round(pct)));
+    }
+    if (metaEl) metaEl.textContent = total ? (fmtKB(loaded) + ' of ' + fmtKB(total)) : (loaded ? fmtKB(loaded) + ' downloaded' : 'resume-2026.pdf');
+  }
+
+  function openModal(fileName) {
+    ensureModal();
+    lastFocus = document.activeElement;
+    if (autoCloseT) { clearTimeout(autoCloseT); autoCloseT = null; }
+    modal.dataset.state = 'busy';
+    titleEl.textContent = 'Downloading resume';
+    subEl.textContent = 'Preparing';
+    subEl.classList.add('rm-dots');
+    if (metaEl) metaEl.textContent = fileName || 'resume-2026.pdf';
+    setProgress(0, 0, 0);
+    const conf = overlay.querySelector('.rm-confetti');
+    if (conf) conf.innerHTML = '';
+    overlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    const c = overlay.querySelector('[data-rm="cancel"]');
+    if (c) c.focus();
+  }
+
+  function showComplete(fileName, blobUrl) {
+    modal.dataset.state = 'done';
+    titleEl.textContent = 'Download complete';
+    subEl.classList.remove('rm-dots');
+    subEl.textContent = (fileName || 'Resume') + ' saved to your downloads.';
+    if (openBtn) openBtn.onclick = () => { if (blobUrl) window.open(blobUrl, '_blank', 'noopener'); };
+    burstConfetti();
+    const done = overlay.querySelector('.rm-actions .primary');
+    if (done) done.focus();
+    autoCloseT = setTimeout(closeModal, 6000);
+  }
+
+  function showError(msg, url) {
+    modal.dataset.state = 'done';
+    titleEl.textContent = 'Download stuck';
+    subEl.classList.remove('rm-dots');
+    subEl.textContent = msg || 'Could not fetch the file. Try opening it instead.';
+    if (openBtn) openBtn.onclick = () => window.open(url, '_blank', 'noopener');
+    const done = overlay.querySelector('.rm-actions .primary');
+    if (done) done.focus();
+  }
+
+  function burstConfetti() {
+    try {
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const box = overlay.querySelector('.rm-confetti');
+      if (!box) return;
+      box.innerHTML = '';
+      const colors = ['#2bea2b', '#00ee89', '#ffd23f', '#4cc9f0', '#ff5d8f', '#ffffff'];
+      for (let i = 0; i < 26; i++) {
+        const s = document.createElement('i');
+        s.style.left = (4 + Math.random() * 92) + '%';
+        s.style.background = colors[i % colors.length];
+        s.style.animationDelay = (Math.random() * 0.5).toFixed(2) + 's';
+        s.style.transform = 'rotate(' + Math.floor(Math.random() * 360) + 'deg)';
+        box.appendChild(s);
+      }
+      setTimeout(() => { if (box) box.innerHTML = ''; }, 2200);
+    } catch (e) {}
+  }
+
+  function closeModal() {
+    if (!overlay) return;
+    overlay.classList.remove('show');
+    document.body.style.overflow = '';
+    if (aborter) { try { aborter.abort(); } catch (e) {} aborter = null; }
+    if (autoCloseT) { clearTimeout(autoCloseT); autoCloseT = null; }
+    if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) {} }
+  }
+
+  function saveBlob(blob, fileName) {
+    const pdfBlob = blob.type === 'application/pdf' ? blob : new Blob([blob], { type: 'application/pdf' });
+    const blobUrl = URL.createObjectURL(pdfBlob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 30000);
+    return blobUrl;
+  }
+
+  async function downloadWithProgress(url, fileName) {
+    aborter = new AbortController();
+    openModal(fileName);
+    try {
+      const res = await fetch(url, { credentials: 'same-origin', signal: aborter.signal });
+      if (!res.ok) throw new Error('fetch failed');
+      const total = Number(res.headers.get('content-length')) || 0;
+      if (!res.body || !res.body.getReader) {
+        setProgress(40, 0, 0);
+        subEl.textContent = 'Downloading';
+        const blob = await res.blob();
+        setProgress(90, blob.size, total);
+        const blobUrl = saveBlob(blob, fileName);
+        setProgress(100, blob.size, total);
+        await new Promise(r => setTimeout(r, 450));
+        showComplete(fileName, blobUrl);
+        return;
+      }
+      const reader = res.body.getReader();
+      const chunks = [];
+      let loaded = 0;
+      subEl.textContent = 'Downloading';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        loaded += value.length;
+        setProgress(total ? (loaded / total) * 100 : Math.min(95, loaded / 8000), loaded, total);
+      }
+      const blob = new Blob(chunks, { type: 'application/pdf' });
+      setProgress(100, loaded || blob.size, total || loaded);
+      const blobUrl = saveBlob(blob, fileName);
+      await new Promise(r => setTimeout(r, 500));
+      showComplete(fileName, blobUrl);
+    } catch (err) {
+      if (err && err.name === 'AbortError') { closeModal(); return; }
+      try {
+        const fb = document.createElement('a');
+        fb.href = url;
+        fb.download = fileName;
+        fb.rel = 'noopener';
+        document.body.appendChild(fb);
+        fb.click();
+        fb.remove();
+        showComplete(fileName, null);
+      } catch (e2) {
+        showError('Could not fetch the file.', url);
+      }
+    } finally {
+      aborter = null;
+    }
+  }
+
+  // Force resume PDF to download instead of opening in browser.
+  // The `download` attribute is only a hint and browsers with a built-in
+  // PDF viewer (or Safari on iPhone) still open it. Fetching as a blob
+  // and saving via object URL forces a real download on same-origin.
+  document.addEventListener('click', (e) => {
     const link = e.target && e.target.closest ? e.target.closest('a[data-force-download]') : null;
     if (!link) return;
     const url = link.getAttribute('href');
@@ -640,33 +914,6 @@ document.addEventListener('click', async (e) => {
     if (e.ctrlKey || e.metaKey || e.shiftKey || (e.button !== undefined && e.button !== 0)) return;
     e.preventDefault();
     const fileName = link.getAttribute('download') || 'RESUME_Cabansag_GlennPatrick.pdf';
-    try {
-        const res = await fetch(url, { credentials: 'same-origin' });
-        if (!res.ok) throw new Error('fetch failed');
-        const blob = await res.blob();
-        const pdfBlob = blob.type === 'application/pdf' ? blob : new Blob([blob], { type: 'application/pdf' });
-        const blobUrl = URL.createObjectURL(pdfBlob);
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 4000);
-    } catch (err) {
-        // Fallback: try native download. window.open() guarantees it opens,
-        // which is what we do NOT want. This also covers file:// preview
-        // where fetch() fails.
-        try {
-            const fb = document.createElement('a');
-            fb.href = url;
-            fb.download = fileName;
-            fb.rel = 'noopener';
-            document.body.appendChild(fb);
-            fb.click();
-            fb.remove();
-        } catch (e2) {
-            window.location.href = url;
-        }
-    }
-});
+    downloadWithProgress(url, fileName);
+  });
+})();
