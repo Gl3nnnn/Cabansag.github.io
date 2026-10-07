@@ -5605,25 +5605,25 @@ src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer>
         }
 
         if (Date.now() - formStartTime < 3000) {
-            setStatus('Please take a moment to complete the form, then try again.', true);
+            setStatus('Please take a moment to complete the form, then try again.', true);try{window.showContactModal&&window.showContactModal('error','Please take a moment to complete the form, then try again.');}catch(e){}
             return;
         }
 
         try {
             var lastSent = parseInt(localStorage.getItem('contactLastSent') || '0', 10);
             if (Date.now() - lastSent < 60000) {
-                setStatus('Please wait a minute before sending another message.', true);
+                setStatus('Please wait a minute before sending another message.', true);try{window.showContactModal&&window.showContactModal('error','Please wait a minute before sending another message.');}catch(e){}
                 return;
             }
         } catch (e) {}
 
         if (typeof emailjs === 'undefined' || typeof EMAILJS === 'undefined') {
-            setStatus('The contact service is unavailable. Please email me directly at patrickcabansag5@gmail.com.', true);
+            setStatus('The contact service is unavailable. Please email me directly at patrickcabansag5@gmail.com.', true);try{window.showContactModal&&window.showContactModal('error','The contact service is unavailable. Please email me directly.');}catch(e){}
             return;
         }
 
         if (!validateForm()) {
-            setStatus('Please fix the highlighted fields and try again.', true);
+            setStatus('Please fix the highlighted fields and try again.', true);try{window.showContactModal&&window.showContactModal('error','Please fix the highlighted fields and try again.');}catch(e){}
             return;
         }
 
@@ -5634,7 +5634,7 @@ submitBtn.setAttribute('aria-busy', 'true');
 var btnLabel = submitBtn.querySelector('.btn-label');
 if (btnLabel) btnLabel.textContent = 'Sending...';
         }
-        setStatus('Sending your message...', false);
+        setStatus('Sending your message...', false);try{window.showContactModal&&window.showContactModal('sending','Talking to the mail server');}catch(e){}
 
             emailjs.send(EMAILJS.serviceID, EMAILJS.templateID, {
             from_name: document.getElementById('full-name').value,
@@ -5644,7 +5644,7 @@ if (btnLabel) btnLabel.textContent = 'Sending...';
             message: document.getElementById('message').value
         })
         .then(function() {
-            setStatus('Thanks! Your message was sent. I usually reply within a day.', false);
+            setStatus('Thanks! Your message was sent. I usually reply within a day.', false);try{window.showContactModal&&window.showContactModal('success','Thanks! Your message was sent. I usually reply within a day.');}catch(e){}
             contactForm.reset();
             try { localStorage.setItem('contactLastSent', String(Date.now())); } catch (e) {}
             Object.keys(fieldRules).forEach(function(id) {
@@ -5655,7 +5655,7 @@ if (btnLabel) btnLabel.textContent = 'Sending...';
             // Log the real error for debugging, but never render it - showing
             // raw JSON to visitors leaks internals and looks broken.
             console.error('EmailJS send failed:', error);
-            setStatus('Sorry, the message could not be sent. Please email me directly at patrickcabansag5@gmail.com.', true);
+            setStatus('Sorry, the message could not be sent. Please email me directly at patrickcabansag5@gmail.com.', true);try{window.showContactModal&&window.showContactModal('error','Sorry, the message could not be sent. Please email me directly at patrickcabansag5@gmail.com.');}catch(e){}
         })
         .then(function() {
             if (submitBtn) {

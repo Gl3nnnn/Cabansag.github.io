@@ -917,3 +917,186 @@ document.querySelectorAll('.cert-card').forEach(card => {
     downloadWithProgress(url, fileName);
   });
 })();
+
+/* Contact send modal: sending / success / error with animation.
+   Mirrors the resume modal visuals. Exposes window.showContactModal(type, msg).
+   The inline contact-form handler in index.html calls it; direct calls are safe. */
+(function contactModalSetup() {
+  const CSS = `
+  .contact-modal-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(3,8,6,.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .28s ease}
+  .contact-modal-overlay.show{opacity:1;pointer-events:auto}
+  .contact-modal{width:min(380px,94vw);border-radius:22px;padding:28px 24px 22px;text-align:center;position:relative;overflow:hidden;background:var(--bg-color,#101410);color:var(--text-color,#eef3ee);border:1px solid rgba(27,179,14,.35);box-shadow:0 24px 80px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.04) inset;transform:translateY(18px) scale(.96);transition:transform .38s cubic-bezier(.21,1.02,.55,1)}
+  .contact-modal-overlay.show .contact-modal{transform:none}
+  .contact-modal::before{content:"";position:absolute;inset:-2px;border-radius:24px;padding:2px;background:conic-gradient(from var(--cm-ang,0deg),transparent 0 70%,rgba(27,179,14,.7) 82%,rgba(0,238,137,.9) 88%,transparent 96%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;animation:cm-spin 2.6s linear infinite}
+  @property --cm-ang { syntax:'<angle>'; initial-value:0deg; inherits:false; }
+  @keyframes cm-spin{to{--cm-ang:360deg}}
+  .cm-icon{width:92px;height:92px;margin:4px auto 12px;border-radius:50%;display:grid;place-items:center;position:relative}
+  .cm-icon svg{width:46px;height:46px}
+  .contact-modal[data-state="sending"] .cm-icon{background:rgba(27,179,14,.14);border:2px solid rgba(27,179,14,.5)}
+  .contact-modal[data-state="sending"] .cm-icon .cm-plane{display:block;animation:cm-float 1.8s ease-in-out infinite}
+  .cm-plane{font-size:38px;line-height:1}
+  @keyframes cm-float{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-8px) rotate(8deg)}}
+  .cm-ring{position:absolute;inset:-8px;border-radius:50%;border:3px solid transparent;border-top-color:#2bea2b;border-right-color:rgba(0,238,137,.5);animation:cm-rot 1s linear infinite}
+  @keyframes cm-rot{to{transform:rotate(360deg)}}
+  .contact-modal[data-state="success"] .cm-icon{background:rgba(27,179,14,.14);border:2px solid rgba(27,179,14,.5);animation:cm-pop .45s cubic-bezier(.21,1.4,.55,1)}
+  @keyframes cm-pop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+  .contact-modal[data-state="success"] .cm-check path{stroke:#2bea2b;stroke-width:6;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60;stroke-dashoffset:60;animation:cm-draw .55s .15s ease forwards}
+  @keyframes cm-draw{to{stroke-dashoffset:0}}
+  .contact-modal[data-state="error"] .cm-icon{background:rgba(255,70,70,.12);border:2px solid rgba(255,70,70,.55);animation:cm-shake .45s ease}
+  @keyframes cm-shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+  .contact-modal[data-state="error"] .cm-cross path{stroke:#ff5d5d;stroke-width:6;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:60;stroke-dashoffset:60;animation:cm-draw .45s .1s ease forwards}
+  .contact-modal[data-state="sending"] .cm-done-only{display:none}
+  .contact-modal[data-state="sending"] .cm-err-only{display:none}
+  .contact-modal[data-state="success"] .cm-send-only{display:none}
+  .contact-modal[data-state="success"] .cm-err-only{display:none}
+  .contact-modal[data-state="error"] .cm-send-only{display:none}
+  .contact-modal[data-state="error"] .cm-done-only.cm-success-only{display:none}
+  .cm-title{font-size:2rem;font-weight:700;margin:0 0 4px}
+  .cm-sub{font-size:1.35rem;opacity:.78;margin:0 0 14px;min-height:2em;line-height:1.5}
+  .cm-dots::after{content:"";animation:cm-dots 1.2s steps(4) infinite}
+  @keyframes cm-dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+  .cm-bar{height:8px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin:10px 4px 6px}
+  .cm-bar>span{display:block;height:100%;width:30%;border-radius:99px;background:linear-gradient(90deg,var(--main-color,#1bb30e),#00ee89);box-shadow:0 0 14px rgba(27,179,14,.7);animation:cm-slide 1.1s ease-in-out infinite alternate}
+  @keyframes cm-slide{from{margin-left:0;width:30%}to{margin-left:70%;width:30%}}
+  .contact-modal[data-state="success"] .cm-bar,.contact-modal[data-state="error"] .cm-bar{display:none}
+  .cm-confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .cm-confetti i{position:absolute;top:-12px;width:8px;height:14px;border-radius:2px;opacity:0;animation:cm-fall 1.6s ease-in forwards}
+  @keyframes cm-fall{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(240px) rotate(540deg)}}
+  .cm-actions{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+  .cm-btn{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:inherit;border-radius:12px;padding:1rem 1.6rem;font-size:1.35rem;cursor:pointer}
+  .cm-btn.primary{background:linear-gradient(135deg,#1bb30e,#00c46a);border-color:transparent;color:#04140a;font-weight:700}
+  html[data-theme="light"] .contact-modal{background:#fff;color:#0f1a12;border-color:rgba(22,101,52,.3)}
+  html[data-theme="light"] .cm-bar{background:rgba(0,0,0,.1)}
+  @media (prefers-reduced-motion: reduce){.contact-modal-overlay,.contact-modal{transition:none!important}.contact-modal::before,.cm-plane,.cm-ring,.cm-bar>span,.cm-confetti{display:none!important}}
+  `;
+
+  function ensureCSS(){
+    if(document.getElementById('contact-modal-css')) return;
+    const s=document.createElement('style');
+    s.id='contact-modal-css';
+    s.textContent=CSS;
+    document.head.appendChild(s);
+  }
+
+  let overlay, modal, titleEl, subEl, doneBtn, mailBtn, closeX;
+  let lastFocus=null, autoT=null;
+
+  function build(){
+    if(overlay) return;
+    ensureCSS();
+    overlay=document.createElement('div');
+    overlay.className='contact-modal-overlay';
+    overlay.id='contact-modal-overlay';
+    overlay.hidden=true;
+    overlay.innerHTML=`
+      <div class="contact-modal" role="dialog" aria-modal="true" aria-labelledby="cm-title" data-state="sending">
+        <button class="rm-close-x cm-close-x" type="button" aria-label="Close">\u00d7</button>
+        <div class="cm-confetti" aria-hidden="true"></div>
+        <div class="cm-icon" aria-hidden="true">
+          <span class="cm-plane cm-send-only">\u2709\ufe0f</span>
+          <svg class="cm-check cm-done-only cm-success-only" viewBox="0 0 52 52" style="display:none"><path d="M10 27 L22 39 L42 15"/></svg>
+          <svg class="cm-cross cm-err-only" viewBox="0 0 52 52" style="display:none"><path d="M14 14 L38 38 M38 14 L14 38"/></svg>
+          <span class="cm-ring cm-send-only"></span>
+        </div>
+        <h3 class="cm-title" id="cm-title">Sending</h3>
+        <p class="cm-sub" id="cm-sub">Please wait</p>
+        <div class="cm-bar cm-send-only" aria-hidden="true"><span></span></div>
+        <div class="cm-actions">
+          <button class="cm-btn primary cm-close-btn" type="button">Done</button>
+          <button class="cm-btn cm-mail-btn cm-err-only" type="button" style="display:none">Copy email</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    modal=overlay.querySelector('.contact-modal');
+    titleEl=overlay.querySelector('#cm-title');
+    subEl=overlay.querySelector('#cm-sub');
+    doneBtn=overlay.querySelector('.cm-close-btn');
+    mailBtn=overlay.querySelector('.cm-mail-btn');
+    closeX=overlay.querySelector('.cm-close-x');
+    const close=()=>hide();
+    doneBtn.addEventListener('click', close);
+    closeX.addEventListener('click', close);
+    overlay.addEventListener('click', (e)=>{ if(e.target===overlay) close(); });
+    document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && overlay && !overlay.hidden && overlay.classList.contains('show')) close(); });
+    if(mailBtn) mailBtn.addEventListener('click', ()=>{
+      try{
+        const em='patrickcabansag5@gmail.com';
+        if(navigator.clipboard) navigator.clipboard.writeText(em);
+        mailBtn.textContent='Copied!';
+        setTimeout(()=>{ mailBtn.textContent='Copy email'; },1800);
+      }catch(e){}
+    });
+  }
+
+  function syncIcons(state){
+    if(!overlay) return;
+    const show=(sel,on)=>{ overlay.querySelectorAll(sel).forEach(el=>{ el.style.display=on?'':'none'; }); };
+    if(state==='sending'){ show('.cm-send-only',true); show('.cm-success-only',false); show('.cm-err-only',false); }
+    else if(state==='success'){ show('.cm-send-only',false); show('.cm-success-only',true); show('.cm-err-only',false); }
+    else { show('.cm-send-only',false); show('.cm-success-only',false); show('.cm-err-only',true); }
+  }
+
+  function burst(){
+    try{
+      if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const box=overlay.querySelector('.cm-confetti');
+      if(!box) return;
+      box.innerHTML='';
+      const colors=['#2bea2b','#00ee89','#ffd23f','#4cc9f0','#ff5d8f','#ffffff'];
+      for(let i=0;i<26;i++){
+        const s=document.createElement('i');
+        s.style.left=(4+Math.random()*92)+'%';
+        s.style.background=colors[i%colors.length];
+        s.style.animationDelay=(Math.random()*0.5).toFixed(2)+'s';
+        box.appendChild(s);
+      }
+      setTimeout(()=>{ if(box) box.innerHTML=''; },2200);
+    }catch(e){}
+  }
+
+  function show(type, msg){
+    build();
+    if(autoT){ clearTimeout(autoT); autoT=null; }
+    lastFocus=document.activeElement;
+    const state=(type==='success')?'success':(type==='error')?'error':'sending';
+    modal.dataset.state=state;
+    syncIcons(state);
+    subEl.classList.remove('cm-dots');
+    if(state==='sending'){
+      titleEl.textContent='Sending your message';
+      subEl.textContent=(msg||'Talking to the mail server')+' ';
+      subEl.classList.add('cm-dots');
+      doneBtn.textContent='Please wait…';
+      doneBtn.disabled=true;
+    } else if(state==='success'){
+      titleEl.textContent='Message sent!';
+      subEl.textContent=msg||'Thanks! I usually reply within a day.';
+      doneBtn.textContent='Done';
+      doneBtn.disabled=false;
+      burst();
+      autoT=setTimeout(()=>hide(), 4500);
+    } else {
+      titleEl.textContent='Could not send';
+      subEl.textContent=msg||'Please email me directly at patrickcabansag5@gmail.com.';
+      doneBtn.textContent='Close';
+      doneBtn.disabled=false;
+    }
+    overlay.hidden=false;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>overlay.classList.add('show')));
+    document.body.style.overflow='hidden';
+    setTimeout(()=>{ try{ doneBtn.focus(); }catch(e){} },80);
+  }
+
+  function hide(){
+    if(!overlay||overlay.hidden) return;
+    overlay.classList.remove('show');
+    document.body.style.overflow='';
+    if(autoT){ clearTimeout(autoT); autoT=null; }
+    setTimeout(()=>{ overlay.hidden=true; },280);
+    if(lastFocus&&lastFocus.focus){ try{ lastFocus.focus(); }catch(e){} }
+  }
+
+  window.showContactModal=show;
+  window.hideContactModal=hide;
+})();
+
