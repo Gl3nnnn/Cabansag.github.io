@@ -2346,18 +2346,18 @@ span{
 }
 /* The address, as a labelled block rather than a centred row.
  *
- * It was `display: flex; justify-content: center` with the copy button inline,
- * which only worked while the section was one centred axis. In the rail it is a
- * vertical stack so the address can wrap at any width without the button being
- * pushed off the end, and it shares the left edge with the heading above it. */
+ * It was `display: flex; justify-content: center`, which only worked while the
+ * section was one centred axis. In the rail it is a vertical stack so the
+ * address can wrap at any width, and it shares the left edge with the heading
+ * above it. */
 /* The address block, set apart from the intro above it by a rule rather than by
  * more space.
  *
  * A top border is the cheapest way to say "this is a different kind of thing" -
- * the intro is prose, this is an address and a button - and it costs no vertical
- * space, which matters because the rail is the taller column at 1024px and the
- * extra gap would push the form's top out of alignment with the heading's. The
- * border is at 18% green, matching the navbar's own hairline. */
+ * the intro is prose, this is an address and its actions - and it costs no
+ * vertical space, which matters because the rail is the taller column at 1024px
+ * and the extra gap would push the form's top out of alignment with the
+ * heading's. The border is at 18% green, matching the navbar's own hairline. */
 .contact-direct{
     display: grid;
     justify-items: start;
@@ -3293,7 +3293,8 @@ span{
      * this width is below it, so it is still in force. Only the font needed
      * restating. */
     /* 320px is narrower again, and the contact row wraps the address onto its own
-     * line at this width with the Copy button beside it. */
+     * line at this width. With the copy button gone, the address itself is the
+     * click target, so only its font size needs restating here. */
     .contact-email{
         font-size: 1.5rem;
     }
@@ -3677,17 +3678,18 @@ section{
     width: 0;
 }
 /* Contact: direct email block, in the left rail. Layout is declared with the
- * rest of the rail above; this block is the address and its copy button. */
+ * rest of the rail above; this block is the address, and clicking it opens the
+ * compose dialog from assets/email-modal.js - no separate copy button needed. */
 /* The address is a link, and looks like one.
  *
  * It used to be an `<a class="btn">` - the same pill, border and hover glow as
  * every other button on the page - so the row read as three identical calls to
- * action rather than one address with two ways to act on it. That also put the
- * longest string on the page in the element with the widest padding, which is
- * what made the row wrap awkwardly at phone widths.
+ * action rather than one address, and the longest string on the page sat in the
+ * element with the widest padding, which is what made the row wrap awkwardly at
+ * phone widths.
  *
- * --main-color rather than --accent-color, so the address and the Copy button
- * that acts on it are visibly the same idea. */
+ * --main-color rather than --accent-color, so it reads as the address the
+ * buttons and the compose dialog act on, not as another button. */
 .contact-email{
     font-size: 1.6rem;
     font-weight: 600;
@@ -3699,20 +3701,6 @@ section{
 .contact-email:hover{
     text-decoration-thickness: 2px;
 }
-/* Ghost button: quiet next to the address, which is the primary thing here. */
-.contact-direct .btn-copy{
-    background: transparent;
-    color: var(--accent-color);
-    border-color: var(--accent-color);
-    font-size: 1.4rem;
-    padding: 0.6rem 1.6rem;
-}
-.contact-direct .btn-copy:hover,.contact-direct .btn-copy:active,.contact-direct .btn-copy:focus-visible,.contact-direct .btn-copy.is-copied{
-    background: var(--accent-color);
-    color: #000;
-    box-shadow: 0 0 25px var(--accent-color);
-}
-.contact-direct .btn-copy:hover *,.contact-direct .btn-copy:active *,.contact-direct .btn-copy.is-copied *{color:#000;}
 /* Certifications: verification link */
 .cert-verify{
     display: block;
@@ -5447,7 +5435,6 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
         <div class="contact-direct">
             <span>Prefer email?</span>
             <a href="mailto:patrickcabansag5@gmail.com" class="contact-email">patrickcabansag5@gmail.com</a>
-            <button type="button" class="btn btn-copy" id="copy-email">Copy Email</button>
             <div class="contact-meta">
                 <div><i class="fa-solid fa-location-dot" aria-hidden="true"></i>Iloilo, Philippines &middot; Replies within a day</div>
             </div>

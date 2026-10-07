@@ -89,7 +89,7 @@ Each entry in `script.js` carries an optional `outcome` line rendered under the 
 - `blog.html` — blog archive with search and topic filters. Search reads `?q=` on load and mirrors edits back into the address bar, so a filtered page can be shared and the site's `SearchAction` structured data points at a URL that actually applies the term.
 - `blog-queue-system.html, blog-accounting-laravel.html, blog-it-support-shift.html, blog-vlans-home-lab.html, blog-docker-portfolio.html, blog-tryhackme-first-month.html, blog-home-lab.html, blog-aws-journey.html, blog-helpdesk-lessons.html` — blog posts
 - `404.html` — custom 404 page
-- `script.js` — shared interactivity (nav, scroll spy, projects via GitHub API with curated fallback, language filters, reveal-on-scroll, theme toggle, hero stats, skill bars, cert links, copy-email). Loaded only by `index.html`.
+- `script.js` — shared interactivity (nav, scroll spy, projects via GitHub API with curated fallback, language filters, reveal-on-scroll, theme toggle, hero stats, skill bars, cert links). Loaded only by `index.html`.
 - Inline in `index.html` — the EmailJS contact form handler, honeypot, field validation and status popups
 - Inline in `faq.html` — FAQ accordion, search and category filter
 - `manifest.webmanifest` — PWA/install metadata

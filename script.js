@@ -590,35 +590,6 @@ if ('IntersectionObserver' in window) {
 
 loadProjects();
 
-// Copy email button (contact section)
-const copyEmailBtn = document.getElementById('copy-email');
-if (copyEmailBtn) {
-    copyEmailBtn.addEventListener('click', () => {
-        const email = 'patrickcabansag5@gmail.com';
-        const done = () => {
-            copyEmailBtn.textContent = 'Copied!';
-            try{copyEmailBtn.classList.add('is-copied');}catch(e){}
-            setTimeout(() => { copyEmailBtn.textContent = 'Copy Email'; try{copyEmailBtn.classList.remove('is-copied');}catch(e){} }, 2000);
-        };
-        const fallbackCopy = () => {
-            const textarea = document.createElement('textarea');
-            textarea.value = email;
-            textarea.setAttribute('readonly', '');
-            textarea.style.position = 'absolute';
-            textarea.style.left = '-9999px';
-            document.body.appendChild(textarea);
-            textarea.select();
-            try { document.execCommand('copy'); done(); } catch (err) { /* ignore */ }
-            document.body.removeChild(textarea);
-        };
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(email).then(done).catch(fallbackCopy);
-        } else {
-            fallbackCopy();
-        }
-    });
-}
-
 // Skill bars fill animation
 //
 // Removed along with the proficiency meters themselves. The bar JS existed only
@@ -1312,5 +1283,15 @@ document.querySelectorAll('.cert-card').forEach(card => {
   window.hideContactModal=hide;
 })();
 
-// Home hero: fade-up once + second copy-email chip
-(function(){var b=document.body;if(b){requestAnimationFrame(function(){requestAnimationFrame(function(){b.classList.add('home-loaded');});});}var btn=document.getElementById('copy-email-home');if(btn){btn.addEventListener('click',function(){var email='patrickcabansag5@gmail.com';var done=function(){try{btn.classList.add('is-copied');}catch(e){}var sp=btn.querySelector('span');if(sp){sp.textContent='Copied!';setTimeout(function(){sp.textContent=email;try{btn.classList.remove('is-copied');}catch(e){}},2000);}};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(email).then(done).catch(function(){done();});}else{done();}});}})();
+// Home hero: fade-up once on load. The hero content and image sit at
+// opacity:0 until body.home-loaded (assets/shared.css) so the entrance can
+// animate. The double rAF lets the initial state paint once before the class
+// lands and the 0.6s transition starts.
+(function(){
+    var b=document.body;
+    if(b){
+        requestAnimationFrame(function(){requestAnimationFrame(function(){
+            b.classList.add('home-loaded');
+        });});
+    }
+})();
