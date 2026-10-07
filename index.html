@@ -700,6 +700,12 @@ font-family: "Poppins" , sans-serif;
     --accent-color: #03dac6; /* Teal */
     --secondary-accent-color: #cf6679; /* Soft red */
     --muted-color: #9aa0a6; /* Dimmed text for meta/secondary lines */
+    /* Hero ambient glow. One token per theme so the single .home::before rule
+     * stays theme-agnostic and the reduced-motion override below cannot be
+     * outranked by a later equal-specificity rule (the trap we fixed at
+     * index.html:4313 and index.html:1369). */
+    --hero-glow: rgba(27, 179, 14, 0.013);
+    --hero-glow-at: 50% 38%;
     /* The surface a timeline rail and its dots sit on. The rail runs down the
      * page background, so a dot's separation ring has to be the colour of
      * whatever is behind it - and that differs per section: Education is a band,
@@ -930,13 +936,52 @@ section{
      *
      * Four gradient layers now, where there were two. The layer *count* is not
      * asserted as a number for exactly this reason - verify_page.js checks that
-     * both axes and the fade are present, so adding a tier is not a test change. */
+     * both axes and the fade are present, so adding a tier is not a test change.
+     *
+     * The grid layers use content-box origin so their 0 point aligns with the
+     * content gutter (12% desktop, 3% tablet, 1.6rem mobile). This puts a minor
+     * line exactly on the text's left edge at every breakpoint without hardcoded
+     * offsets. The fade layer keeps padding-box origin so its percentages span
+     * the full section height. */
     background:
-        linear-gradient(180deg, transparent 55%, var(--bg-color) 100%),
+        linear-gradient(180deg, transparent 78%, var(--bg-color) 100%),
         repeating-linear-gradient(0deg, rgba(27, 179, 14, 0.24) 0 1px, transparent 1px 180px),
         repeating-linear-gradient(90deg, rgba(27, 179, 14, 0.24) 0 1px, transparent 1px 180px),
         repeating-linear-gradient(0deg, rgba(27, 179, 14, 0.17) 0 1px, transparent 1px 36px),
         repeating-linear-gradient(90deg, rgba(27, 179, 14, 0.17) 0 1px, transparent 1px 36px);
+    /* Layer origins match the list above: fade on padding-box, grid on content-box.
+     * This per-layer origin is the single line that fixes alignment everywhere. */
+    background-origin: padding-box, content-box, content-box, content-box, content-box;
+}
+
+/* Hero ambient glow. Painted on ::before so it animates on the compositor
+ * (transform + opacity only) without repainting the grid stack. The grid
+ * itself stays static; this layer adds a slow, subtle radial wash behind
+ * all hero content. See index.html:1064-1077 for the same compositor-only
+ * pattern on .home-img::after. */
+.home::before{
+    content: "";
+    position: absolute;
+    /* `inset: 0`, not negative. A negative inset put this box 10% past the
+     * section on both sides, and an absolutely positioned element contributes
+     * to scrollable overflow: 1440px went to 1584px of scrollWidth, so the
+     * page gained a horizontal scrollbar the checks caught immediately. The
+     * scale now stays at or below 1, so the box never outgrows its own
+     * bounds and no clipping is needed to contain it. */
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(ellipse at var(--hero-glow-at), var(--hero-glow), transparent 70%);
+    opacity: .5;
+    animation: hero-glow-breathe 8s ease-in-out infinite;
+}
+/* Grows from 0.9 to 1.0 rather than 1.0 to 1.1: the bloom reads the same,
+ * but the box can never exceed the section, so there is no overflow to clip
+ * and .home keeps overflow: visible for the photo and its halo.
+ * The gradient is transparent by 70%, so scaling down shows no hard edge. */
+@keyframes hero-glow-breathe{
+    0%, 100%{ opacity: .5;  transform: scale(0.9); }
+    50%     { opacity: .9;  transform: scale(1); }
 }
 
 .home-content{
@@ -2985,8 +3030,28 @@ span{
         background-color: #f8d7da;
         border-color: #f5c6cb;
     }
+    /* In stacked mode content fills the section; no empty band exists for a
+     * fade to occupy. Push it to ~97% so it barely runs and the grid meets
+     * the stats band's border-top directly. */
+    .home{
+        background-image: linear-gradient(180deg, transparent 97%, var(--bg-color) 100%),
+            repeating-linear-gradient(0deg, rgba(27, 179, 14, 0.24) 0 1px, transparent 1px 180px),
+            repeating-linear-gradient(90deg, rgba(27, 179, 14, 0.24) 0 1px, transparent 1px 180px),
+            repeating-linear-gradient(0deg, rgba(27, 179, 14, 0.17) 0 1px, transparent 1px 36px),
+            repeating-linear-gradient(90deg, rgba(27, 179, 14, 0.17) 0 1px, transparent 1px 36px);
+    }
+    /* Light theme same override: fade barely runs in stacked mode. */
+    [data-theme="light"] .home{
+        background-image: linear-gradient(180deg, transparent 97%, var(--bg-color) 100%),
+            repeating-linear-gradient(0deg, rgba(22, 101, 52, 0.24) 0 1px, transparent 1px 180px),
+            repeating-linear-gradient(90deg, rgba(22, 101, 52, 0.24) 0 1px, transparent 1px 180px),
+            repeating-linear-gradient(0deg, rgba(22, 101, 52, 0.17) 0 1px, transparent 1px 36px),
+            repeating-linear-gradient(90deg, rgba(22, 101, 52, 0.17) 0 1px, transparent 1px 36px);
+    }
+    /* Stacked hero is taller; shift the glow centre up so it stays behind the
+     * text column rather than the photo. */
+    :root{ --hero-glow-at: 50% 30%; }
 }
-
 
 @media (max-width: 768px) {
     html {
@@ -3598,6 +3663,12 @@ section{
         transform: none;
     }
     .home-img::after{ opacity: 0.6; }
+    /* Hero glow stops breathing; hold a fixed subtle presence like the photo halo. */
+    .home::before{
+        animation: none;
+        opacity: .55;
+        transform: none;
+    }
     .text-animation .ta-sr{
         position: static;
         width: auto;
@@ -3850,6 +3921,8 @@ section{
     --accent-color: #115e59;
     --secondary-accent-color: #b03a4e;
     --muted-color: #5f6368;
+    --hero-glow: rgba(22, 101, 52, 0.10);
+    --hero-glow-at: 50% 38%;
 
     /* The contact field tokens, inverted for light. See the :root note for why
      * these are separate from --second-bg-color: a form well is a third surface
@@ -3870,16 +3943,20 @@ section{
  * --bg-color.
  *
  * Dark on a light background needs more alpha, not less, to read as the same
-     * surface: 4.5% green over #f6f7f9 is 1.02:1, invisible for the same reason the
-     * dark theme's 5% was. At 17% the grid is 1.29:1, close to the dark theme's
-     * 1.27:1. */
+ * surface: 4.5% green over #f6f7f9 is 1.02:1, invisible for the same reason the
+ * dark theme's 5% was. At 17% the grid is 1.29:1, close to the dark theme's
+ * 1.27:1.
+ *
+ * Grid layers use content-box origin so a minor line lands on the content gutter
+ * at every breakpoint. Fade layer stays on padding-box. */
 [data-theme="light"] .home{
     background:
-        linear-gradient(180deg, transparent 55%, var(--bg-color) 100%),
+        linear-gradient(180deg, transparent 78%, var(--bg-color) 100%),
         repeating-linear-gradient(0deg, rgba(22, 101, 52, 0.24) 0 1px, transparent 1px 180px),
         repeating-linear-gradient(90deg, rgba(22, 101, 52, 0.24) 0 1px, transparent 1px 180px),
         repeating-linear-gradient(0deg, rgba(22, 101, 52, 0.17) 0 1px, transparent 1px 36px),
         repeating-linear-gradient(90deg, rgba(22, 101, 52, 0.17) 0 1px, transparent 1px 36px);
+    background-origin: padding-box, content-box, content-box, content-box, content-box;
 }
 [data-theme="light"] .header{
     /* Was rgba(255,255,255,0.85) against the dark bar's rgba(0,0,0,0.3) - two
@@ -5589,7 +5666,7 @@ submitBtn.textContent = 'Send Message';
             </p>
             <!-- class and text shape preserved: tools/build_last_updated.js
                  matches this element by class and rewrites the date in place. -->
-            <p class="last-updated">Last updated: 2026-10-06</p>
+            <p class="last-updated">Last updated: 2026-10-07</p>
         </div>
     </div>
 </footer>

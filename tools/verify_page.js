@@ -222,6 +222,7 @@ async function main() {
       const { layers, css, img, gridAxes, fades, cellPx } = ${SPLIT}();
       const h = document.querySelector('.home').getBoundingClientRect();
       const i = img.getBoundingClientRect();
+      const origin = getComputedStyle(document.querySelector('.home')).getPropertyValue('background-origin');
       return {
         gridAxes,
         fades,
@@ -229,6 +230,7 @@ async function main() {
         image: css.backgroundImage,
         layers: layers.length,
         overflow: css.overflow,
+        backgroundOrigin: origin,
         photoBottomPastSection: +(i.bottom - h.bottom).toFixed(1),
         photoVisible: i.width > 0 && i.height > 0,
       };
@@ -251,6 +253,50 @@ async function main() {
       'overflow: ' + backdrop.overflow);
     check(backdrop.photoVisible, 'the hero photo still has a box',
       `${backdrop.photoBottomPastSection}px past section bottom`);
+
+    // Grid origin regression: grid layers must be content-box (aligns to gutter),
+    // fade layer must be padding-box (spans full section height). This prevents
+    // silent reversion to the old padding-box grid that put the text column
+    // 28.8px into a cell at 1440px.
+    const origins = backdrop.backgroundOrigin.split(',').map(s => s.trim());
+    check(origins.length === 5 && origins[0] === 'padding-box' && origins.slice(1).every(o => o === 'content-box'),
+      'grid origin is content-box, fade origin is padding-box',
+      `got ${origins.join(', ')}`);
+
+    // Hero ambient glow: assert it exists, animates on the compositor, and
+    // does not shift layout. The glow is on .home::before so it paints behind
+    // content and the grid stack, adding a subtle radial wash.
+    const glow = await evaluate(`(() => {
+      const cs = getComputedStyle(document.querySelector('.home'), '::before');
+      return {
+        content: cs.content,
+        animationName: cs.animationName,
+        animationDuration: cs.animationDuration,
+        animationTimingFunction: cs.animationTimingFunction,
+        animationIterationCount: cs.animationIterationCount,
+        opacity: cs.opacity,
+        transform: cs.transform,
+        position: cs.position,
+        pointerEvents: cs.pointerEvents,
+        zIndex: cs.zIndex,
+        backgroundImage: cs.backgroundImage,
+      };
+    })()`);
+    check(glow.content !== 'none', 'hero glow pseudo-element is generated');
+    check(glow.animationName === 'hero-glow-breathe', 'hero glow runs the breathe animation',
+      `animation-name: ${glow.animationName}`);
+    check(glow.animationDuration === '8s', 'hero glow cycle is 8s',
+      `duration: ${glow.animationDuration}`);
+    check(glow.animationTimingFunction === 'ease-in-out', 'hero glow uses ease-in-out',
+      `timing: ${glow.animationTimingFunction}`);
+    check(glow.animationIterationCount === 'infinite', 'hero glow loops infinitely',
+      `iteration-count: ${glow.animationIterationCount}`);
+    check(glow.position === 'absolute', 'hero glow is absolutely positioned (no layout impact)',
+      `position: ${glow.position}`);
+    check(glow.pointerEvents === 'none', 'hero glow does not intercept clicks',
+      `pointer-events: ${glow.pointerEvents}`);
+    check(glow.zIndex === '-1', 'hero glow sits behind the grid and content (z-index: -1)',
+      `z-index: ${glow.zIndex}`);
 
     // The backdrop sits behind body copy, so the contrast of the bio paragraph has
     // to be measured rather than assumed. WCAG relative luminance, composited here
@@ -275,7 +321,22 @@ async function main() {
       // the way the browser paints them. Takes the stack as an argument so it can
       // never close over a stack captured before the theme was set.
       const sectionBackdrop = layers => {
+        // Composite bottom-to-top: body -> hero glow (::before) -> grid stack (layers).
+        // The glow is a radial-gradient on .home::before with z-index: -1, so it paints
+        // behind the grid stack but above the body background. We read it per-theme
+        // so the token swap is reflected.
         let acc = parse(getComputedStyle(document.body).backgroundColor);
+        const glowBg = getComputedStyle(document.querySelector('.home'), '::before').backgroundImage;
+        if (glowBg && glowBg !== 'none') {
+          const m = glowBg.match(/rgba?\\(([^)]+)\\)/);
+          if (m) {
+            const parts = m[1].split(',').map(s => parseFloat(s));
+            const [r, g, b] = parts, a = parts.length > 3 ? parts[3] : 1;
+            if (a > 0) {
+              acc = [r * a + acc[0] * (1 - a), g * a + acc[1] * (1 - a), b * a + acc[2] * (1 - a)];
+            }
+          }
+        }
         for (const layer of layers) {
           const m = layer.match(/rgba?\\(([^)]+)\\)/);
           if (!m) continue;
@@ -367,12 +428,25 @@ async function main() {
         const { layers } = ${SPLIT}();
         // Uses the same shared depth-aware splitter as the layer count, so this
         // cannot measure a different set of layers than the check above it counts.
-        const bg = parse(getComputedStyle(document.body).backgroundColor);
+        const bodyBg = parse(getComputedStyle(document.body).backgroundColor);
+        // Composite the hero glow (from ::before) as the bottom layer over body.
+        const glowBg = getComputedStyle(document.querySelector('.home'), '::before').backgroundImage;
+        let bg = bodyBg;
+        if (glowBg && glowBg !== 'none') {
+          const m = glowBg.match(/rgba?\\(([^)]+)\\)/);
+          if (m) {
+            const parts = m[1].split(',').map(s => parseFloat(s));
+            const [r, g, b] = parts, a = parts.length > 3 ? parts[3] : 1;
+            if (a > 0) {
+              bg = [r * a + bg[0] * (1 - a), g * a + bg[1] * (1 - a), b * a + bg[2] * (1 - a)];
+            }
+          }
+        }
         const grid = layers.filter(l => l.startsWith('repeating-linear-gradient'));
         const meas = {};
         // Both grid axes carry the same tint; one is enough and both must agree.
         const line = grid.map(l => over(l, bg)).filter(Boolean);
-meas.grid = line.length
+        meas.grid = line.length
           ? { r: +Math.min(...line.map(c => ratio(c, bg))).toFixed(2), axes: line.length }
           : null;
         out[theme] = meas;
@@ -976,14 +1050,20 @@ meas.grid = line.length
     const still = await evaluate(`(() => {
       const wrap = document.querySelector('.home-img');
       const halo = getComputedStyle(wrap, '::after');
+      const glow = getComputedStyle(document.querySelector('.home'), '::before');
       return { anim: halo.animationName, opacity: halo.opacity,
                float: getComputedStyle(wrap).animationName,
-               rotator: getComputedStyle(document.querySelector('.ta-rotator')).display };
+               rotator: getComputedStyle(document.querySelector('.ta-rotator')).display,
+               glowAnim: glow.animationName, glowOpacity: glow.opacity, glowTransform: glow.transform };
     })()`);
     check(still.anim === 'none', 'the pulse stops under prefers-reduced-motion',
       `animation-name: ${still.anim} at opacity ${still.opacity}`);
     check(still.float === 'none', 'the float stops under prefers-reduced-motion',
       'wrapper animation-name: ' + still.float);
+    check(still.glowAnim === 'none', 'the hero glow stops under prefers-reduced-motion',
+      `glow animation-name: ${still.glowAnim} at opacity ${still.glowOpacity}`);
+    check(still.glowTransform === 'none', 'the hero glow transform is reset under prefers-reduced-motion',
+      `glow transform: ${still.glowTransform}`);
     // Confirms the emulation is real and this check is not passing by accident:
     // the rotator's swap below is already known to work, so it must flip too.
     check(still.rotator === 'none', 'the reduced-motion emulation is actually in effect',
