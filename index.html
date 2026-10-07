@@ -4398,6 +4398,70 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
         transform: none;
     }
 }
+
+/* Services v2: 6 compact cards, 3-col grid, cheap hover, expandable details */
+.services{padding-top:4rem;padding-bottom:4rem}
+.services-intro{max-width:72ch;margin:0 auto 3rem;text-align:center;font-size:1.6rem;line-height:1.6;color:var(--text-color);opacity:1}
+.svc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.6rem;align-items:stretch}
+.svc-card{background:var(--card-bg,#1e1e1e);border:1px solid rgba(0,238,137,.35);border-radius:1.2rem;padding:1.6rem;transition:border-color .2s ease}
+.svc-card:hover{border-color:var(--main-color)}
+.svc-card.svc-open{border-color:var(--main-color)}
+.svc-head{display:flex;gap:1.2rem;align-items:flex-start;width:100%;background:none;border:0;color:inherit;cursor:pointer;padding:0;text-align:left;font:inherit}
+.svc-icon{flex:0 0 auto;width:4.4rem;height:4.4rem;display:grid;place-items:center;border-radius:1rem;background:rgba(0,238,137,.12);color:var(--main-color);font-size:2rem}
+.svc-titles{display:flex;flex-direction:column;gap:.3rem;min-width:0}
+.svc-name{font-size:1.9rem;font-weight:700;line-height:1.25}
+.svc-short{font-size:1.4rem;line-height:1.5;color:var(--text-color);opacity:1}
+.svc-plus{margin-left:auto;font-size:2.4rem;font-weight:300;line-height:1;color:var(--main-color);transition:transform .2s ease}
+.svc-card.svc-open .svc-plus{transform:rotate(45deg)}
+.svc-tags{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.2rem}
+.svc-tag{font-size:1.2rem;padding:.3rem 1rem;border-radius:999px;border:1px solid rgba(0,238,137,.4);background:rgba(0,238,137,.08);color:var(--text-color);opacity:1}
+.svc-details{overflow:hidden}
+.svc-details[hidden]{display:none!important}
+.svc-details p{font-size:1.45rem;line-height:1.65;margin:1.2rem 0 0;color:var(--text-color);opacity:1}
+.svc-card.svc-reveal{opacity:0;transform:translateY(14px)}
+.svc-card.svc-in{opacity:1;transform:none;transition:opacity .45s ease,transform .45s ease}
+[data-theme="light"] .svc-card{background:#fff;color:#14161a;border-color:#d7dee6}
+[data-theme="light"] .svc-icon{background:rgba(0,150,90,.1)}
+[data-theme="light"] .svc-short,[data-theme="light"] .svc-details p{color:#333a41}
+[data-theme="light"] .svc-tag{background:#eef4ef;color:#1c2b23;border-color:#bcd8c6}
+@media (max-width:1024px){.svc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.svc-grid{grid-template-columns:minmax(0,1fr);gap:1.2rem}.svc-card{padding:1.4rem}.svc-icon{width:4rem;height:4rem}}
+@media (prefers-reduced-motion:reduce){.svc-card,.svc-card.svc-in,.svc-plus{transition:none!important;transform:none!important}.svc-card.svc-reveal{opacity:1}}
+
+
+/* Contact upgrade: 2 cards, paired fields, 48px targets. */
+.contact{content-visibility:auto;contain-intrinsic-size:auto 800px;}
+.contact-rail,.contact-form{
+  background:var(--band-bg-color);
+  border:1px solid rgba(27,179,14,.16);
+  border-radius:12px;
+  padding:clamp(2rem,3vw,3.2rem);
+  box-shadow:0 8px 28px rgba(0,0,0,.18);
+}
+.contact-form{gap:1.6rem;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem;}
+.field input,.field textarea{min-height:48px;font-size:1.6rem;border-radius:8px;}
+.field textarea{min-height:12rem;}
+.field-error{display:none;font-size:1.3rem;color:var(--secondary-accent-color);margin:0;}
+.field-error.show{display:block;}
+.msg-count{font-size:1.2rem;color:var(--muted-color);text-align:right;margin:0;}
+.privacy-note{font-size:1.25rem;color:var(--muted-color);margin:0;text-align:center;}
+.contact-meta{display:grid;gap:.6rem;margin-top:1rem;font-size:1.4rem;color:var(--muted-color);}
+.contact-meta i{color:var(--main-color);margin-right:.6rem;}
+.contact-socials{display:flex;gap:1rem;margin-top:.6rem;}
+.contact-socials a{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;border:1px solid rgba(27,179,14,.35);color:var(--text-color);font-size:1.7rem;transition:.25s ease;}
+.contact-socials a:hover{background:var(--main-color);border-color:var(--main-color);color:#04140a;box-shadow:0 0 18px rgba(27,179,14,.4);}
+#contact-submit{display:flex;align-items:center;justify-content:center;gap:1rem;}
+
+#contact-submit .btn-label{color:inherit;font:inherit;font-size:inherit;font-weight:inherit;letter-spacing:inherit;}
+#contact-submit .spinner{display:none;width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;animation:spin .7s linear infinite;}
+#contact-submit[aria-busy="true"] .spinner{display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+@media (max-width:768px){
+  .form-row{grid-template-columns:1fr;}
+  #contact-submit{width:100%;}
+}
+
 </style>
     <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>
@@ -4418,7 +4482,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <a href="#education">Education</a>
             <a href="#experience">Experience</a>
             <a href="#certifications">Certifications</a>
-            <a href="#services" aria-label="Skills and services">Skills</a>
+            <a href="#services" aria-label="Skills">Skills</a>
             <a href="#projects">Projects</a>
             <a href="#testimonials">Testimonials</a>
             <a href="#blog">Blog</a>
@@ -4448,7 +4512,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             </div>
 
             <div class="btn-group">
-                <a href="resume-2026.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" class="btn btn-primary" aria-label="Download resume (PDF)">Resume</a>
+                <a href="resume-2026.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" data-force-download class="btn btn-primary" aria-label="Download resume (PDF)">Resume</a>
 
                 <a href="#contact" class="btn btn-secondary">Contact</a>
             </div>
@@ -5100,73 +5164,93 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 </section>
 
 <section class="services" id="services" tabindex="-1">
-    <h2 class="heading">Skills</h2>
-    <p class="services-intro">Eight areas, each one traceable to a credential on this page, a public repository, or a job I have actually held. Nothing here is a self-assigned percentage.</p>
-    <div class="services-container">
-        <div class="services-box">
-            <div class="services-info">
-                <h3><i class="fa-solid fa-headset"></i> IT Support</h3>
+    <h2 class="heading">My <span>Skills</span></h2>
+    <p class="services-intro">What I can do for you &mdash; six skill areas, each backed by a certificate, a repo, or a job below. Select a card for details.</p>
+    <div class="services-container svc-grid">
+        <article class="svc-card">
+            <button class="svc-head" aria-expanded="false" aria-controls="svc-d1" id="svc-b1">
+                <span class="svc-icon" aria-hidden="true"><i class="fa-solid fa-headset"></i></span>
+                <span class="svc-titles">
+                    <span class="svc-name">IT Support</span>
+                    <span class="svc-short">Windows setup, troubleshooting, and incident resolution.</span>
+                </span>
+                <span class="svc-plus" aria-hidden="true">+</span>
+            </button>
+            <div class="svc-tags"><span class="svc-tag">Windows</span><span class="svc-tag">Help Desk</span><span class="svc-tag">Troubleshooting</span></div>
+            <div class="svc-details" id="svc-d1" role="region" aria-labelledby="svc-b1" hidden>
                 <p>Day-to-day support as an IT Assistant and Help Desk associate on Windows: troubleshooting hardware and software, installing and configuring workstations, handling incidents through to resolution and escalation, and documenting recurring faults so they stop coming back.</p>
-
             </div>
-        </div>
-
-        <div class="services-box">
-            <div class="services-info">
-                <h3><i class="fa-solid fa-server"></i> Linux &amp; Systems</h3>
+        </article>
+        <article class="svc-card">
+            <button class="svc-head" aria-expanded="false" aria-controls="svc-d2" id="svc-b2">
+                <span class="svc-icon" aria-hidden="true"><i class="fa-solid fa-server"></i></span>
+                <span class="svc-titles">
+                    <span class="svc-name">Linux & Systems</span>
+                    <span class="svc-short">Red Hat administration, storage, users, and services.</span>
+                </span>
+                <span class="svc-plus" aria-hidden="true">+</span>
+            </button>
+            <div class="svc-tags"><span class="svc-tag">Linux</span><span class="svc-tag">RHEL</span><span class="svc-tag">Bash</span></div>
+            <div class="svc-details" id="svc-d2" role="region" aria-labelledby="svc-b2" hidden>
                 <p>Red Hat System Administration I and II, covering installation, file systems, storage, users and groups, services, networking on the command line, and core administration of Linux servers.</p>
-
             </div>
-        </div>
-
-        <div class="services-box">
-            <div class="services-info">
-                <h3><i class="fa-solid fa-network-wired"></i> Networking</h3>
+        </article>
+        <article class="svc-card">
+            <button class="svc-head" aria-expanded="false" aria-controls="svc-d3" id="svc-b3">
+                <span class="svc-icon" aria-hidden="true"><i class="fa-solid fa-network-wired"></i></span>
+                <span class="svc-titles">
+                    <span class="svc-name">Networking</span>
+                    <span class="svc-short">Switching, routing, wireless, and subnetting.</span>
+                </span>
+                <span class="svc-plus" aria-hidden="true">+</span>
+            </button>
+            <div class="svc-tags"><span class="svc-tag">CCNA</span><span class="svc-tag">TCP/IP</span><span class="svc-tag">VLAN</span></div>
+            <div class="svc-details" id="svc-d3" role="region" aria-labelledby="svc-b3" hidden>
                 <p>CCNA switching, routing and wireless, plus TCP/IP fundamentals and subnetting. In the training centre I maintain the wired and wireless network that classrooms and administrative systems depend on.</p>
-
             </div>
-        </div>
-
-        <div class="services-box">
-            <div class="services-info">
-                <h3><i class="fa-solid fa-cloud"></i> Google Cloud</h3>
+        </article>
+        <article class="svc-card">
+            <button class="svc-head" aria-expanded="false" aria-controls="svc-d4" id="svc-b4">
+                <span class="svc-icon" aria-hidden="true"><i class="fa-solid fa-cloud"></i></span>
+                <span class="svc-titles">
+                    <span class="svc-name">Google Cloud</span>
+                    <span class="svc-short">Core infra, modernisation, security, and GenAI.</span>
+                </span>
+                <span class="svc-plus" aria-hidden="true">+</span>
+            </button>
+            <div class="svc-tags"><span class="svc-tag">GCP</span><span class="svc-tag">Cloud Security</span><span class="svc-tag">GenAI</span></div>
+            <div class="svc-details" id="svc-d4" role="region" aria-labelledby="svc-b4" hidden>
                 <p>Seven Google Cloud credentials spanning core infrastructure, application modernisation, security and operations, large language models and responsible AI. This is my cloud platform, and it is the one I hold the most credentials in.</p>
-
             </div>
-        </div>
-
-        <div class="services-box">
-            <div class="services-info">
-                <h3><i class="fa-solid fa-shield-halved"></i> Cybersecurity</h3>
-                <p>ISC2 Certified in Cybersecurity, DICT CyberPRO Level 2, Cisco CyberOps, TryHackMe Advent of Cyber, Linux Foundation Cybersecurity Essentials and IBM's cyber tools track, covering threat awareness, defensive practice and incident response.</p>
-
+        </article>
+        <article class="svc-card">
+            <button class="svc-head" aria-expanded="false" aria-controls="svc-d5" id="svc-b5">
+                <span class="svc-icon" aria-hidden="true"><i class="fa-solid fa-shield-halved"></i></span>
+                <span class="svc-titles">
+                    <span class="svc-name">Cybersecurity</span>
+                    <span class="svc-short">Threat awareness, defense, and incident response.</span>
+                </span>
+                <span class="svc-plus" aria-hidden="true">+</span>
+            </button>
+            <div class="svc-tags"><span class="svc-tag">ISC2 CC</span><span class="svc-tag">CyberOps</span><span class="svc-tag">TryHackMe</span></div>
+            <div class="svc-details" id="svc-d5" role="region" aria-labelledby="svc-b5" hidden>
+                <p>ISC2 Certified in Cybersecurity, DICT CyberPRO Level 2, Cisco CyberOps, TryHackMe Advent of Cyber, Linux Foundation Cybersecurity Essentials and IBM cyber tools track, covering threat awareness, defensive practice and incident response.</p>
             </div>
-        </div>
-
-        <div class="services-box">
-            <div class="services-info">
-                <h3><i class="fa-solid fa-code"></i> Web Development</h3>
-                <p>PHP and Laravel with Blade templating, MySQL, and JavaScript on the browser side. Five of my public repositories are PHP or Laravel applications, including the helpdesk ticketing and IT asset systems I built for the training centre.</p>
-
+        </article>
+        <article class="svc-card">
+            <button class="svc-head" aria-expanded="false" aria-controls="svc-d6" id="svc-b6">
+                <span class="svc-icon" aria-hidden="true"><i class="fa-solid fa-code"></i></span>
+                <span class="svc-titles">
+                    <span class="svc-name">Web, Automation & Design</span>
+                    <span class="svc-short">PHP/Laravel apps, Python scripts, and design basics.</span>
+                </span>
+                <span class="svc-plus" aria-hidden="true">+</span>
+            </button>
+            <div class="svc-tags"><span class="svc-tag">PHP</span><span class="svc-tag">Laravel</span><span class="svc-tag">Python</span></div>
+            <div class="svc-details" id="svc-d6" role="region" aria-labelledby="svc-b6" hidden>
+                <p>PHP and Laravel with Blade and MySQL plus JavaScript on the browser side, including the helpdesk ticketing and IT asset systems I built. Python for support automation (student records, queue and accounting tools), plus graphic-design fundamentals for clean interfaces.</p>
             </div>
-        </div>
-
-        <div class="services-box">
-            <div class="services-info">
-                <h3><i class="fa-solid fa-robot"></i> Python &amp; Automation</h3>
-                <p>Three Python repositories: a student record manager, a desktop assistant and a calculator. I also use scripting to automate routine support tasks, which is how the queue and accounting systems came about.</p>
-
-            </div>
-        </div>
-
-        <div class="services-box">
-            <div class="services-info">
-                <h3><i class="fa-solid fa-paint-brush"></i> Design &amp; Graphics</h3>
-                <p>Four design credentials covering graphic design principles, logo development and visual communication. Credential-based rather than role-based: I have studied the discipline but do not currently work in it.</p>
-
-            </div>
-        </div>
-
+        </article>
     </div>
 
         <div class="skills-evidence">
@@ -5353,7 +5437,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
                  thing a visitor is meant to do. It was `btn-secondary` sitting in a
                  flex row beside an 8rem heading, where a 44px button centred against
                  76px of type reads as a footnote to the word "Contact". -->
-            <a href="resume-2026.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" class="btn btn-primary contact-resume" aria-label="Download resume (PDF)">Resume</a>
+            <a href="resume-2026.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" data-force-download class="btn btn-primary contact-resume" aria-label="Download resume (PDF)">Resume</a>
         </div>
         <!-- A status line, and the only decorative element in the section. The dot
              is a pseudo-element, so it is absent from the accessibility tree and
@@ -5363,6 +5447,14 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
             <span>Prefer email?</span>
             <a href="mailto:patrickcabansag5@gmail.com" class="contact-email">patrickcabansag5@gmail.com</a>
             <button type="button" class="btn btn-copy" id="copy-email">Copy Email</button>
+            <div class="contact-meta">
+                <div><i class="fa-solid fa-location-dot" aria-hidden="true"></i>Iloilo, Philippines &middot; Replies within a day</div>
+            </div>
+            <div class="contact-socials">
+                <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="fa-brands fa-github" aria-hidden="true"></i></a>
+                <a href="https://www.linkedin.com/in/glenpatrick" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><i class="fa-brands fa-linkedin" aria-hidden="true"></i></a>
+                <a href="https://www.facebook.com/Gl3nQt" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook" aria-hidden="true"></i></a>
+            </div>
         </div>
     </div>
     <form id="contact-form" class="contact-form" novalidate>
@@ -5375,14 +5467,19 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
              one's error element and overwrote its text. validateForm() runs in
              key order, so an email error replaced the name error outright and a
              visitor submitting an empty form was shown one message, not two. -->
+        <div class="form-row">
         <div class="field">
             <label class="field-label" for="full-name">Full Name</label>
-            <input type="text" id="full-name" name="from_name" placeholder="Full Name" autocomplete="name" required>
+            <input type="text" id="full-name" name="from_name" placeholder="Full Name" autocomplete="name" required aria-describedby="full-name-error">
+            <p class="field-error" id="full-name-error" role="alert"></p>
         </div>
         <div class="field">
             <label class="field-label" for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+            <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required aria-describedby="email-error">
+            <p class="field-error" id="email-error" role="alert"></p>
         </div>
+        </div>
+        <div class="form-row">
         <div class="field">
             <label class="field-label" for="phone-number">Phone Number <span class="field-optional">(optional)</span></label>
             <!-- (optional) moved to the label, which stays visible. It used to
@@ -5393,18 +5490,23 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
         </div>
         <div class="field">
             <label class="field-label" for="subject">Subject</label>
-            <input type="text" id="subject" name="subject" placeholder="What is this about?" autocomplete="off" required>
+            <input type="text" id="subject" name="subject" placeholder="What is this about?" autocomplete="off" required aria-describedby="subject-error">
+            <p class="field-error" id="subject-error" role="alert"></p>
+        </div>
         </div>
         <div class="field">
             <label class="field-label" for="message">Your Message</label>
-            <textarea id="message" name="message" cols="30" placeholder="Your Message" required></textarea>
+            <textarea id="message" name="message" cols="30" rows="5" maxlength="1000" placeholder="Tell me about your project or role..." required aria-describedby="message-error msg-count"></textarea>
+            <p class="field-error" id="message-error" role="alert"></p>
+            <p class="msg-count" id="msg-count">0 / 1000</p>
         </div>
         <!-- Honeypot. Kept out of .field: it must not be announced, sized or
              focused, and .hp-field already takes it off-screen. -->
         <input type="text" id="website" name="website" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary" id="contact-submit">Send Message</button>
+            <button type="submit" class="btn btn-primary" id="contact-submit"><span class="btn-label">Send Message</span><span class="spinner" aria-hidden="true"></span></button>
         </div>
+        <p class="privacy-note">Your details are only used to reply. No spam, no sharing.</p>
         <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
 </form>
 </section>
@@ -5436,7 +5538,7 @@ src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer>
     }
 
     function setFieldError(input, message) {
-        var err = input.parentNode.querySelector('.field-error');
+        var err = document.getElementById(input.id + '-error') || input.parentNode.querySelector('.field-error');
         if (!err) {
             err = document.createElement('p');
             err.className = 'field-error';
@@ -5485,6 +5587,14 @@ src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer>
         }
     });
 
+    (function messageCounter(){
+        var msg = document.getElementById('message');
+        var count = document.getElementById('msg-count');
+        if(!msg || !count) return;
+        var update = function(){ count.textContent = msg.value.length + ' / 1000'; };
+        msg.addEventListener('input', update); update();
+    })();
+
     contactForm.addEventListener('submit', function(event) {
         event.preventDefault();
 
@@ -5520,7 +5630,9 @@ src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer>
         var submitBtn = document.getElementById('contact-submit');
         if (submitBtn) {
 submitBtn.disabled = true;
-submitBtn.textContent = 'Sending...';
+submitBtn.setAttribute('aria-busy', 'true');
+var btnLabel = submitBtn.querySelector('.btn-label');
+if (btnLabel) btnLabel.textContent = 'Sending...';
         }
         setStatus('Sending your message...', false);
 
@@ -5548,7 +5660,9 @@ submitBtn.textContent = 'Sending...';
         .then(function() {
             if (submitBtn) {
 submitBtn.disabled = false;
-submitBtn.textContent = 'Send Message';
+submitBtn.removeAttribute('aria-busy');
+var btnLabel2 = submitBtn.querySelector('.btn-label');
+if (btnLabel2) btnLabel2.textContent = 'Send Message';
             }
         });
     });
@@ -5669,7 +5783,7 @@ submitBtn.textContent = 'Send Message';
              unqualified "navigation" landmark. -->
         <nav class="footer-nav" aria-label="Footer">
             <ul class="list">
-                <li><a href="resume-2026.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" aria-label="Download resume (PDF)">Resume</a></li>
+                <li><a href="resume-2026.pdf" download="RESUME_Cabansag_GlennPatrick.pdf" data-force-download aria-label="Download resume (PDF)">Resume</a></li>
                 <li><a href="faq.html">FAQ</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#education">Education</a></li>
@@ -5680,7 +5794,7 @@ submitBtn.textContent = 'Send Message';
                      (index.html:3301); the section id predates the heading text
                      and renaming it would touch the navbar, the alternation
                      checks and any inbound #services links for no gain. -->
-                <li><a href="#services" aria-label="Skills and services">Skills</a></li>
+                <li><a href="#services" aria-label="Skills">Skills</a></li>
                 <li><a href="#projects">Projects</a></li>
                 <li><a href="#testimonials">Testimonials</a></li>
                 <li><a href="#blog">Blog</a></li>

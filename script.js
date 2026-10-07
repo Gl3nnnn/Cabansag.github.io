@@ -597,3 +597,76 @@ document.querySelectorAll('.cert-card').forEach(card => {
     if (top) top.appendChild(link);
     else card.appendChild(link);
 });
+
+/* Services v2: expandable cards + one-time reveal */
+(function(){
+  var cards = document.querySelectorAll('.svc-card');
+  if(!cards.length) return;
+  cards.forEach(function(card){
+    var btn = card.querySelector('.svc-head');
+    var panel = card.querySelector('.svc-details');
+    if(!btn || !panel) return;
+    btn.addEventListener('click', function(){
+      var open = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+      if(open){ panel.hidden = true; card.classList.remove('svc-open'); }
+      else { panel.hidden = false; card.classList.add('svc-open'); }
+    });
+    if(btn.getAttribute('aria-expanded') === 'true') card.classList.add('svc-open');
+  });
+  try{
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if(!('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('svc-in'); io.unobserve(e.target); }
+      });
+    }, {threshold: 0.12});
+    cards.forEach(function(c){ c.classList.add('svc-reveal'); io.observe(c); });
+    setTimeout(function(){ cards.forEach(function(c){ c.classList.add('svc-in'); }); }, 1600);
+  }catch(e){}
+})();
+
+// Force resume PDF to download instead of opening in browser.
+// The `download` attribute is only a hint and browsers with a built-in
+// PDF viewer (or Safari on iPhone) still open it. Fetching as a blob
+// and saving via object URL forces a real download on same-origin.
+document.addEventListener('click', async (e) => {
+    const link = e.target && e.target.closest ? e.target.closest('a[data-force-download]') : null;
+    if (!link) return;
+    const url = link.getAttribute('href');
+    if (!url) return;
+    // Let right-click / ctrl+click / middle-click open normally.
+    if (e.ctrlKey || e.metaKey || e.shiftKey || (e.button !== undefined && e.button !== 0)) return;
+    e.preventDefault();
+    const fileName = link.getAttribute('download') || 'RESUME_Cabansag_GlennPatrick.pdf';
+    try {
+        const res = await fetch(url, { credentials: 'same-origin' });
+        if (!res.ok) throw new Error('fetch failed');
+        const blob = await res.blob();
+        const pdfBlob = blob.type === 'application/pdf' ? blob : new Blob([blob], { type: 'application/pdf' });
+        const blobUrl = URL.createObjectURL(pdfBlob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 4000);
+    } catch (err) {
+        // Fallback: try native download. window.open() guarantees it opens,
+        // which is what we do NOT want. This also covers file:// preview
+        // where fetch() fails.
+        try {
+            const fb = document.createElement('a');
+            fb.href = url;
+            fb.download = fileName;
+            fb.rel = 'noopener';
+            document.body.appendChild(fb);
+            fb.click();
+            fb.remove();
+        } catch (e2) {
+            window.location.href = url;
+        }
+    }
+});
