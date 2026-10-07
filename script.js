@@ -65,6 +65,17 @@ if (menuIcon) {
     });
 }
 
+// Close on Escape or tap outside (mobile menu)
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && navbar && navbar.classList.contains('active')) setMenuOpen(false);
+});
+document.addEventListener('click', (e) => {
+  if (!navbar || !navbar.classList.contains('active')) return;
+  if (menuIcon && menuIcon.contains(e.target)) return;
+  if (navbar.contains(e.target)) return;
+  setMenuOpen(false);
+});
+
 // Close mobile menu when a link is clicked
 navLinks.forEach(link => {
     link.addEventListener('click', () => {
