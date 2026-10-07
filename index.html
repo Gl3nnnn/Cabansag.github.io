@@ -28,6 +28,9 @@
     <link rel="alternate" type="application/rss+xml" title="Glenn Patrick Cabansag - Technical Blog" href="https://gl3nnnn.github.io/Cabansag.github.io/feed.xml">
     <link rel="stylesheet" href="assets/shared.css">
     <link rel="stylesheet" href="assets/home-upgrade.css">
+    <link rel="stylesheet" href="assets/projects-upgrade.css">
+    <link rel="stylesheet" href="assets/mobile-friendly.css">
+    <link rel="stylesheet" href="assets/back-to-top.css">
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1802,50 +1805,8 @@ span{
     color: var(--text-color);
     font-size: 1.6rem;
 }
-/* Scroll progress bar */
-.scroll-progress{
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 4px;
-    width: 0%;
-    background: linear-gradient(90deg, var(--main-color), var(--accent-color));
-    z-index: 1001;
-    transition: width 0.1s linear;
-    box-shadow: 0 0 10px var(--main-color);
-}
-/* Back to top button */
-#back-to-top{
-    position: fixed;
-    bottom: 2.5rem;
-    right: 2.5rem;
-    width: 5rem;
-    height: 5rem;
-    border-radius: 50%;
-    border: 2px solid var(--main-color);
-    background: var(--bg-color);
-    color: var(--main-color);
-    font-size: 2.6rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(1rem);
-    transition: 0.3s ease-in-out;
-    z-index: 1000;
-}
-#back-to-top.show{
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-#back-to-top:hover{
-    background: var(--main-color);
-    color: black;
-    box-shadow: 0 0 25px var(--main-color);
-}
+/* Back to top — positioning only, look lives in assets/back-to-top.css */
+#back-to-top{ position: fixed; z-index: 1000; }
 /* Testimonials */
 .testimonials{
     background: var(--bg-color);
@@ -4206,10 +4167,10 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 [data-theme="light"] .blog-back-link:hover,
 [data-theme="light"] .skip-link,
 [data-theme="light"] #theme-toggle:hover,
-[data-theme="light"] #back-to-top:hover{ color: #ffffff; }
+/* removed: back-to-top stays green in light mode */
 [data-theme="light"] .blog-back-link:hover,
 [data-theme="light"] #theme-toggle:hover{ box-shadow: 0 4px 14px rgba(22, 101, 52, 0.30); }
-[data-theme="light"] #back-to-top:hover{ box-shadow: 0 4px 14px rgba(22, 101, 52, 0.35); }
+/* removed: shadow handled in back-to-top.css */
 /* Form/popup */
 /* Inline form status (replaces the old auto-dismissing .popup, which showed a
    fake success for bot/sub-3s submissions and leaked raw JSON on errors). */
@@ -4483,7 +4444,7 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
 </head>
 <body>
     <a class="skip-link" href="#home">Skip to content</a>
-    <div class="scroll-progress" id="scroll-progress"></div>
+    
     <button id="back-to-top" aria-label="Back to top" title="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
     <header class="header">
         <a href="#home" class="logo">Glenn Patrick
@@ -5289,17 +5250,42 @@ html[data-theme="dark"] .services-box:hover .services-info p{ color: #ffffff; }
     <h2 class="heading">Projects</h2>
     <p class="projects-intro">My public work on GitHub. Loaded live — check my <a href="https://github.com/Gl3nnnn" target="_blank" rel="noopener noreferrer">profile</a> for the full list.</p>
 
+    <div class="projects-toolbar" role="search">
+      <div class="projects-search">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <input type="search" id="project-search" placeholder="Search projects..." autocomplete="off" aria-label="Search projects">
+      </div>
+      <select id="project-sort" aria-label="Sort projects">
+        <option value="curated">Curated order</option>
+        <option value="stars">Most starred</option>
+        <option value="recent">Recently updated</option>
+        <option value="az">A to Z</option>
+      </select>
+    </div>
+
     <div class="project-filters" id="project-filters"></div>
 
     <p class="projects-count" id="project-results-count" role="status" aria-live="polite"></p>
 
     <p class="projects-note" id="project-data-note" role="status" hidden>Live GitHub data is unavailable right now, so star counts and last-updated dates are not shown. The project list below is curated and complete.</p>
 
+    <div class="projects-featured" id="projects-featured" hidden></div>
     <div class="projects-grid" id="projects-grid">
-        <div class="project-card">
-            <h3>Loading projects...</h3>
-            <p>Fetching repositories from GitHub.</p>
-        </div>
+        <article class="project-card">
+            <div class="project-top"><h3>INVENTORY-NEW</h3><span class="project-star"><i class="fa-solid fa-star"></i> 0</span></div>
+            <p class="project-desc">Inventory management web system for tracking stock, suppliers and item movement.</p>
+            <div class="project-actions"><a class="project-btn primary" href="https://github.com/Gl3nnnn/INVENTORY-NEW" target="_blank" rel="noopener noreferrer">View Code</a></div>
+        </article>
+        <article class="project-card">
+            <div class="project-top"><h3>TechDesk</h3><span class="project-star"><i class="fa-solid fa-star"></i> 0</span></div>
+            <p class="project-desc">IT tech-desk ticketing app for logging, assigning and tracking support requests.</p>
+            <div class="project-actions"><a class="project-btn primary" href="https://github.com/Gl3nnnn/TechDesk" target="_blank" rel="noopener noreferrer">View Code</a></div>
+        </article>
+        <article class="project-card">
+            <div class="project-top"><h3>counter_compass</h3><span class="project-star"><i class="fa-solid fa-star"></i> 0</span></div>
+            <p class="project-desc">Real-time queue management system for walk-in registrations and inquiries.</p>
+            <div class="project-actions"><a class="project-btn primary" href="https://github.com/Gl3nnnn/counter_compass" target="_blank" rel="noopener noreferrer">View Code</a></div>
+        </article>
     </div>
 </section>
 

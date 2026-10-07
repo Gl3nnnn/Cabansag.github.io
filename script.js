@@ -34,11 +34,10 @@ function updateActiveLink() {
 }
 
 // One passive scroll listener, throttled with rAF so scroll-spy +
-// progress bar + back-to-top run once per frame instead of per event.
+// back-to-top run once per frame instead of per event.
 let scrollTicking = false;
 function handleScroll() {
     updateActiveLink();
-    updateScrollProgress();
     toggleBackToTop();
     scrollTicking = false;
 }
@@ -73,31 +72,59 @@ navLinks.forEach(link => {
     });
 });
 
-// Scroll progress bar (top of page)
-function updateScrollProgress() {
-    const progress = document.getElementById('scroll-progress');
-    if (!progress) return;
-    const scrollTop = window.scrollY;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-    progress.style.width = percent + '%';
-}
-
-// Back to top button
+// Back to top button — clean + progress ring
 const backToTop = document.getElementById('back-to-top');
 
 function toggleBackToTop() {
     if (!backToTop) return;
-    if (window.scrollY > 400) {
+    const y = window.scrollY || 0;
+    const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const pct = Math.min(100, Math.max(0, (y / max) * 100));
+    try { backToTop.style.setProperty('--btt-p', pct.toFixed(1) + '%'); } catch (e) {}
+    if (y > 400) {
         backToTop.classList.add('show');
-    } else {
+    } else if (!backToTop.classList.contains('is-scrolling')) {
         backToTop.classList.remove('show');
     }
 }
 
-if (backToTop) backToTop.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-});
+let bttRaf = 0;
+let bttCancelled = false;
+function cancelBtt(){ bttCancelled = true; if (bttRaf) cancelAnimationFrame(bttRaf); bttRaf = 0; }
+function smoothScrollToTop() {
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) { window.scrollTo(0, 0); return Promise.resolve(); }
+    const startY = window.scrollY;
+    if (startY <= 0) return Promise.resolve();
+    const dur = Math.min(800, Math.max(450, 280 + startY * 0.18));
+    const t0 = performance.now();
+    bttCancelled = false;
+    return new Promise((resolve) => {
+        function easeInOut(x){ return x < 0.5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2; }
+        function frame(now){
+            if (bttCancelled) { resolve(); return; }
+            const p = Math.min(1, (now - t0) / dur);
+            window.scrollTo(0, Math.round(startY * (1 - easeInOut(p))));
+            if (p < 1) { bttRaf = requestAnimationFrame(frame); }
+            else { bttRaf = 0; resolve(); }
+        }
+        bttRaf = requestAnimationFrame(frame);
+    });
+}
+
+if (backToTop) {
+    try { document.querySelectorAll('.btt-anime-fx').forEach(el => el.remove()); } catch (e) {}
+    try { document.body.classList.remove('btt-shaking'); } catch (e) {}
+    ['wheel','touchstart','touchmove'].forEach(ev => window.addEventListener(ev, () => { if (backToTop.classList.contains('is-scrolling')) cancelBtt(); }, { passive: true }));
+    backToTop.addEventListener('click', () => {
+        if (backToTop.classList.contains('is-scrolling')) return;
+        backToTop.classList.add('show', 'is-scrolling');
+        smoothScrollToTop().then(() => {
+            backToTop.classList.remove('is-scrolling');
+            toggleBackToTop();
+        });
+    });
+}
 
 // GitHub project cards
 const GITHUB_USER = 'Gl3nnnn';
@@ -235,42 +262,52 @@ function buildProjectCard(repo) {
     const rawName = repo.name || '';
     const name = escapeHtml(rawName);
     const description = escapeHtml((repo.description || '').slice(0, 160));
-    // Optional, and deliberately not truncated: the outcome is a single
-    // hand-written sentence, so clipping it would cut the point off. A card
-    // without one just omits the row.
     const outcome = escapeHtml((repo.outcome || '').trim());
     const language = escapeHtml(repo.language || 'N/A');
     const stars = Number(repo.stargazers_count) || 0;
     const fallbackUrl = `https://github.com/${GITHUB_USER}/${rawName}`;
     const rawUrl = repo.html_url || fallbackUrl;
     const url = escapeHtml(/^https:\/\//i.test(rawUrl) ? rawUrl : fallbackUrl);
-    const hasDemo = Boolean(repo.homepage);
-    const ctaLabel = hasDemo ? 'Live Demo' : 'View Project';
-    const ctaIcon = hasDemo ? 'fa-solid fa-rocket' : 'fa-solid fa-arrow-right';
+    const rawHome = repo.homepage || '';
+    const demo = escapeHtml(/^https:\/\//i.test(rawHome) ? rawHome : '');
     const pushed = escapeHtml(formatPushed(repo.pushed_at));
-    const tags = (repo.tags || [])
+    const tags = (repo.tags || []).slice(0, 3)
         .map(tag => `<span class="project-tag">${escapeHtml(tag)}</span>`)
         .join('');
 
+    const actions = demo
+        ? `<div class="project-actions"><a class="project-btn primary" href="${demo}" target="_blank" rel="noopener noreferrer">Live Demo</a><a class="project-btn ghost" href="${url}" target="_blank" rel="noopener noreferrer">View Code</a></div>`
+        : `<div class="project-actions"><a class="project-btn primary" href="${url}" target="_blank" rel="noopener noreferrer">View Code</a></div>`;
+
     return `
-        <a class="project-card" href="${url}" target="_blank" rel="noopener noreferrer">
+        <article class="project-card">
             <div class="project-top">
                 <h3>${name}</h3>
                 <span class="project-star"><i class="fa-solid fa-star"></i> ${stars}</span>
             </div>
-            <p>${description}</p>
+            <p class="project-desc">${description}</p>
             ${outcome ? `<p class="project-outcome">${outcome}</p>` : ''}
             ${tags ? `<div class="project-tags">${tags}</div>` : ''}
             <div class="project-meta">
                 <span class="project-lang"><i class="${langIcon(language)}"></i> ${language}</span>
                 ${pushed ? `<span class="project-updated"><i class="fa-regular fa-clock"></i> ${pushed}</span>` : ''}
-                <span class="project-link ${hasDemo ? 'demo' : ''}">${ctaLabel} <i class="${ctaIcon}"></i></span>
             </div>
-        </a>
+            ${actions}
+        </article>
     `;
 }
 
-let activeLang = 'All';
+function readStore(key, fallback) {
+    try { const v = localStorage.getItem(key); return v == null ? fallback : v; }
+    catch (err) { return fallback; }
+}
+function writeStore(key, val) {
+    try { localStorage.setItem(key, val); } catch (err) {}
+}
+
+let activeLang = readStore('portfolio_proj_lang', 'All');
+let activeSearch = '';
+let activeSort = readStore('portfolio_proj_sort', 'curated');
 
 function projectLangCounts() {
     const counts = {};
@@ -286,36 +323,102 @@ function renderProjectFilters() {
     if (!container) return;
     const counts = projectLangCounts();
     const langs = Object.keys(counts).sort((a, b) => (counts[b] - counts[a]) || a.localeCompare(b));
+    if (!langs.includes(activeLang) && activeLang !== 'All') activeLang = 'All';
     const total = activeProjects.length;
     const options = ['All', ...langs].map(lang => {
         const n = lang === 'All' ? total : (counts[lang] || 0);
-        return `<button type="button" class="chip${lang === activeLang ? ' active' : ''}" data-lang="${lang}" aria-pressed="${lang === activeLang}">${lang} <span class="chip-count">${n}</span></button>`;
+        return `<button type="button" class="chip${lang === activeLang ? ' active' : ''}" data-lang="${escapeHtml(lang)}" aria-pressed="${lang === activeLang}">${escapeHtml(lang)} <span class="chip-count">${n}</span></button>`;
     });
     container.innerHTML = options.join('');
     container.querySelectorAll('.chip').forEach(chip => {
         chip.addEventListener('click', () => {
             activeLang = chip.dataset.lang;
+            writeStore('portfolio_proj_lang', activeLang);
             renderProjectFilters();
             renderProjectGrid();
         });
     });
 }
 
+function getFilteredProjects() {
+    const q = activeSearch.trim().toLowerCase();
+    let list = activeLang === 'All'
+        ? activeProjects.slice()
+        : activeProjects.filter(repo => (repo.language || 'N/A') === activeLang);
+    if (q) {
+        list = list.filter(repo => {
+            const hay = `${repo.name || ''} ${repo.description || ''} ${(repo.tags || []).join(' ')}`.toLowerCase();
+            return hay.includes(q);
+        });
+    }
+    if (activeSort === 'stars') list.sort((a, b) => (b.stargazers_count || 0) - (a.stargazers_count || 0));
+    else if (activeSort === 'recent') list.sort((a, b) => String(b.pushed_at || '') > String(a.pushed_at || '') ? 1 : -1);
+    else if (activeSort === 'az') list.sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')));
+    return list;
+}
+
+function renderFeatured() {
+    const box = document.getElementById('projects-featured');
+    if (!box) return;
+    if (activeSearch || activeLang !== 'All') { box.hidden = true; box.innerHTML = ''; return; }
+    const top = activeProjects.slice().sort((a, b) => (b.stargazers_count || 0) - (a.stargazers_count || 0))[0] || activeProjects[0];
+    if (!top) { box.hidden = true; return; }
+    const name = escapeHtml(top.name || '');
+    const desc = escapeHtml((top.description || '').slice(0, 180));
+    const stars = Number(top.stargazers_count) || 0;
+    const url = escapeHtml(top.html_url || `https://github.com/${GITHUB_USER}/${top.name}`);
+    const rawHome = top.homepage || '';
+    const demo = escapeHtml(/^https:\/\//i.test(rawHome) ? rawHome : '');
+    box.hidden = false;
+    box.innerHTML = `
+        <div class="featured-card">
+            <div style="flex:1;min-width:0">
+                <span class="featured-badge"><i class="fa-solid fa-star"></i> Featured project</span>
+                <h3>${name}</h3>
+                <p>${desc}</p>
+                <p style="font-size:1.25rem;opacity:.75;margin-top:.6rem"><i class="fa-solid fa-star"></i> ${stars} stars &middot; updated ${escapeHtml(formatPushed(top.pushed_at) || 'recently')}</p>
+                <div class="project-actions">
+                    ${demo ? `<a class="project-btn primary" href="${demo}" target="_blank" rel="noopener noreferrer">Live Demo</a>` : ''}
+                    <a class="project-btn ${demo ? 'ghost' : 'primary'}" href="${url}" target="_blank" rel="noopener noreferrer">View Code</a>
+                </div>
+            </div>
+        </div>`;
+}
+
+function bindProjectsToolbar() {
+    const input = document.getElementById('project-search');
+    if (input && !input.dataset.bound) {
+        input.dataset.bound = '1';
+        input.addEventListener('input', () => { activeSearch = input.value; renderProjectGrid(); });
+    }
+    const sort = document.getElementById('project-sort');
+    if (sort && !sort.dataset.bound) {
+        sort.dataset.bound = '1';
+        sort.value = activeSort;
+        sort.addEventListener('change', () => {
+            activeSort = sort.value;
+            writeStore('portfolio_proj_sort', activeSort);
+            renderProjectGrid();
+        });
+    } else if (sort) { sort.value = activeSort; }
+}
+
 function renderProjectGrid() {
     if (!projectsGrid) return;
-    const list = activeLang === 'All'
-        ? activeProjects
-        : activeProjects.filter(repo => (repo.language || 'N/A') === activeLang);
+    bindProjectsToolbar();
+    const list = getFilteredProjects();
 
     const counter = document.getElementById('project-results-count');
     if (counter) {
-        counter.textContent = list.length === activeProjects.length
+        counter.textContent = list.length === activeProjects.length && !activeSearch
             ? `Showing all ${list.length} projects`
             : `Showing ${list.length} of ${activeProjects.length} projects`;
     }
 
+    renderFeatured();
+
     if (list.length === 0) {
-        projectsGrid.innerHTML = `<p class="project-error">No projects in this category.</p>`;
+        projectsGrid.innerHTML = `<p class="project-error">No projects match. Try a different search or category.</p>`;
         return;
     }
 
@@ -324,6 +427,7 @@ function renderProjectGrid() {
 }
 
 function renderProjects(projects) {
+
     if (!projectsGrid) return;
     // The curated list is already in deliberate display order, so it is not
     // re-sorted here. Re-sorting by stars (all currently 0) made the order
@@ -367,7 +471,7 @@ async function loadProjects() {
     // one refetch instead. Note the cached path is also why `outcome` has to be
     // carried through projectsFromCurated/enrichProjects rather than read off
     // PROJECTS at render time.
-    const CACHE_KEY = 'portfolio_projects_v4';
+    const CACHE_KEY = 'portfolio_projects_v5';
     const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
     // renderProjects renders whatever array it is handed, so a truncated or
@@ -377,8 +481,8 @@ async function loadProjects() {
     // enrichProjects() output looks like, since it maps over PROJECTS.
     const isUsable = list =>
         Array.isArray(list) &&
-        list.length === PROJECTS.length &&
-        PROJECTS.every((p, i) => list[i] && list[i].name === p.name);
+        list.length > 0 &&
+        PROJECTS.every(p => list.some(x => x && x.name === p.name));
 
     const readCache = () => {
         let raw = null;
@@ -401,11 +505,24 @@ async function loadProjects() {
 
     // Only the API path writes the cache, so a cache hit is always live-derived
     // data, just possibly an hour old.
+    const byName = names => { const m = new Map(); (names || []).forEach(r => { if (r && r.name) m.set(r.name, r); }); return m; };
+    const mergeCached = cachedProjects => {
+        const m = byName(cachedProjects);
+        return projectsFromCurated().map(base => {
+            const hit = m.get(base.name);
+            if (!hit) return base;
+            return { ...base, stargazers_count: hit.stargazers_count || 0, pushed_at: hit.pushed_at || '', html_url: hit.html_url || base.html_url, homepage: hit.homepage || '' };
+        });
+    };
+
     if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
         setProjectsLive(true);
-        renderProjects(cached.projects);
+        renderProjects(mergeCached(cached.projects));
         return;
     }
+    // Stale-while-revalidate: show stale cache instantly, refresh in background.
+    const stale = cached ? mergeCached(cached.projects) : null;
+    if (stale) { setProjectsLive(true); renderProjects(stale); }
 
     try {
         const res = await fetch(GITHUB_API_URL);
