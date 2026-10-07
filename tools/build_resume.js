@@ -233,7 +233,9 @@ const icon = name =>
 
 const CONTACT = [
   { icon: 'pin', text: 'Iloilo City, Philippines' },
-  { icon: 'phone', text: '09388759110' },
+  // Both mobile numbers share one item: the icon is decorative and a second
+  // phone item would push the contact line toward a third row on the A4 sheet.
+  { icon: 'phone', text: '09388759110 / 09910102920' },
   { icon: 'mail', text: 'patrickcabansag5@gmail.com' },
   { icon: 'linkedin', text: 'linkedin.com/in/glenpatrick' },
   { icon: 'github', text: 'github.com/Gl3nnnn' },
