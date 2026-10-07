@@ -721,6 +721,8 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
       try { apply(next); } catch (e) {}
       title.textContent = isLight ? 'Light mode on' : 'Dark mode on';
       sub.textContent = isLight ? 'Bright and clear.' : 'Easy on the eyes.';
+      try { if (typeof themeProgTimer !== 'undefined' && themeProgTimer) { try { clearInterval(themeProgTimer); } catch (e) {} themeProgTimer = null; } } catch (e) {} /*REDUCED-100*/
+      try { var _b2 = card.querySelector('.theme-switch-bar span'); if (_b2) _b2.style.width = '100%'; var _p2 = card.querySelector('.theme-pct'); if (_p2) _p2.textContent = '100%'; } catch (e) {}
       card.classList.add('is-done');
       later(hide, 700);
       return;

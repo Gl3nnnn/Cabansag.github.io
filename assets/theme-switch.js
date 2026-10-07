@@ -34,10 +34,12 @@
     overlay.setAttribute('aria-hidden', 'true');
     overlay.innerHTML =
       '<div class="theme-switch-card" role="status" aria-live="polite">' +
-      '<div class="theme-switch-orb"><i class="fa-solid fa-moon"></i><span class="ring"></span></div>' +
+      '<span class="theme-pill"><i class="fa-solid fa-circle-half-stroke"></i><span class="theme-pill-text">Theme</span></span>' +
+      '<div class="theme-switch-orb"><i class="fa-solid fa-moon"></i><span class="ring"></span><span class="orbit o1"></span><span class="orbit o2"></span></div>' +
       '<h3 class="theme-switch-title">Switching to Dark mode...</h3>' +
       '<p class="theme-switch-sub">Tuning colors for your eyes.</p>' +
       '<div class="theme-switch-bar"><span></span></div>' +
+      '<div class="theme-meta"><span class="theme-pct">0%</span><span class="theme-step">Reading palette...</span></div>' +
       '</div>';
     document.body.appendChild(overlay);
     overlay.addEventListener('click', function (e) { if (e.target === overlay) hide(); });
@@ -50,6 +52,30 @@
   }
 
   // Same signature as script.js so behavior matches index.html exactly.
+  var themeProgTimer = null;
+  function runThemeProgress(card, isLight) {
+    try { if (themeProgTimer) clearInterval(themeProgTimer); } catch (e) {}
+    var bar = card.querySelector('.theme-switch-bar span');
+    var pct = card.querySelector('.theme-pct');
+    var step = card.querySelector('.theme-step');
+    var pill = card.querySelector('.theme-pill-text');
+    var steps = isLight ? ['Reading palette...','Warming whites...','Softening shadows...','Bright and clear!'] : ['Reading palette...','Dimming lights...','Deepening blacks...','Easy on the eyes!'];
+    if (pill) pill.textContent = isLight ? 'Dark \u2192 Light' : 'Light \u2192 Dark';
+    var p = 0;
+    if (bar) bar.style.width = '4%';
+    if (pct) pct.textContent = '4%';
+    if (step) step.textContent = steps[0];
+    themeProgTimer = setInterval(function () {
+      p = Math.min(96, p + 8 + Math.random() * 10);
+      if (bar) bar.style.width = p.toFixed(0) + '%';
+      if (pct) pct.textContent = p.toFixed(0) + '%';
+      if (step) step.textContent = steps[Math.min(steps.length - 2, Math.floor(p / 34))];
+      if (p >= 96) { try { clearInterval(themeProgTimer); } catch (e) {} themeProgTimer = null; }
+    }, 110);
+    timers.push({ _t: 1 });
+    var _origClear = clearTimers;
+    clearTimers = function () { try { if (themeProgTimer) clearInterval(themeProgTimer); } catch (e) {} themeProgTimer = null; timers.forEach(function (x) { try { if (typeof x === 'number') clearTimeout(x); } catch (e) {} }); timers = []; };
+  }
   window.switchThemeAnimated = function (next, apply, btn) {
     var ov = ensure();
     var card = ov.querySelector('.theme-switch-card');
@@ -69,18 +95,25 @@
     ov.classList.remove('show');
     void ov.offsetWidth;
     ov.classList.add('show');
+    try { runThemeProgress(card, isLight); } catch (e) {}
     if (btn) { btn.classList.remove('theme-flip'); void btn.offsetWidth; btn.classList.add('theme-flip'); }
 
     if (REDUCED) {
       try { apply(next); } catch (e) {}
       title.textContent = isLight ? 'Light mode on' : 'Dark mode on';
       sub.textContent = isLight ? 'Bright and clear.' : 'Easy on the eyes.';
+      try { if (typeof themeProgTimer !== 'undefined' && themeProgTimer) { try { clearInterval(themeProgTimer); } catch (e) {} themeProgTimer = null; } } catch (e) {}
+      try { var _b = card.querySelector('.theme-switch-bar span'); if (_b) _b.style.width = '100%'; var _p = card.querySelector('.theme-pct'); if (_p) _p.textContent = '100%'; var _s = card.querySelector('.theme-step'); if (_s) _s.textContent = isLight ? 'Bright and clear! Enjoy!' : 'Easy on the eyes! Enjoy!'; } catch (e) {}
+      try { if (typeof themeProgTimer !== 'undefined' && themeProgTimer) { try { clearInterval(themeProgTimer); } catch (e) {} themeProgTimer = null; } } catch (e) {} /*REDUCED-100*/
+      try { var _b2 = card.querySelector('.theme-switch-bar span'); if (_b2) _b2.style.width = '100%'; var _p2 = card.querySelector('.theme-pct'); if (_p2) _p2.textContent = '100%'; } catch (e) {}
       card.classList.add('is-done');
       later(hide, 700);
       return;
     }
     later(function () { try { apply(next); } catch (e) {} }, 420);
     later(function () {
+      try { if (typeof themeProgTimer !== 'undefined' && themeProgTimer) { try { clearInterval(themeProgTimer); } catch (e) {} themeProgTimer = null; } } catch (e) {}
+      try { var _b = card.querySelector('.theme-switch-bar span'); if (_b) _b.style.width = '100%'; var _p = card.querySelector('.theme-pct'); if (_p) _p.textContent = '100%'; var _s = card.querySelector('.theme-step'); if (_s) _s.textContent = isLight ? 'Bright and clear! Enjoy!' : 'Easy on the eyes! Enjoy!'; } catch (e) {}
       card.classList.add('is-done');
       orb.classList.add('spin-done');
       icon.className = 'fa-solid fa-check';
@@ -113,7 +146,31 @@
     toggle.setAttribute('data-ts-wired', 'true');
     toggle.addEventListener('click', function () {
       var next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-      window.switchThemeAnimated(next, applyTheme, toggle);
+      var themeProgTimer = null;
+  function runThemeProgress(card, isLight) {
+    try { if (themeProgTimer) clearInterval(themeProgTimer); } catch (e) {}
+    var bar = card.querySelector('.theme-switch-bar span');
+    var pct = card.querySelector('.theme-pct');
+    var step = card.querySelector('.theme-step');
+    var pill = card.querySelector('.theme-pill-text');
+    var steps = isLight ? ['Reading palette...','Warming whites...','Softening shadows...','Bright and clear!'] : ['Reading palette...','Dimming lights...','Deepening blacks...','Easy on the eyes!'];
+    if (pill) pill.textContent = isLight ? 'Dark \u2192 Light' : 'Light \u2192 Dark';
+    var p = 0;
+    if (bar) bar.style.width = '4%';
+    if (pct) pct.textContent = '4%';
+    if (step) step.textContent = steps[0];
+    themeProgTimer = setInterval(function () {
+      p = Math.min(96, p + 8 + Math.random() * 10);
+      if (bar) bar.style.width = p.toFixed(0) + '%';
+      if (pct) pct.textContent = p.toFixed(0) + '%';
+      if (step) step.textContent = steps[Math.min(steps.length - 2, Math.floor(p / 34))];
+      if (p >= 96) { try { clearInterval(themeProgTimer); } catch (e) {} themeProgTimer = null; }
+    }, 110);
+    timers.push({ _t: 1 });
+    var _origClear = clearTimers;
+    clearTimers = function () { try { if (themeProgTimer) clearInterval(themeProgTimer); } catch (e) {} themeProgTimer = null; timers.forEach(function (x) { try { if (typeof x === 'number') clearTimeout(x); } catch (e) {} }); timers = []; };
+  }
+  window.switchThemeAnimated(next, applyTheme, toggle);
     });
   }
 
