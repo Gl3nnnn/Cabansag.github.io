@@ -31,7 +31,8 @@
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preload" as="image" href="profile.jpg" fetchpriority="high">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -5414,6 +5415,7 @@ src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer>
 </script>
 <script type="text/javascript">
     var contactForm = document.getElementById('contact-form');
+    var formStartTime = Date.now();
 
     var fieldRules = {
         'full-name':     { test: function(v) { return v.trim().length >= 2; },      msg: 'Please enter your full name.' },
@@ -5492,6 +5494,24 @@ src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js" defer>
             return;
         }
 
+        if (Date.now() - formStartTime < 3000) {
+            setStatus('Please take a moment to complete the form, then try again.', true);
+            return;
+        }
+
+        try {
+            var lastSent = parseInt(localStorage.getItem('contactLastSent') || '0', 10);
+            if (Date.now() - lastSent < 60000) {
+                setStatus('Please wait a minute before sending another message.', true);
+                return;
+            }
+        } catch (e) {}
+
+        if (typeof emailjs === 'undefined' || typeof EMAILJS === 'undefined') {
+            setStatus('The contact service is unavailable. Please email me directly at patrickcabansag5@gmail.com.', true);
+            return;
+        }
+
         if (!validateForm()) {
             setStatus('Please fix the highlighted fields and try again.', true);
             return;
@@ -5514,6 +5534,7 @@ submitBtn.textContent = 'Sending...';
         .then(function() {
             setStatus('Thanks! Your message was sent. I usually reply within a day.', false);
             contactForm.reset();
+            try { localStorage.setItem('contactLastSent', String(Date.now())); } catch (e) {}
             Object.keys(fieldRules).forEach(function(id) {
                 var input = document.getElementById(id);
                 if (input) setFieldError(input, null);
